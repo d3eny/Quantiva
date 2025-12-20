@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quantiva — AI Accounting for Personal Finance</title>
+    <meta
+      name="description"
+      content="Quantiva is a minimalist fintech tool: track income and expenses, view daily/monthly analytics, and get AI savings advice."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="container header__inner">
+        <a class="brand" href="#top" aria-label="Quantiva">
+  <span class="brand__mark" aria-hidden="true">
+    <img class="brand__logo" src="assets/logo.png" alt="" />
+  </span>
+  <span class="brand__name">Quantiva</span>
+</a>
+
+        <nav class="nav" aria-label="Navigation">
+          <a class="nav__link" href="#features">Features</a>
+          <a class="nav__link" href="#security">Security</a>
+          <a class="nav__link" href="#pricing">Pricing</a>
+          <a class="nav__link" href="#faq">FAQ</a>
+        </nav>
+
+        <div class="header__actions">
+          <button class="btn btn--ghost" type="button" data-open="login">
+            Sign in
+          </button>
+          <button class="btn btn--primary" type="button" data-open="signup">
+            Get started
+          </button>
+
+          <button class="iconbtn burger" type="button" aria-label="Open menu" data-burger>
+            <span class="burger__line"></span>
+            <span class="burger__line"></span>
+            <span class="burger__line"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="mobile-nav" data-mobile-nav>
+        <a class="mobile-nav__link" href="#features">Features</a>
+        <a class="mobile-nav__link" href="#security">Security</a>
+        <a class="mobile-nav__link" href="#pricing">Pricing</a>
+        <a class="mobile-nav__link" href="#faq">FAQ</a>
+        <div class="mobile-nav__actions">
+          <button class="btn btn--ghost" type="button" data-open="login">Sign in</button>
+          <button class="btn btn--primary" type="button" data-open="signup">Get started</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="container hero__grid">
+          <div class="hero__content">
+            <div class="pill">
+              <span class="dot" aria-hidden="true"></span>
+              Next-gen AI accounting
+            </div>
+
+            <h1 class="hero__title">
+              Track income and expenses.
+              <span class="muted">Get AI-powered savings advice.</span>
+            </h1>
+
+            <p class="hero__subtitle">
+              Quantiva helps you log transactions, see daily/monthly analytics,
+              and turn spending chaos into a clear plan.
+            </p>
+
+            <div class="hero__cta">
+              <button class="btn btn--primary btn--lg" type="button" data-open="signup">
+                Create account
+              </button>
+              <a class="btn btn--ghost btn--lg" href="#features">Explore features</a>
+            </div>
+
+            <div class="hero__stats" aria-label="Key metrics">
+              <div class="stat">
+                <div class="stat__value">30 sec</div>
+                <div class="stat__label">to your first report</div>
+              </div>
+              <div class="stat">
+                <div class="stat__value">1 click</div>
+                <div class="stat__label">fast transaction logging</div>
+              </div>
+              <div class="stat">
+                <div class="stat__value">AI</div>
+                <div class="stat__label">personalized recommendations</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero__panel" aria-label="Dashboard preview">
+            <div class="panel">
+              <div class="panel__top">
+                <div class="panel__title">Overview</div>
+                <div class="panel__chip">December</div>
+              </div>
+
+              <div class="cards">
+                <div class="card">
+                  <div class="card__label">Balance</div>
+                  <div class="card__value">€ 1,284.20</div>
+                  <div class="card__hint">+8.4% over 30 days</div>
+                </div>
+                <div class="card">
+                  <div class="card__label">Spending</div>
+                  <div class="card__value">€ 642.10</div>
+                  <div class="card__hint">−2.1% this week</div>
+                </div>
+              </div>
+
+              <div class="chart">
+                <div class="chart__row">
+                  <div class="chart__label">Mon</div>
+                  <div class="bar"><span style="width: 55%"></span></div>
+                </div>
+                <div class="chart__row">
+                  <div class="chart__label">Tue</div>
+                  <div class="bar"><span style="width: 32%"></span></div>
+                </div>
+                <div class="chart__row">
+                  <div class="chart__label">Wed</div>
+                  <div class="bar"><span style="width: 78%"></span></div>
+                </div>
+                <div class="chart__row">
+                  <div class="chart__label">Thu</div>
+                  <div class="bar"><span style="width: 46%"></span></div>
+                </div>
+                <div class="chart__row">
+                  <div class="chart__label">Fri</div>
+                  <div class="bar"><span style="width: 66%"></span></div>
+                </div>
+              </div>
+
+              <div class="ai-tip">
+                <div class="ai-tip__badge">AI tip</div>
+                <p class="ai-tip__text">
+                  Try limiting food delivery to once a week — estimated savings ≈ €65/month.
+                </p>
+                <button class="btn btn--ghost btn--sm" type="button" data-open="signup">
+                  Enable AI assistant
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__bg" aria-hidden="true"></div>
+      </section>
+
+      <section id="features" class="section">
+        <div class="container">
+          <div class="section__head">
+            <h2 class="section__title">What Quantiva does</h2>
+            <p class="section__desc">
+              Minimal clicks. Maximum clarity.
+            </p>
+          </div>
+
+          <div class="grid3">
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">↳</div>
+              <h3 class="feature__title">Income & expenses</h3>
+              <p class="feature__text">
+                Add transactions quickly with categories and notes. No busywork.
+              </p>
+            </article>
+
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">▦</div>
+              <h3 class="feature__title">Analytics</h3>
+              <p class="feature__text">
+                Daily and monthly trends, clear summaries, and budget control.
+              </p>
+            </article>
+
+            <article class="feature">
+              <div class="feature__icon" aria-hidden="true">✦</div>
+              <h3 class="feature__title">AI recommendations</h3>
+              <p class="feature__text">
+                The assistant reviews your spending patterns and suggests concrete savings actions.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="security" class="section section--alt">
+        <div class="container">
+          <div class="split">
+            <div>
+              <h2 class="section__title">Security by design</h2>
+              <p class="section__desc">
+                We structure the system so it can scale safely from day one.
+                Today it’s a landing page—next it becomes a full product.
+              </p>
+
+              <ul class="bullets">
+                <li>Clear separation between public pages and your private app</li>
+                <li>Session-based auth and protected forms</li>
+                <li>Ready for database storage and audit logging</li>
+              </ul>
+            </div>
+
+            <div class="callout">
+              <div class="callout__title">Product roadmap</div>
+              <div class="steps">
+                <div class="step">
+                  <div class="step__num">1</div>
+                  <div class="step__body">
+                    <div class="step__title">Landing + Auth</div>
+                    <div class="step__text">Sign up / sign in and basic navigation.</div>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step__num">2</div>
+                  <div class="step__body">
+                    <div class="step__title">Transactions + Analytics</div>
+                    <div class="step__text">Income/expense logging, filters, daily/monthly reports.</div>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step__num">3</div>
+                  <div class="step__body">
+                    <div class="step__title">AI Assistant</div>
+                    <div class="step__text">OpenAI-powered advice, using aggregated transaction context.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" class="section">
+        <div class="container">
+          <div class="section__head">
+            <h2 class="section__title">Pricing</h2>
+            <p class="section__desc">Simple tiers, straightforward upgrades.</p>
+          </div>
+
+          <div class="grid3">
+            <article class="price">
+              <h3 class="price__title">Free</h3>
+              <div class="price__value">€0</div>
+              <ul class="price__list">
+                <li>Transactions</li>
+                <li>Categories</li>
+                <li>Basic reports</li>
+              </ul>
+              <button class="btn btn--ghost w100" type="button" data-open="signup">Try it</button>
+            </article>
+
+            <article class="price price--best">
+              <div class="price__tag">Recommended</div>
+              <h3 class="price__title">Pro</h3>
+              <div class="price__value">€6<span class="price__per">/mo</span></div>
+              <ul class="price__list">
+                <li>Advanced analytics</li>
+                <li>Export</li>
+                <li>Goals & limits</li>
+              </ul>
+              <button class="btn btn--primary w100" type="button" data-open="signup">Start Pro</button>
+            </article>
+
+            <article class="price">
+              <h3 class="price__title">AI</h3>
+              <div class="price__value">€12<span class="price__per">/mo</span></div>
+              <ul class="price__list">
+                <li>AI savings advice</li>
+                <li>Category suggestions</li>
+                <li>Personalized insights</li>
+              </ul>
+              <button class="btn btn--ghost w100" type="button" data-open="signup">Enable AI</button>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" class="section section--alt">
+        <div class="container">
+          <div class="section__head">
+            <h2 class="section__title">FAQ</h2>
+            <p class="section__desc">Quick answers to common questions.</p>
+          </div>
+
+          <div class="faq">
+            <details class="faq__item">
+              <summary>Is this a finished product?</summary>
+              <p>
+                This is the Replit-ready landing page. Next we’ll add auth, transaction storage,
+                analytics, and the AI assistant via the OpenAI API.
+              </p>
+            </details>
+            <details class="faq__item">
+              <summary>Can we add a dashboard quickly?</summary>
+              <p>
+                Yes. The next step is FastAPI + SQLite (or Postgres), sign-up/sign-in forms,
+                and protected routes like /app.
+              </p>
+            </details>
+            <details class="faq__item">
+              <summary>How will the AI assistant work?</summary>
+              <p>
+                We’ll send aggregated data (categories, totals, timeframe) to the OpenAI API and
+                return actionable advice—without sending unnecessary personal details.
+              </p>
+            </details>
+          </div>
+
+          <div class="cta-box">
+            <div>
+              <h3 class="cta-box__title">Ready to begin?</h3>
+              <p class="cta-box__text">Create an account and we’ll build the dashboard next.</p>
+            </div>
+            <button class="btn btn--primary" type="button" data-open="signup">
+              Get started
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__inner">
+        <div class="footer__left">
+          <div class="brand brand--small">
+            <span class="brand__mark" aria-hidden="true">Q</span>
+            <span class="brand__name">Quantiva</span>
+          </div>
+          <div class="footer__copy">© <span id="year"></span> Quantiva. All rights reserved.</div>
+        </div>
+
+        <div class="footer__right">
+          <a class="footer__link" href="#security">Security</a>
+          <a class="footer__link" href="#pricing">Pricing</a>
+          <a class="footer__link" href="#faq">FAQ</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- MODALS -->
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Sign in" data-modal="login">
+      <div class="modal__backdrop" data-close></div>
+      <div class="modal__card">
+        <div class="modal__head">
+          <h3 class="modal__title">Sign in</h3>
+          <button class="iconbtn" type="button" aria-label="Close" data-close>×</button>
+        </div>
+
+        <form class="form" id="loginForm">
+          <label class="field">
+            <span>Email</span>
+            <input type="email" name="email" placeholder="you@domain.com" required />
+          </label>
+          <label class="field">
+            <span>Password</span>
+            <input type="password" name="password" placeholder="••••••••" minlength="6" required />
+          </label>
+
+          <button class="btn btn--primary w100" type="submit">Sign in</button>
+          <p class="form__hint">
+            New here?
+            <button class="linklike" type="button" data-swap="signup">Create an account</button>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Sign up" data-modal="signup">
+      <div class="modal__backdrop" data-close></div>
+      <div class="modal__card">
+        <div class="modal__head">
+          <h3 class="modal__title">Create your account</h3>
+          <button class="iconbtn" type="button" aria-label="Close" data-close>×</button>
+        </div>
+
+        <form class="form" id="signupForm">
+          <label class="field">
+            <span>Name</span>
+            <input type="text" name="name" placeholder="Alex" required />
+          </label>
+          <label class="field">
+            <span>Email</span>
+            <input type="email" name="email" placeholder="you@domain.com" required />
+          </label>
+          <label class="field">
+            <span>Password</span>
+            <input type="password" name="password" placeholder="min 6 characters" minlength="6" required />
+          </label>
+
+          <button class="btn btn--primary w100" type="submit">Create account</button>
+          <p class="form__hint">
+            Already have an account?
+            <button class="linklike" type="button" data-swap="login">Sign in</button>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <div class="toast" aria-live="polite" aria-atomic="true" id="toast"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
