@@ -39,15 +39,6 @@
 
         <div class="header__actions">
           <!-- Language switcher -->
-          <div class="lang">
-            <button class="lang__btn" type="button" data-lang-btn aria-label="Language">
-              <span data-lang-label>EN</span> ▾
-            </button>
-            <div class="lang__menu" data-lang-menu>
-              <button type="button" class="lang__item" data-set-lang="en">English</button>
-              <button type="button" class="lang__item" data-set-lang="de">Deutsch</button>
-              <button type="button" class="lang__item" data-set-lang="ru">Русский</button>
-            </div>
           </div>
 
           <button class="btn btn--ghost" type="button" data-open="login" data-i18n="nav.signin">
@@ -73,15 +64,6 @@
 
         <div class="mobile-nav__actions">
           <!-- mobile language -->
-          <div class="lang lang--mobile">
-            <button class="lang__btn" type="button" data-lang-btn aria-label="Language">
-              <span data-lang-label>EN</span> ▾
-            </button>
-            <div class="lang__menu" data-lang-menu>
-              <button type="button" class="lang__item" data-set-lang="en">English</button>
-              <button type="button" class="lang__item" data-set-lang="de">Deutsch</button>
-              <button type="button" class="lang__item" data-set-lang="ru">Русский</button>
-            </div>
           </div>
 
           <button class="btn btn--ghost" type="button" data-open="login" data-i18n="nav.signin">
@@ -474,6 +456,19 @@
 
     <div class="toast" aria-live="polite" aria-atomic="true" id="toast"></div>
 
+    <!-- Floating language (bottom-right) -->
+<div class="lang-float" data-lang-float>
+  <button class="lang-float__btn" type="button" data-lang-btn aria-label="Language">
+    <span data-lang-label>EN</span> · 🌐
+  </button>
+
+  <div class="lang-float__menu" data-lang-menu>
+    <button type="button" class="lang-float__item" data-set-lang="en">English</button>
+    <button type="button" class="lang-float__item" data-set-lang="de">Deutsch</button>
+    <button type="button" class="lang-float__item" data-set-lang="ru">Русский</button>
+  </div>
+</div>
+
     <script src="app.js"></script>
   </body>
   <div class="hero-right">
@@ -486,5 +481,6 @@
   </div>
 </div>
 </html>
+
 
 
