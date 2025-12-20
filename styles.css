@@ -863,6 +863,25 @@ body::before{
   font-weight: 700;
 }
 
+   .overview-card {
+  position: relative;
+}
+
+.overview-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  color: #cfd3ff;
+  background: rgba(140, 120, 255, 0.12);
+  border: 1px solid rgba(140, 120, 255, 0.25);
+  border-radius: 999px;
+
+  backdrop-filter: blur(6px);
 }
 
 
