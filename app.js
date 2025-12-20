@@ -33,6 +33,40 @@
       toastEl.textContent = "";
     }, ms);
   }
+  // -----------------------------
+// Header hide-on-scroll (Safari-like)
+// -----------------------------
+const header = document.querySelector(".header");
+let lastY = window.scrollY;
+let ticking = false;
+
+function onScroll() {
+  const y = window.scrollY;
+
+  // show at top
+  if (y < 20) {
+    header?.classList.remove("is-hidden");
+    lastY = y;
+    return;
+  }
+
+  // if scrolling down -> hide, up -> show
+  if (y > lastY + 6) header?.classList.add("is-hidden");
+  else if (y < lastY - 6) header?.classList.remove("is-hidden");
+
+  lastY = y;
+}
+
+window.addEventListener("scroll", () => {
+  if (!ticking) {
+    window.requestAnimationFrame(() => {
+      onScroll();
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
 
   // -----------------------------
   // Mobile menu (burger)
@@ -574,8 +608,6 @@
 
   // Setup both desktop and mobile language blocks (if both exist)
   setupLangSwitcher(document);
-  // If you want strict: setup only inside mobile nav too:
-  if (mobileNav) setupLangSwitcher(mobileNav);
 
   // -----------------------------
   // Init language
@@ -585,4 +617,5 @@
   // expose for debugging if needed (optional)
   // window.Quantiva = { applyLang };
 })();
+
 
