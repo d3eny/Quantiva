@@ -21,8 +21,9 @@
 
   --radius: 18px;
   --radius-sm: 12px;
+   
+  --font: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 
-  --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
 }
 
 /* Base reset */
@@ -828,3 +829,4 @@ body::before{
   .header__actions{ gap: 8px; }
   .btn{ width: auto; }
 }
+
