@@ -828,5 +828,20 @@ body::before{
   .container{ width: calc(100% - 28px); }
   .header__actions{ gap: 8px; }
   .btn{ width: auto; }
+
+   .bubble{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+  color: rgba(235,242,255,0.86);
+  font-size: 12px;
+  font-weight: 700;
 }
+
+}
+
 
