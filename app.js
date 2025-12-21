@@ -7,10 +7,6 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  function clampStr(v) {
-    return typeof v === "string" ? v : "";
-  }
-
   // -----------------------------
   // Year
   // -----------------------------
@@ -23,7 +19,7 @@
   const toastEl = $("#toast");
   let toastTimer = null;
 
-  function toast(message, ms = 2200) {
+  function toast(message, ms = 2400) {
     if (!toastEl) return;
     toastEl.textContent = message;
     toastEl.style.display = "block";
@@ -33,40 +29,6 @@
       toastEl.textContent = "";
     }, ms);
   }
-  // -----------------------------
-// Header hide-on-scroll (Safari-like)
-// -----------------------------
-const header = document.querySelector(".header");
-let lastY = window.scrollY;
-let ticking = false;
-
-function onScroll() {
-  const y = window.scrollY;
-
-  // show at top
-  if (y < 20) {
-    header?.classList.remove("is-hidden");
-    lastY = y;
-    return;
-  }
-
-  // if scrolling down -> hide, up -> show
-  if (y > lastY + 6) header?.classList.add("is-hidden");
-  else if (y < lastY - 6) header?.classList.remove("is-hidden");
-
-  lastY = y;
-}
-
-window.addEventListener("scroll", () => {
-  if (!ticking) {
-    window.requestAnimationFrame(() => {
-      onScroll();
-      ticking = false;
-    });
-    ticking = true;
-  }
-});
-
 
   // -----------------------------
   // Mobile menu (burger)
@@ -74,31 +36,40 @@ window.addEventListener("scroll", () => {
   const burger = $("[data-burger]");
   const mobileNav = $("[data-mobile-nav]");
 
+  function isMobileNavOpen() {
+    return !!mobileNav && mobileNav.style.display === "block";
+  }
+
   function closeMobileNav() {
     if (!mobileNav) return;
     mobileNav.style.display = "none";
-    if (burger) burger.setAttribute("aria-expanded", "false");
+    burger?.setAttribute("aria-expanded", "false");
   }
 
   function toggleMobileNav() {
     if (!mobileNav) return;
-    const isOpen = mobileNav.style.display === "block";
-    mobileNav.style.display = isOpen ? "none" : "block";
-    if (burger) burger.setAttribute("aria-expanded", String(!isOpen));
+    const open = isMobileNavOpen();
+    mobileNav.style.display = open ? "none" : "block";
+    burger?.setAttribute("aria-expanded", String(!open));
   }
 
   if (burger && mobileNav) {
+    burger.setAttribute("aria-expanded", "false");
+
     burger.addEventListener("click", (e) => {
+      e.preventDefault();
       e.stopPropagation();
       toggleMobileNav();
     });
 
     document.addEventListener("click", (e) => {
-      // закрываем меню при клике вне
-      if (!mobileNav.contains(e.target) && e.target !== burger) closeMobileNav();
+      if (!isMobileNavOpen()) return;
+      const t = e.target;
+      if (t === burger) return;
+      if (mobileNav.contains(t)) return;
+      closeMobileNav();
     });
 
-    // закрываем при клике по ссылке
     $$(".mobile-nav__link", mobileNav).forEach((a) => {
       a.addEventListener("click", () => closeMobileNav());
     });
@@ -116,12 +87,17 @@ window.addEventListener("scroll", () => {
     return $(`[data-modal="${name}"]`);
   }
 
+  function anyModalOpen() {
+    return modals.some((m) => m.classList.contains("is-open"));
+  }
+
   function closeAllModals() {
     modals.forEach((m) => m.classList.remove("is-open"));
     document.body.style.overflow = "";
   }
 
   function openModal(name) {
+    closeMobileNav();
     closeAllModals();
     const m = getModal(name);
     if (!m) return;
@@ -142,28 +118,16 @@ window.addEventListener("scroll", () => {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeAllModals();
+    if (e.key === "Escape") {
+      closeAllModals();
+      closeMobileNav();
+      closeLangMenu();
+    }
   });
 
   // Fake submit handlers (пока без backend)
   const loginForm = $("#loginForm");
   const signupForm = $("#signupForm");
-
-  if (loginForm) {
-    loginForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      toast(t("toast.login"), 2200);
-      closeAllModals();
-    });
-  }
-
-  if (signupForm) {
-    signupForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      toast(t("toast.signup"), 2200);
-      closeAllModals();
-    });
-  }
 
   // -----------------------------
   // i18n (EN/DE/RU)
@@ -172,7 +136,6 @@ window.addEventListener("scroll", () => {
 
   const I18N = {
     en: {
-      // nav
       "nav.features": "Features",
       "nav.security": "Security",
       "nav.pricing": "Pricing",
@@ -180,7 +143,6 @@ window.addEventListener("scroll", () => {
       "nav.signin": "Sign in",
       "nav.getstarted": "Get started",
 
-      // hero
       "hero.pill": "Next-gen AI accounting",
       "hero.title1": "Track income and expenses.",
       "hero.title2": "Get AI-powered savings advice.",
@@ -195,7 +157,6 @@ window.addEventListener("scroll", () => {
       "hero.stat3.value": "AI",
       "hero.stat3.label": "personalized recommendations",
 
-      // panel
       "panel.title": "Overview",
       "panel.chip": "December",
       "panel.balance.label": "Balance",
@@ -208,11 +169,9 @@ window.addEventListener("scroll", () => {
       "panel.chart.thu": "Thu",
       "panel.chart.fri": "Fri",
       "panel.aitip.badge": "AI tip",
-      "panel.aitip.text":
-        "Try limiting food delivery to once a week — estimated savings ≈ €65/month.",
+      "panel.aitip.text": "Try limiting food delivery to once a week — estimated savings ≈ €65/month.",
       "panel.aitip.cta": "Enable AI assistant",
 
-      // features section
       "features.title": "What Quantiva does",
       "features.desc": "Minimal clicks. Maximum clarity.",
       "features.f1.title": "Income & expenses",
@@ -220,10 +179,8 @@ window.addEventListener("scroll", () => {
       "features.f2.title": "Analytics",
       "features.f2.text": "Daily and monthly trends, clear summaries, and budget control.",
       "features.f3.title": "AI recommendations",
-      "features.f3.text":
-        "The assistant reviews your spending patterns and suggests concrete savings actions.",
+      "features.f3.text": "The assistant reviews your spending patterns and suggests concrete savings actions.",
 
-      // security section
       "security.title": "Security by design",
       "security.desc":
         "We structure the system so it can scale safely from day one. Today it’s a landing page—next it becomes a full product.",
@@ -231,7 +188,6 @@ window.addEventListener("scroll", () => {
       "security.b2": "Session-based auth and protected forms",
       "security.b3": "Ready for database storage and audit logging",
 
-      // roadmap
       "roadmap.title": "Product roadmap",
       "roadmap.s1.title": "Landing + Auth",
       "roadmap.s1.text": "Sign up / sign in and basic navigation.",
@@ -240,7 +196,6 @@ window.addEventListener("scroll", () => {
       "roadmap.s3.title": "AI Assistant",
       "roadmap.s3.text": "OpenAI-powered advice, using aggregated transaction context.",
 
-      // pricing
       "pricing.title": "Pricing",
       "pricing.desc": "Simple tiers, straightforward upgrades.",
       "pricing.free.title": "Free",
@@ -263,7 +218,6 @@ window.addEventListener("scroll", () => {
       "pricing.ai.l3": "Personalized insights",
       "pricing.ai.cta": "Enable AI",
 
-      // faq
       "faq.title": "FAQ",
       "faq.desc": "Quick answers to common questions.",
       "faq.q1": "Is this a finished product?",
@@ -275,15 +229,12 @@ window.addEventListener("scroll", () => {
       "faq.a3":
         "We’ll send aggregated data (categories, totals, timeframe) and return actionable advice—without sending unnecessary personal details.",
 
-      // cta
       "cta.title": "Ready to begin?",
       "cta.text": "Create an account and we’ll build the dashboard next.",
       "cta.button": "Get started",
 
-      // footer
       "footer.rights": "Quantiva. All rights reserved.",
 
-      // auth modals
       "login.title": "Sign in",
       "login.email": "Email",
       "login.password": "Password",
@@ -299,7 +250,6 @@ window.addEventListener("scroll", () => {
       "signup.hint1": "Already have an account?",
       "signup.hint2": "Sign in",
 
-      // toasts
       "toast.login": "Signed in (demo). Next: connect backend.",
       "toast.signup": "Account created (demo). Next: connect backend.",
     },
@@ -338,8 +288,7 @@ window.addEventListener("scroll", () => {
       "panel.chart.thu": "Do",
       "panel.chart.fri": "Fr",
       "panel.aitip.badge": "KI‑Tipp",
-      "panel.aitip.text":
-        "Begrenze Lieferessen auf einmal pro Woche — geschätzte Ersparnis ≈ 65 €/Monat.",
+      "panel.aitip.text": "Begrenze Lieferessen auf einmal pro Woche — Ersparnis ≈ 65 €/Monat.",
       "panel.aitip.cta": "KI‑Assistent aktivieren",
 
       "features.title": "Was Quantiva kann",
@@ -354,8 +303,8 @@ window.addEventListener("scroll", () => {
       "security.title": "Sicherheit von Anfang an",
       "security.desc":
         "Wir strukturieren das System so, dass es sicher skalieren kann. Heute Landingpage—morgen ein vollständiges Produkt.",
-      "security.b1": "Klare Trennung zwischen öffentlicher Seite und privater App",
-      "security.b2": "Session‑basierte Auth und geschützte Formulare",
+      "security.b1": "Trennung zwischen öffentlicher Seite und privater App",
+      "security.b2": "Session‑Auth und geschützte Formulare",
       "security.b3": "Bereit für Datenbank und Audit‑Logging",
 
       "roadmap.title": "Produkt‑Roadmap",
@@ -391,13 +340,11 @@ window.addEventListener("scroll", () => {
       "faq.title": "FAQ",
       "faq.desc": "Kurze Antworten auf häufige Fragen.",
       "faq.q1": "Ist das ein fertiges Produkt?",
-      "faq.a1":
-        "Das ist die Landingpage. Als Nächstes kommen Auth, Speicherung, Analysen und der KI‑Assistent.",
+      "faq.a1": "Das ist die Landingpage. Als Nächstes kommen Auth, Speicherung, Analysen und der KI‑Assistent.",
       "faq.q2": "Können wir schnell ein Dashboard bauen?",
-      "faq.a2": "Ja. Nächster Schritt: Backend + Datenbank und geschützte Routen wie /app.",
+      "faq.a2": "Ja. Nächster Schritt: Backend + Datenbank und /app.",
       "faq.q3": "Wie funktioniert der KI‑Assistent?",
-      "faq.a3":
-        "Wir senden aggregierte Daten (Kategorien, Summen, Zeitraum) und erhalten umsetzbare Tipps—ohne unnötige persönliche Details.",
+      "faq.a3": "Wir senden aggregierte Daten und bekommen umsetzbare Tipps—ohne unnötige Details.",
 
       "cta.title": "Bereit loszulegen?",
       "cta.text": "Erstelle ein Konto — als Nächstes bauen wir das Dashboard.",
@@ -458,8 +405,7 @@ window.addEventListener("scroll", () => {
       "panel.chart.thu": "Чт",
       "panel.chart.fri": "Пт",
       "panel.aitip.badge": "AI‑совет",
-      "panel.aitip.text":
-        "Попробуй ограничить доставку еды до 1 раза в неделю — экономия ≈ €65/мес.",
+      "panel.aitip.text": "Ограничь доставку еды до 1 раза в неделю — экономия ≈ €65/мес.",
       "panel.aitip.cta": "Включить AI‑ассистента",
 
       "features.title": "Что умеет Quantiva",
@@ -467,20 +413,20 @@ window.addEventListener("scroll", () => {
       "features.f1.title": "Доходы и расходы",
       "features.f1.text": "Быстро добавляй операции с категориями и заметками.",
       "features.f2.title": "Аналитика",
-      "features.f2.text": "Тренды по дням и месяцам, понятные итоги и контроль бюджета.",
+      "features.f2.text": "Тренды по дням и месяцам, итоги и контроль бюджета.",
       "features.f3.title": "AI‑рекомендации",
-      "features.f3.text": "Ассистент замечает паттерны и предлагает конкретные действия для экономии.",
+      "features.f3.text": "Ассистент замечает паттерны и предлагает действия для экономии.",
 
       "security.title": "Безопасность по дизайну",
       "security.desc":
-        "Мы строим систему так, чтобы она безопасно масштабировалась. Сегодня лендинг — завтра полноценный продукт.",
-      "security.b1": "Чёткое разделение публичной части и приватного кабинета",
+        "Мы строим систему так, чтобы она безопасно масштабировалась. Сегодня лендинг — завтра продукт.",
+      "security.b1": "Разделение публичной части и приватной зоны",
       "security.b2": "Сессионная авторизация и защищённые формы",
       "security.b3": "Готовность к БД и аудит‑логированию",
 
       "roadmap.title": "Роадмап продукта",
       "roadmap.s1.title": "Лендинг + Auth",
-      "roadmap.s1.text": "Регистрация/вход и базовая навигация.",
+      "roadmap.s1.text": "Регистрация/вход и навигация.",
       "roadmap.s2.title": "Операции + Аналитика",
       "roadmap.s2.text": "Доходы/расходы, фильтры, отчёты по дням/месяцам.",
       "roadmap.s3.title": "AI‑ассистент",
@@ -511,13 +457,11 @@ window.addEventListener("scroll", () => {
       "faq.title": "FAQ",
       "faq.desc": "Быстрые ответы на популярные вопросы.",
       "faq.q1": "Это уже готовый продукт?",
-      "faq.a1":
-        "Сейчас это лендинг. Далее добавим auth, хранение операций, аналитику и AI‑ассистента.",
+      "faq.a1": "Пока это лендинг. Далее добавим auth, хранение, аналитику и AI‑ассистента.",
       "faq.q2": "Можно быстро сделать dashboard?",
-      "faq.a2": "Да. Следующий шаг — backend + база данных и защищённые страницы типа /app.",
+      "faq.a2": "Да. Следующий шаг — backend + база данных и /app.",
       "faq.q3": "Как будет работать AI‑ассистент?",
-      "faq.a3":
-        "Мы отправим агрегированные данные (категории, суммы, период) и получим понятные действия — без лишних личных деталей.",
+      "faq.a3": "Отправим агрегированные данные и получим понятные действия — без лишних деталей.",
 
       "cta.title": "Готов начать?",
       "cta.text": "Создай аккаунт — дальше соберём dashboard.",
@@ -552,23 +496,19 @@ window.addEventListener("scroll", () => {
 
   function t(key) {
     const lang = normalizeLang(localStorage.getItem(STORAGE_KEY) || "en");
-    const dict = I18N[lang] || I18N.en;
-    return dict[key] || (I18N.en[key] ?? key);
+    return (I18N[lang] && I18N[lang][key]) || (I18N.en[key] ?? key);
   }
 
   function applyLang(lang) {
     const L = normalizeLang(lang);
     const dict = I18N[L] || I18N.en;
 
-    // translate all marked nodes
     $$("[data-i18n]").forEach((el) => {
       const key = el.getAttribute("data-i18n");
       if (!key) return;
-      if (dict[key]) el.textContent = dict[key];
-      else if (I18N.en[key]) el.textContent = I18N.en[key];
+      el.textContent = dict[key] || I18N.en[key] || el.textContent;
     });
 
-    // update all language labels (there are 2: desktop + mobile)
     $$("[data-lang-label]").forEach((el) => {
       el.textContent = L.toUpperCase();
     });
@@ -578,44 +518,135 @@ window.addEventListener("scroll", () => {
   }
 
   // -----------------------------
-  // Language UI (supports multiple switchers)
+  // Floating language menu
   // -----------------------------
-  function setupLangSwitcher(root = document) {
-    const btn = $("[data-lang-btn]", root);
-    const menu = $("[data-lang-menu]", root);
-    if (!btn || !menu) return;
+  const langBtn = $("[data-lang-btn]");
+  const langMenu = $("[data-lang-menu]");
 
-    const close = () => menu.classList.remove("is-open");
+  function closeLangMenu() {
+    langMenu?.classList.remove("is-open");
+  }
 
-    btn.addEventListener("click", (e) => {
+  if (langBtn && langMenu) {
+    langBtn.addEventListener("click", (e) => {
+      e.preventDefault();
       e.stopPropagation();
-      menu.classList.toggle("is-open");
+      langMenu.classList.toggle("is-open");
     });
 
-    menu.addEventListener("click", (e) => {
+    langMenu.addEventListener("click", (e) => {
       const target = e.target.closest("[data-set-lang]");
       if (!target) return;
-      const lang = target.getAttribute("data-set-lang");
-      applyLang(lang);
-      close();
+      applyLang(target.getAttribute("data-set-lang"));
+      closeLangMenu();
     });
 
-    document.addEventListener("click", close);
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") close();
+    document.addEventListener("click", () => closeLangMenu());
+  }
+
+  // Init language
+  applyLang(normalizeLang(localStorage.getItem(STORAGE_KEY) || "en"));
+
+  // -----------------------------
+  // Demo submits
+  // -----------------------------
+  if (loginForm) {
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      toast(t("toast.login"));
+      closeAllModals();
+    });
+  }
+  if (signupForm) {
+    signupForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      toast(t("toast.signup"));
+      closeAllModals();
     });
   }
 
-  // Setup both desktop and mobile language blocks (if both exist)
-  setupLangSwitcher(document);
-
   // -----------------------------
-  // Init language
+  // Header hide-on-scroll (Safari-like)
+  // Fix: always targets ".header" and ignores when UI overlays are open
   // -----------------------------
-  applyLang(normalizeLang(localStorage.getItem(STORAGE_KEY) || "en"));
+  const header = $(".header");
+  let lastY = window.scrollY || 0;
+  let acc = 0; // accumulated delta (prevents jitter)
+  const HIDE_AFTER = 40; // px: after scrolling down enough, hide
+  const SHOW_AFTER = 14; // px: small upward scroll shows
 
-  // expose for debugging if needed (optional)
-  // window.Quantiva = { applyLang };
+  function shouldPauseAutoHide() {
+    return anyModalOpen() || isMobileNavOpen() || (langMenu && langMenu.classList.contains("is-open"));
+  }
+
+  function setHeaderHidden(hidden) {
+    if (!header) return;
+    header.classList.toggle("is-hidden", !!hidden);
+  }
+
+  function onScroll() {
+    if (!header) return;
+
+    // If any overlay is open -> keep header visible
+    if (shouldPauseAutoHide()) {
+      setHeaderHidden(false);
+      lastY = window.scrollY;
+      acc = 0;
+      return;
+    }
+
+    const y = window.scrollY || 0;
+
+    // Always show near top
+    if (y <= 12) {
+      setHeaderHidden(false);
+      lastY = y;
+      acc = 0;
+      return;
+    }
+
+    const dy = y - lastY;
+    lastY = y;
+
+    // Ignore tiny moves
+    if (Math.abs(dy) < 2) return;
+
+    // accumulate (like Safari)
+    acc += dy;
+
+    // scrolling down
+    if (acc > HIDE_AFTER) {
+      setHeaderHidden(true);
+      acc = 0;
+      return;
+    }
+
+    // scrolling up
+    if (acc < -SHOW_AFTER) {
+      setHeaderHidden(false);
+      acc = 0;
+      return;
+    }
+  }
+
+  // rAF throttle
+  let ticking = false;
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        onScroll();
+        ticking = false;
+      });
+    },
+    { passive: true }
+  );
+
+  // If user opens overlays, ensure header is visible
+  document.addEventListener("click", () => {
+    if (!header) return;
+    if (shouldPauseAutoHide()) setHeaderHidden(false);
+  });
 })();
-
-
