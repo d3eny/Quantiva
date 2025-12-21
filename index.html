@@ -97,7 +97,7 @@
               <button class="btn btn--primary btn--lg" type="button" data-open="signup" data-i18n="hero.cta1">
                 Create account
               </button>
-              <a class="btn btn--ghost btn--lg" href="#features" data-i18n="hero.cta2">Explore features</a>
+              <a class="btn btn--ghost btn--lg" href="#how" data-i18n="hero.cta2">Explore features</a>
             </div>
 
             <div class="hero__stats" aria-label="Key metrics">
@@ -118,54 +118,133 @@
 
           <!-- Right preview panel -->
           <div class="hero__panel" aria-label="Dashboard preview">
-            <div class="panel">
+            <div class="panel is-loading" data-panel>
               <div class="panel__top">
                 <div class="bubble" data-i18n="panel.title">Overview</div>
                 <div class="bubble bubble--muted" data-i18n="panel.chip">December</div>
               </div>
 
+              <!-- Scenario demo toggle -->
+              <div class="seg" role="tablist" aria-label="Scenario demo" data-seg>
+                <button
+                  class="seg__btn is-active"
+                  type="button"
+                  role="tab"
+                  aria-selected="true"
+                  data-scenario="student"
+                  data-i18n="demo.student"
+                >
+                  Student
+                </button>
+                <button
+                  class="seg__btn"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  data-scenario="freelancer"
+                  data-i18n="demo.freelancer"
+                >
+                  Freelancer
+                </button>
+                <button
+                  class="seg__btn"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  data-scenario="family"
+                  data-i18n="demo.family"
+                >
+                  Family
+                </button>
+              </div>
+
               <div class="cards">
-                <div class="card">
+                <div class="card" tabindex="0">
                   <div class="card__label" data-i18n="panel.balance.label">Balance</div>
-                  <div class="card__value">€ 1,284.20</div>
+                  <div class="card__value" data-kpi="balance">
+                    <span class="sk sk--text" aria-hidden="true"></span>
+                    <span class="kpi" data-kpi-text>€ 1,284.20</span>
+                  </div>
                   <div class="card__hint" data-i18n="panel.balance.hint">+8.4% over 30 days</div>
                 </div>
 
-                <div class="card">
+                <div class="card" tabindex="0">
                   <div class="card__label" data-i18n="panel.spend.label">Spending</div>
-                  <div class="card__value">€ 642.10</div>
+                  <div class="card__value" data-kpi="spending">
+                    <span class="sk sk--text" aria-hidden="true"></span>
+                    <span class="kpi" data-kpi-text>€ 642.10</span>
+                  </div>
                   <div class="card__hint" data-i18n="panel.spend.hint">−2.1% this week</div>
                 </div>
               </div>
 
-              <div class="chart" aria-label="Weekly trend">
+              <div class="chart" aria-label="Weekly trend" data-chart>
                 <div class="chart__row">
                   <div class="chart__label" data-i18n="panel.chart.mon">Mon</div>
-                  <div class="bar"><span style="width: 55%"></span></div>
+                  <div class="bar">
+                    <span class="sk sk--bar" aria-hidden="true"></span>
+                    <span class="bar__fill" style="width: 55%"></span>
+                  </div>
                 </div>
                 <div class="chart__row">
                   <div class="chart__label" data-i18n="panel.chart.tue">Tue</div>
-                  <div class="bar"><span style="width: 32%"></span></div>
+                  <div class="bar">
+                    <span class="sk sk--bar" aria-hidden="true"></span>
+                    <span class="bar__fill" style="width: 32%"></span>
+                  </div>
                 </div>
                 <div class="chart__row">
                   <div class="chart__label" data-i18n="panel.chart.wed">Wed</div>
-                  <div class="bar"><span style="width: 78%"></span></div>
+                  <div class="bar">
+                    <span class="sk sk--bar" aria-hidden="true"></span>
+                    <span class="bar__fill" style="width: 78%"></span>
+                  </div>
                 </div>
                 <div class="chart__row">
                   <div class="chart__label" data-i18n="panel.chart.thu">Thu</div>
-                  <div class="bar"><span style="width: 46%"></span></div>
+                  <div class="bar">
+                    <span class="sk sk--bar" aria-hidden="true"></span>
+                    <span class="bar__fill" style="width: 46%"></span>
+                  </div>
                 </div>
                 <div class="chart__row">
                   <div class="chart__label" data-i18n="panel.chart.fri">Fri</div>
-                  <div class="bar"><span style="width: 66%"></span></div>
+                  <div class="bar">
+                    <span class="sk sk--bar" aria-hidden="true"></span>
+                    <span class="bar__fill" style="width: 66%"></span>
+                  </div>
+                </div>
+
+                <!-- Empty state (toggled by JS) -->
+                <div class="empty" data-empty>
+                  <div class="empty__title" data-i18n="empty.title">No data yet</div>
+                  <div class="empty__text" data-i18n="empty.text">
+                    Add your first transaction to unlock insights and AI recommendations.
+                  </div>
                 </div>
               </div>
 
-              <div class="ai-tip">
-                <div class="ai-tip__badge" data-i18n="panel.aitip.badge">AI tip</div>
+              <div class="ai-tip" data-ai>
+                <div class="ai-tip__row">
+                  <div class="ai-tip__badge" data-i18n="panel.aitip.badge">AI tip</div>
+
+                  <!-- AI reasoning preview -->
+                  <button class="ai-why" type="button" data-ai-why aria-label="Why this suggestion?">
+                    <span data-i18n="ai.why">Why?</span>
+                  </button>
+
+                  <div class="tip" role="tooltip" data-ai-tip>
+                    <div class="tip__title" data-i18n="ai.tip.title">Reasoning preview</div>
+                    <div class="tip__text" data-i18n="ai.tip.text">
+                      Based on your food & transport categories over the last 30 days, delivery spikes are driving most of the variance.
+                    </div>
+                  </div>
+                </div>
+
                 <p class="ai-tip__text" data-i18n="panel.aitip.text">
                   Try limiting food delivery to once a week — estimated savings ≈ €65/month.
                 </p>
+
                 <button class="btn btn--ghost btn--sm" type="button" data-open="signup" data-i18n="panel.aitip.cta">
                   Enable AI assistant
                 </button>
@@ -175,8 +254,38 @@
         </div>
       </section>
 
+      <!-- HOW IT WORKS -->
+      <section id="how" class="section section--alt" data-reveal>
+        <div class="container">
+          <div class="section__head">
+            <h2 class="section__title" data-i18n="how.title">How Quantiva works</h2>
+            <p class="section__desc" data-i18n="how.desc">Three steps from chaos to clarity.</p>
+          </div>
+
+          <div class="grid3">
+            <article class="feature" data-reveal>
+              <div class="feature__icon" aria-hidden="true">①</div>
+              <h3 class="feature__title" data-i18n="how.s1.title">Add income & expenses</h3>
+              <p class="feature__text" data-i18n="how.s1.text">Log transactions in seconds with categories and notes.</p>
+            </article>
+
+            <article class="feature" data-reveal>
+              <div class="feature__icon" aria-hidden="true">②</div>
+              <h3 class="feature__title" data-i18n="how.s2.title">See daily & monthly analytics</h3>
+              <p class="feature__text" data-i18n="how.s2.text">Understand trends and stay in control of your budget.</p>
+            </article>
+
+            <article class="feature" data-reveal>
+              <div class="feature__icon" aria-hidden="true">③</div>
+              <h3 class="feature__title" data-i18n="how.s3.title">Get AI savings advice</h3>
+              <p class="feature__text" data-i18n="how.s3.text">Receive practical actions based on your aggregated patterns.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <!-- FEATURES -->
-      <section id="features" class="section">
+      <section id="features" class="section" data-reveal>
         <div class="container">
           <div class="section__head">
             <h2 class="section__title" data-i18n="features.title">What Quantiva does</h2>
@@ -184,7 +293,7 @@
           </div>
 
           <div class="grid3">
-            <article class="feature">
+            <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">↳</div>
               <h3 class="feature__title" data-i18n="features.f1.title">Income & expenses</h3>
               <p class="feature__text" data-i18n="features.f1.text">
@@ -192,7 +301,7 @@
               </p>
             </article>
 
-            <article class="feature">
+            <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">▦</div>
               <h3 class="feature__title" data-i18n="features.f2.title">Analytics</h3>
               <p class="feature__text" data-i18n="features.f2.text">
@@ -200,7 +309,7 @@
               </p>
             </article>
 
-            <article class="feature">
+            <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">✦</div>
               <h3 class="feature__title" data-i18n="features.f3.title">AI recommendations</h3>
               <p class="feature__text" data-i18n="features.f3.text">
@@ -211,8 +320,38 @@
         </div>
       </section>
 
-      <!-- SECURITY -->
-      <section id="security" class="section section--alt">
+      <!-- WHO IT'S FOR -->
+      <section id="audience" class="section section--alt" data-reveal>
+        <div class="container">
+          <div class="section__head">
+            <h2 class="section__title" data-i18n="aud.title">Who it’s built for</h2>
+            <p class="section__desc" data-i18n="aud.desc">Designed for real-life money routines.</p>
+          </div>
+
+          <div class="grid3">
+            <article class="feature" data-reveal>
+              <div class="feature__icon" aria-hidden="true">🎓</div>
+              <h3 class="feature__title" data-i18n="aud.a1.title">Students</h3>
+              <p class="feature__text" data-i18n="aud.a1.text">Control daily spending and avoid surprises.</p>
+            </article>
+
+            <article class="feature" data-reveal>
+              <div class="feature__icon" aria-hidden="true">🧑‍💻</div>
+              <h3 class="feature__title" data-i18n="aud.a2.title">Freelancers</h3>
+              <p class="feature__text" data-i18n="aud.a2.text">Track irregular income and plan ahead.</p>
+            </article>
+
+            <article class="feature" data-reveal>
+              <div class="feature__icon" aria-hidden="true">👨‍👩‍👧</div>
+              <h3 class="feature__title" data-i18n="aud.a3.title">Families</h3>
+              <p class="feature__text" data-i18n="aud.a3.text">Budget monthly expenses with clarity and goals.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECURITY + TRUST -->
+      <section id="security" class="section" data-reveal>
         <div class="container">
           <div class="split">
             <div>
@@ -228,7 +367,7 @@
               </ul>
             </div>
 
-            <div class="callout">
+            <div class="callout" data-reveal>
               <div class="callout__title" data-i18n="roadmap.title">Product roadmap</div>
 
               <div class="steps">
@@ -262,11 +401,40 @@
               </div>
             </div>
           </div>
+
+          <div class="trust-grid" data-reveal>
+            <div class="trust">
+              <div class="bubble bubble--muted" data-i18n="ai.title">How AI works</div>
+              <ul class="bullets bullets--tight">
+                <li data-i18n="ai.b1">AI uses aggregated totals and category trends (not raw bank credentials).</li>
+                <li data-i18n="ai.b2">You can enable/disable AI at any time.</li>
+                <li data-i18n="ai.b3">Advice is actionable, not generic.</li>
+              </ul>
+            </div>
+
+            <div class="trust">
+              <div class="bubble bubble--muted" data-i18n="privacy.title">Privacy first</div>
+              <ul class="bullets bullets--tight">
+                <li data-i18n="privacy.b1">No bank login required.</li>
+                <li data-i18n="privacy.b2">Built with secure storage and audit-ready structure.</li>
+                <li data-i18n="privacy.b3">EU-ready approach (GDPR-aligned by design).</li>
+              </ul>
+            </div>
+
+            <div class="trust">
+              <div class="bubble bubble--muted" data-i18n="next.title">What’s next</div>
+              <ul class="bullets bullets--tight">
+                <li data-i18n="next.b1">Budgets, goals and spending limits.</li>
+                <li data-i18n="next.b2">Exports (CSV/PDF) and reporting.</li>
+                <li data-i18n="next.b3">Smarter AI insights with weekly summaries.</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
 
       <!-- PRICING -->
-      <section id="pricing" class="section">
+      <section id="pricing" class="section section--alt" data-reveal>
         <div class="container">
           <div class="section__head">
             <h2 class="section__title" data-i18n="pricing.title">Pricing</h2>
@@ -274,7 +442,7 @@
           </div>
 
           <div class="grid3">
-            <article class="price">
+            <article class="price" data-reveal>
               <h3 class="price__title" data-i18n="pricing.free.title">Free</h3>
               <div class="price__value">€0</div>
               <ul class="price__list">
@@ -287,7 +455,7 @@
               </button>
             </article>
 
-            <article class="price price--best">
+            <article class="price price--best" data-reveal>
               <div class="price__tag" data-i18n="pricing.pro.tag">Recommended</div>
               <h3 class="price__title" data-i18n="pricing.pro.title">Pro</h3>
               <div class="price__value">
@@ -303,7 +471,7 @@
               </button>
             </article>
 
-            <article class="price">
+            <article class="price" data-reveal>
               <h3 class="price__title" data-i18n="pricing.ai.title">AI</h3>
               <div class="price__value">
                 €12<span class="price__per" data-i18n="pricing.per">/mo</span>
@@ -322,7 +490,7 @@
       </section>
 
       <!-- FAQ -->
-      <section id="faq" class="section section--alt">
+      <section id="faq" class="section" data-reveal>
         <div class="container">
           <div class="section__head">
             <h2 class="section__title" data-i18n="faq.title">FAQ</h2>
@@ -339,9 +507,7 @@
 
             <details class="faq__item">
               <summary data-i18n="faq.q2">Can we add a dashboard quickly?</summary>
-              <p data-i18n="faq.a2">
-                Yes. Next step is backend + database, and protected routes like /app.
-              </p>
+              <p data-i18n="faq.a2">Yes. Next step is backend + database, and protected routes like /app.</p>
             </details>
 
             <details class="faq__item">
@@ -350,18 +516,35 @@
                 We’ll send aggregated data (categories, totals, timeframe) and return actionable advice—without sending unnecessary personal details.
               </p>
             </details>
+
+            <details class="faq__item">
+              <summary data-i18n="faq.q4">Do I need to connect my bank account?</summary>
+              <p data-i18n="faq.a4">
+                No. You can start by manually logging transactions. Bank integrations can be added later as an optional feature.
+              </p>
+            </details>
+
+            <details class="faq__item">
+              <summary data-i18n="faq.q5">Is my data secure?</summary>
+              <p data-i18n="faq.a5">
+                The architecture is designed for secure storage, protected sessions, and audit-ready logging as the product evolves.
+              </p>
+            </details>
+
+            <details class="faq__item">
+              <summary data-i18n="faq.q6">Is there a free plan?</summary>
+              <p data-i18n="faq.a6">
+                Yes. You can start with Free and upgrade only when you need advanced analytics or AI features.
+              </p>
+            </details>
           </div>
 
           <div class="cta-box">
             <div>
               <h3 class="cta-box__title" data-i18n="cta.title">Ready to begin?</h3>
-              <p class="cta-box__text" data-i18n="cta.text">
-                Create an account and we’ll build the dashboard next.
-              </p>
+              <p class="cta-box__text" data-i18n="cta.text">Create an account and we’ll build the dashboard next.</p>
             </div>
-            <button class="btn btn--primary" type="button" data-open="signup" data-i18n="cta.button">
-              Get started
-            </button>
+            <button class="btn btn--primary" type="button" data-open="signup" data-i18n="cta.button">Get started</button>
           </div>
         </div>
       </section>
@@ -379,6 +562,9 @@
           </div>
           <div class="footer__copy">
             © <span id="year"></span> <span data-i18n="footer.rights">Quantiva. All rights reserved.</span>
+          </div>
+          <div class="footer__copy footer__micro" data-i18n="footer.micro">
+            Privacy-first • No bank credentials required • EU-ready
           </div>
         </div>
 
@@ -427,9 +613,7 @@
 
           <p class="form__hint">
             <span data-i18n="login.hint1">New here?</span>
-            <button class="linklike" type="button" data-swap="signup" data-i18n="login.hint2">
-              Create an account
-            </button>
+            <button class="linklike" type="button" data-swap="signup" data-i18n="login.hint2">Create an account</button>
           </p>
         </form>
       </div>
@@ -463,9 +647,7 @@
 
           <p class="form__hint">
             <span data-i18n="signup.hint1">Already have an account?</span>
-            <button class="linklike" type="button" data-swap="login" data-i18n="signup.hint2">
-              Sign in
-            </button>
+            <button class="linklike" type="button" data-swap="login" data-i18n="signup.hint2">Sign in</button>
           </p>
         </form>
       </div>
