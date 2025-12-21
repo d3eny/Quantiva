@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0B0D12" />
   <meta name="description" content="Quantiva — AI accounting demo landing." />
-
   <title>Quantiva</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -16,8 +15,8 @@
 </head>
 
 <body>
-  <!-- Background layers (styles.css should handle fixed/gradient properly) -->
-  <div class="bg">
+  <!-- Background layers -->
+  <div class="bg" aria-hidden="true">
     <div class="bg__top"></div>
     <div class="bg__base"></div>
   </div>
@@ -45,12 +44,13 @@
           {{nav.getstarted}}
         </button>
 
-        <button class="burger" id="burger" data-action="toggle-mobile" type="button" aria-label="Menu" aria-expanded="false">
+        <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
       </div>
     </div>
 
+    <!-- Mobile nav (toggled by app.js) -->
     <div class="mobile-nav" aria-label="Mobile Navigation" style="display:none">
       <div class="container mobile-nav__inner">
         <a class="mobile-nav__link" href="#features">{{nav.features}}</a>
@@ -106,7 +106,7 @@
           </div>
         </div>
 
-        <!-- Overview panel (demo UI) -->
+        <!-- Overview panel -->
         <div class="panel-wrap" data-reveal>
           <section class="panel" id="overviewPanel" aria-label="Overview panel">
             <div class="panel__top">
@@ -128,7 +128,6 @@
               </div>
             </div>
 
-            <!-- skeleton overlay handled via .panel.is-loading in CSS -->
             <div class="panel__grid">
               <div class="kpi card card--kpi">
                 <div class="card__head">
@@ -185,7 +184,7 @@
                   </button>
                 </div>
 
-                <p class="ai-tip__text" id="aiTipText" data-ai="tip-text">
+                <p class="ai-tip__text" id="aiTipText">
                   {{panel.aitip.text}}
                 </p>
 
@@ -203,10 +202,10 @@
               </div>
             </div>
 
-            <!-- Empty state (optional display via CSS/JS) -->
+            <!-- Optional empty state block -->
             <div class="empty" aria-live="polite">
-              <div class="empty__title" data-empty="title">{{empty.title}}</div>
-              <div class="empty__text" data-empty="text">{{empty.text}}</div>
+              <div class="empty__title">{{empty.title}}</div>
+              <div class="empty__text">{{empty.text}}</div>
             </div>
           </section>
         </div>
@@ -238,7 +237,7 @@
       </div>
     </section>
 
-    <!-- SECURITY -->
+    <!-- SECURITY + TRUST -->
     <section class="section" id="security" data-reveal>
       <div class="container">
         <div class="section__head">
@@ -292,7 +291,6 @@
       <div class="container">
         <div class="section__head">
           <h2 class="section__title">{{roadmap.title}}</h2>
-          <p class="section__desc">Demo timeline</p>
         </div>
 
         <div class="grid3">
@@ -452,7 +450,7 @@
 
       <p class="modal__hint">{{modal.signin.hint}}</p>
 
-      <form id="signInForm" data-auth="signin">
+      <form id="signInForm">
         <label class="field">
           <span class="field__label">{{modal.email}}</span>
           <input class="input" type="email" required placeholder="{{modal.email}}" />
@@ -484,7 +482,7 @@
 
       <p class="modal__hint">{{modal.signup.hint}}</p>
 
-      <form id="createForm" data-auth="signup">
+      <form id="createForm">
         <label class="field">
           <span class="field__label">{{modal.email}}</span>
           <input class="input" type="email" required placeholder="{{modal.email}}" />
