@@ -1,660 +1,514 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Quantiva — AI Accounting for Personal Finance</title>
-    <meta
-      name="description"
-      content="Quantiva is a minimalist fintech tool: track income and expenses, view daily/monthly analytics, and get AI savings advice."
-    />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0B0D12" />
+  <meta name="description" content="Quantiva — AI accounting demo landing." />
 
-    <!-- Premium wordmark font (ONLY for logo text) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap"
-      rel="stylesheet"
-    />
+  <title>Quantiva</title>
 
-    <link rel="stylesheet" href="styles.css" />
-  </head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-  <body>
-    <!-- HEADER -->
-    <header class="header" data-header>
-      <div class="container header__inner">
-        <a class="brand" href="#top" aria-label="Quantiva">
-          <span class="brand__mark" aria-hidden="true">
-            <img class="brand__logo" src="assets/logo.svg" alt="" />
-          </span>
-          <span class="brand__name">Quantiva</span>
-        </a>
+  <link rel="stylesheet" href="styles.css" />
+</head>
 
-        <nav class="nav" aria-label="Navigation">
-          <a class="nav__link" href="#features" data-i18n="nav.features">Features</a>
-          <a class="nav__link" href="#security" data-i18n="nav.security">Security</a>
-          <a class="nav__link" href="#pricing" data-i18n="nav.pricing">Pricing</a>
-          <a class="nav__link" href="#faq" data-i18n="nav.faq">FAQ</a>
-        </nav>
+<body>
+  <!-- Background layers (styles.css should handle fixed/gradient properly) -->
+  <div class="bg">
+    <div class="bg__top"></div>
+    <div class="bg__base"></div>
+  </div>
 
-        <div class="header__actions">
-          <div class="header__btns">
-            <button class="btn btn--ghost" type="button" data-open="login" data-i18n="nav.signin">
-              Sign in
-            </button>
-            <button class="btn btn--primary" type="button" data-open="signup" data-i18n="nav.getstarted">
-              Get started
-            </button>
-          </div>
+  <!-- HEADER -->
+  <header class="header" role="banner">
+    <div class="container header__inner">
+      <a class="brand" href="#top" aria-label="Quantiva home">
+        <span class="brand__mark" aria-hidden="true">Q</span>
+        <span class="brand__name">Quantiva</span>
+      </a>
 
-          <button class="iconbtn burger" type="button" aria-label="Open menu" data-burger>
-            <span class="burger__line"></span>
-            <span class="burger__line"></span>
-            <span class="burger__line"></span>
-          </button>
-        </div>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link" href="#features">{{nav.features}}</a>
+        <a class="nav__link" href="#security">{{nav.security}}</a>
+        <a class="nav__link" href="#pricing">{{nav.pricing}}</a>
+        <a class="nav__link" href="#faq">{{nav.faq}}</a>
+      </nav>
+
+      <div class="header__actions">
+        <button class="btn btn--ghost btn--sm" id="signInBtn" data-modal-open="signin" type="button">
+          {{nav.signin}}
+        </button>
+        <button class="btn btn--primary btn--sm" id="getStartedBtn" data-modal-open="signup" type="button">
+          {{nav.getstarted}}
+        </button>
+
+        <button class="burger" id="burger" data-action="toggle-mobile" type="button" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
       </div>
+    </div>
 
-      <!-- Mobile nav -->
-      <div class="mobile-nav" data-mobile-nav>
-        <a class="mobile-nav__link" href="#features" data-i18n="nav.features">Features</a>
-        <a class="mobile-nav__link" href="#security" data-i18n="nav.security">Security</a>
-        <a class="mobile-nav__link" href="#pricing" data-i18n="nav.pricing">Pricing</a>
-        <a class="mobile-nav__link" href="#faq" data-i18n="nav.faq">FAQ</a>
+    <div class="mobile-nav" aria-label="Mobile Navigation" style="display:none">
+      <div class="container mobile-nav__inner">
+        <a class="mobile-nav__link" href="#features">{{nav.features}}</a>
+        <a class="mobile-nav__link" href="#security">{{nav.security}}</a>
+        <a class="mobile-nav__link" href="#pricing">{{nav.pricing}}</a>
+        <a class="mobile-nav__link" href="#faq">{{nav.faq}}</a>
 
         <div class="mobile-nav__actions">
-          <button class="btn btn--ghost w100" type="button" data-open="login" data-i18n="nav.signin">
-            Sign in
-          </button>
-          <button class="btn btn--primary w100" type="button" data-open="signup" data-i18n="nav.getstarted">
-            Get started
-          </button>
+          <button class="btn btn--ghost" data-modal-open="signin" type="button">{{nav.signin}}</button>
+          <button class="btn btn--primary" data-modal-open="signup" type="button">{{nav.getstarted}}</button>
         </div>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <main id="top">
-      <!-- HERO -->
-      <section class="hero">
-        <div class="container hero__grid">
-          <div class="hero__content">
-            <div class="pill">
-              <span class="dot" aria-hidden="true"></span>
-              <span data-i18n="hero.pill">Next-gen AI accounting</span>
-            </div>
+  <!-- MAIN -->
+  <main id="top" class="main" role="main">
 
-            <h1 class="hero__title">
-              <span data-i18n="hero.title1">Track income and expenses.</span>
-              <span class="muted" data-i18n="hero.title2">Get AI-powered savings advice.</span>
-            </h1>
-
-            <p class="hero__subtitle" data-i18n="hero.subtitle">
-              Quantiva helps you log transactions, see daily/monthly analytics, and turn spending chaos into a clear plan.
-            </p>
-
-            <div class="hero__cta">
-              <button class="btn btn--primary btn--lg" type="button" data-open="signup" data-i18n="hero.cta1">
-                Create account
-              </button>
-              <a class="btn btn--ghost btn--lg" href="#how" data-i18n="hero.cta2">Explore features</a>
-            </div>
-
-            <div class="hero__stats" aria-label="Key metrics">
-              <div class="stat">
-                <div class="stat__value" data-i18n="hero.stat1.value">30 sec</div>
-                <div class="stat__label" data-i18n="hero.stat1.label">to your first report</div>
-              </div>
-              <div class="stat">
-                <div class="stat__value" data-i18n="hero.stat2.value">1 click</div>
-                <div class="stat__label" data-i18n="hero.stat2.label">fast transaction logging</div>
-              </div>
-              <div class="stat stat--wide">
-                <div class="stat__value" data-i18n="hero.stat3.value">AI</div>
-                <div class="stat__label" data-i18n="hero.stat3.label">personalized recommendations</div>
-              </div>
-            </div>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container hero__inner">
+        <div class="hero__copy">
+          <div class="pill">
+            <span class="pill__dot" aria-hidden="true"></span>
+            <span class="pill__text">{{hero.pill}}</span>
           </div>
 
-          <!-- Right preview panel -->
-          <div class="hero__panel" aria-label="Dashboard preview">
-            <div class="panel is-loading" data-panel>
-              <div class="panel__top">
-                <div class="bubble" data-i18n="panel.title">Overview</div>
-                <div class="bubble bubble--muted" data-i18n="panel.chip">December</div>
+          <h1 class="hero__title">
+            <span class="hero__line">{{hero.title1}}</span>
+            <span class="hero__line hero__line--accent">{{hero.title2}}</span>
+          </h1>
+
+          <p class="hero__subtitle">{{hero.subtitle}}</p>
+
+          <div class="hero__cta">
+            <button class="btn btn--primary" data-modal-open="signup" type="button">{{hero.cta1}}</button>
+            <a class="btn btn--ghost" href="#features">{{hero.cta2}}</a>
+          </div>
+
+          <div class="stats" aria-label="Highlights">
+            <div class="stat">
+              <div class="stat__value">{{hero.stat1.value}}</div>
+              <div class="stat__label">{{hero.stat1.label}}</div>
+            </div>
+            <div class="stat">
+              <div class="stat__value">{{hero.stat2.value}}</div>
+              <div class="stat__label">{{hero.stat2.label}}</div>
+            </div>
+            <div class="stat">
+              <div class="stat__value">{{hero.stat3.value}}</div>
+              <div class="stat__label">{{hero.stat3.label}}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overview panel (demo UI) -->
+        <div class="panel-wrap" data-reveal>
+          <section class="panel" id="overviewPanel" aria-label="Overview panel">
+            <div class="panel__top">
+              <div class="panel__title">
+                <span class="bubble">{{panel.title}}</span>
+                <span class="chip">{{panel.chip}}</span>
               </div>
 
-              <!-- Scenario demo toggle -->
-              <div class="seg" role="tablist" aria-label="Scenario demo" data-seg>
-                <button
-                  class="seg__btn is-active"
-                  type="button"
-                  role="tab"
-                  aria-selected="true"
-                  data-scenario="student"
-                  data-i18n="demo.student"
-                >
-                  Student
+              <div class="seg" role="tablist" aria-label="Scenario">
+                <button class="seg__btn is-active" type="button" data-scenario="student" aria-pressed="true">
+                  {{demo.student}}
                 </button>
-                <button
-                  class="seg__btn"
-                  type="button"
-                  role="tab"
-                  aria-selected="false"
-                  data-scenario="freelancer"
-                  data-i18n="demo.freelancer"
-                >
-                  Freelancer
+                <button class="seg__btn" type="button" data-scenario="freelancer" aria-pressed="false">
+                  {{demo.freelancer}}
                 </button>
-                <button
-                  class="seg__btn"
-                  type="button"
-                  role="tab"
-                  aria-selected="false"
-                  data-scenario="family"
-                  data-i18n="demo.family"
-                >
-                  Family
+                <button class="seg__btn" type="button" data-scenario="family" aria-pressed="false">
+                  {{demo.family}}
                 </button>
               </div>
+            </div>
 
-              <div class="cards">
-                <div class="card" tabindex="0">
-                  <div class="card__label" data-i18n="panel.balance.label">Balance</div>
-                  <div class="card__value" data-kpi="balance">
-                    <span class="sk sk--text" aria-hidden="true"></span>
-                    <span class="kpi" data-kpi-text>€ 1,284.20</span>
-                  </div>
-                  <div class="card__hint" data-i18n="panel.balance.hint">+8.4% over 30 days</div>
+            <!-- skeleton overlay handled via .panel.is-loading in CSS -->
+            <div class="panel__grid">
+              <div class="kpi card card--kpi">
+                <div class="card__head">
+                  <div class="card__label">{{panel.balance.label}}</div>
+                  <div class="card__hint">{{panel.balance.hint}}</div>
                 </div>
-
-                <div class="card" tabindex="0">
-                  <div class="card__label" data-i18n="panel.spend.label">Spending</div>
-                  <div class="card__value" data-kpi="spending">
-                    <span class="sk sk--text" aria-hidden="true"></span>
-                    <span class="kpi" data-kpi-text>€ 642.10</span>
-                  </div>
-                  <div class="card__hint" data-i18n="panel.spend.hint">−2.1% this week</div>
-                </div>
+                <div class="card__value" id="kpiBalance">€0.00</div>
               </div>
 
-              <div class="chart" aria-label="Weekly trend" data-chart>
-                <div class="chart__row">
-                  <div class="chart__label" data-i18n="panel.chart.mon">Mon</div>
-                  <div class="bar">
-                    <span class="sk sk--bar" aria-hidden="true"></span>
-                    <span class="bar__fill" style="width: 55%"></span>
-                  </div>
+              <div class="kpi card card--kpi">
+                <div class="card__head">
+                  <div class="card__label">{{panel.spend.label}}</div>
+                  <div class="card__hint">{{panel.spend.hint}}</div>
                 </div>
-                <div class="chart__row">
-                  <div class="chart__label" data-i18n="panel.chart.tue">Tue</div>
-                  <div class="bar">
-                    <span class="sk sk--bar" aria-hidden="true"></span>
-                    <span class="bar__fill" style="width: 32%"></span>
-                  </div>
-                </div>
-                <div class="chart__row">
-                  <div class="chart__label" data-i18n="panel.chart.wed">Wed</div>
-                  <div class="bar">
-                    <span class="sk sk--bar" aria-hidden="true"></span>
-                    <span class="bar__fill" style="width: 78%"></span>
-                  </div>
-                </div>
-                <div class="chart__row">
-                  <div class="chart__label" data-i18n="panel.chart.thu">Thu</div>
-                  <div class="bar">
-                    <span class="sk sk--bar" aria-hidden="true"></span>
-                    <span class="bar__fill" style="width: 46%"></span>
-                  </div>
-                </div>
-                <div class="chart__row">
-                  <div class="chart__label" data-i18n="panel.chart.fri">Fri</div>
-                  <div class="bar">
-                    <span class="sk sk--bar" aria-hidden="true"></span>
-                    <span class="bar__fill" style="width: 66%"></span>
-                  </div>
+                <div class="card__value" id="kpiSpending">€0.00</div>
+              </div>
+
+              <div class="card card--chart">
+                <div class="card__head">
+                  <div class="card__label">Weekly</div>
+                  <div class="card__hint">Demo</div>
                 </div>
 
-                <!-- Empty state (toggled by JS) -->
-                <div class="empty" data-empty>
-                  <div class="empty__title" data-i18n="empty.title">No data yet</div>
-                  <div class="empty__text" data-i18n="empty.text">
-                    Add your first transaction to unlock insights and AI recommendations.
+                <div class="bars" role="img" aria-label="Chart">
+                  <div class="bar">
+                    <div class="bar__fill" data-bar-fill></div>
+                    <div class="bar__label">{{panel.chart.mon}}</div>
+                  </div>
+                  <div class="bar">
+                    <div class="bar__fill" data-bar-fill></div>
+                    <div class="bar__label">{{panel.chart.tue}}</div>
+                  </div>
+                  <div class="bar">
+                    <div class="bar__fill" data-bar-fill></div>
+                    <div class="bar__label">{{panel.chart.wed}}</div>
+                  </div>
+                  <div class="bar">
+                    <div class="bar__fill" data-bar-fill></div>
+                    <div class="bar__label">{{panel.chart.thu}}</div>
+                  </div>
+                  <div class="bar">
+                    <div class="bar__fill" data-bar-fill></div>
+                    <div class="bar__label">{{panel.chart.fri}}</div>
                   </div>
                 </div>
               </div>
 
-              <div class="ai-tip" data-ai>
-                <div class="ai-tip__row">
-                  <div class="ai-tip__badge" data-i18n="panel.aitip.badge">AI tip</div>
+              <div class="card card--ai ai-tip">
+                <div class="card__head">
+                  <div class="badge">{{panel.aitip.badge}}</div>
 
-                  <!-- AI reasoning preview -->
-                  <button class="ai-why" type="button" data-ai-why aria-label="Why this suggestion?">
-                    <span data-i18n="ai.why">Why?</span>
+                  <button class="ai-why" id="aiWhyBtn" type="button" aria-label="{{ai.why}}">
+                    {{ai.why}}
                   </button>
-
-                  <div class="tip" role="tooltip" data-ai-tip>
-                    <div class="tip__title" data-i18n="ai.tip.title">Reasoning preview</div>
-                    <div class="tip__text" data-i18n="ai.tip.text">
-                      Based on your food & transport categories over the last 30 days, delivery spikes are driving most of the variance.
-                    </div>
-                  </div>
                 </div>
 
-                <p class="ai-tip__text" data-i18n="panel.aitip.text">
-                  Try limiting food delivery to once a week — estimated savings ≈ €65/month.
+                <p class="ai-tip__text" id="aiTipText" data-ai="tip-text">
+                  {{panel.aitip.text}}
                 </p>
 
-                <button class="btn btn--ghost btn--sm" type="button" data-open="signup" data-i18n="panel.aitip.cta">
-                  Enable AI assistant
+                <button class="btn btn--ghost btn--sm" data-action="toggle-ai" type="button">
+                  {{panel.aitip.cta}}
                 </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      <!-- HOW IT WORKS -->
-      <section id="how" class="section section--alt" data-reveal>
-        <div class="container">
-          <div class="section__head">
-            <h2 class="section__title" data-i18n="how.title">How Quantiva works</h2>
-            <p class="section__desc" data-i18n="how.desc">Three steps from chaos to clarity.</p>
-          </div>
-
-          <div class="grid3">
-            <article class="feature" data-reveal>
-              <div class="feature__icon" aria-hidden="true">①</div>
-              <h3 class="feature__title" data-i18n="how.s1.title">Add income & expenses</h3>
-              <p class="feature__text" data-i18n="how.s1.text">Log transactions in seconds with categories and notes.</p>
-            </article>
-
-            <article class="feature" data-reveal>
-              <div class="feature__icon" aria-hidden="true">②</div>
-              <h3 class="feature__title" data-i18n="how.s2.title">See daily & monthly analytics</h3>
-              <p class="feature__text" data-i18n="how.s2.text">Understand trends and stay in control of your budget.</p>
-            </article>
-
-            <article class="feature" data-reveal>
-              <div class="feature__icon" aria-hidden="true">③</div>
-              <h3 class="feature__title" data-i18n="how.s3.title">Get AI savings advice</h3>
-              <p class="feature__text" data-i18n="how.s3.text">Receive practical actions based on your aggregated patterns.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <!-- FEATURES -->
-      <section id="features" class="section" data-reveal>
-        <div class="container">
-          <div class="section__head">
-            <h2 class="section__title" data-i18n="features.title">What Quantiva does</h2>
-            <p class="section__desc" data-i18n="features.desc">Minimal clicks. Maximum clarity.</p>
-          </div>
-
-          <div class="grid3">
-            <article class="feature" data-reveal>
-              <div class="feature__icon" aria-hidden="true">↳</div>
-              <h3 class="feature__title" data-i18n="features.f1.title">Income & expenses</h3>
-              <p class="feature__text" data-i18n="features.f1.text">
-                Add transactions quickly with categories and notes. No busywork.
-              </p>
-            </article>
-
-            <article class="feature" data-reveal>
-              <div class="feature__icon" aria-hidden="true">▦</div>
-              <h3 class="feature__title" data-i18n="features.f2.title">Analytics</h3>
-              <p class="feature__text" data-i18n="features.f2.text">
-                Daily and monthly trends, clear summaries, and budget control.
-              </p>
-            </article>
-
-            <article class="feature" data-reveal>
-              <div class="feature__icon" aria-hidden="true">✦</div>
-              <h3 class="feature__title" data-i18n="features.f3.title">AI recommendations</h3>
-              <p class="feature__text" data-i18n="features.f3.text">
-                The assistant reviews your spending patterns and suggests concrete savings actions.
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <!-- WHO IT'S FOR -->
-      <section id="audience" class="section section--alt" data-reveal>
-        <div class="container">
-          <div class="section__head">
-            <h2 class="section__title" data-i18n="aud.title">Who it’s built for</h2>
-            <p class="section__desc" data-i18n="aud.desc">Designed for real-life money routines.</p>
-          </div>
-
-          <div class="grid3">
-            <article class="feature" data-reveal>
-              <div class="feature__icon" aria-hidden="true">🎓</div>
-              <h3 class="feature__title" data-i18n="aud.a1.title">Students</h3>
-              <p class="feature__text" data-i18n="aud.a1.text">Control daily spending and avoid surprises.</p>
-            </article>
-
-            <article class="feature" data-reveal>
-              <div class="feature__icon" aria-hidden="true">🧑‍💻</div>
-              <h3 class="feature__title" data-i18n="aud.a2.title">Freelancers</h3>
-              <p class="feature__text" data-i18n="aud.a2.text">Track irregular income and plan ahead.</p>
-            </article>
-
-            <article class="feature" data-reveal>
-              <div class="feature__icon" aria-hidden="true">👨‍👩‍👧</div>
-              <h3 class="feature__title" data-i18n="aud.a3.title">Families</h3>
-              <p class="feature__text" data-i18n="aud.a3.text">Budget monthly expenses with clarity and goals.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <!-- SECURITY + TRUST -->
-      <section id="security" class="section" data-reveal>
-        <div class="container">
-          <div class="split">
-            <div>
-              <h2 class="section__title" data-i18n="security.title">Security by design</h2>
-              <p class="section__desc" data-i18n="security.desc">
-                We structure the system so it can scale safely from day one. Today it’s a landing page—next it becomes a full product.
-              </p>
-
-              <ul class="bullets">
-                <li data-i18n="security.b1">Clear separation between public pages and your private app</li>
-                <li data-i18n="security.b2">Session-based auth and protected forms</li>
-                <li data-i18n="security.b3">Ready for database storage and audit logging</li>
-              </ul>
-            </div>
-
-            <div class="callout" data-reveal>
-              <div class="callout__title" data-i18n="roadmap.title">Product roadmap</div>
-
-              <div class="steps">
-                <div class="step">
-                  <div class="step__num">1</div>
-                  <div class="step__body">
-                    <div class="step__title" data-i18n="roadmap.s1.title">Landing + Auth</div>
-                    <div class="step__text" data-i18n="roadmap.s1.text">Sign up / sign in and basic navigation.</div>
-                  </div>
-                </div>
-
-                <div class="step">
-                  <div class="step__num">2</div>
-                  <div class="step__body">
-                    <div class="step__title" data-i18n="roadmap.s2.title">Transactions + Analytics</div>
-                    <div class="step__text" data-i18n="roadmap.s2.text">
-                      Income/expense logging, filters, daily/monthly reports.
-                    </div>
-                  </div>
-                </div>
-
-                <div class="step">
-                  <div class="step__num">3</div>
-                  <div class="step__body">
-                    <div class="step__title" data-i18n="roadmap.s3.title">AI Assistant</div>
-                    <div class="step__text" data-i18n="roadmap.s3.text">
-                      OpenAI-powered advice, using aggregated transaction context.
-                    </div>
+                <!-- Popover -->
+                <div class="tip" id="aiTipPopover" role="dialog" aria-label="AI explanation">
+                  <div class="tip__inner">
+                    <div class="tip__title">{{ai.whyTitle}}</div>
+                    <div class="tip__text">{{ai.whyText}}</div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="trust-grid" data-reveal>
-            <div class="trust">
-              <div class="bubble bubble--muted" data-i18n="ai.title">How AI works</div>
-              <ul class="bullets bullets--tight">
-                <li data-i18n="ai.b1">AI uses aggregated totals and category trends (not raw bank credentials).</li>
-                <li data-i18n="ai.b2">You can enable/disable AI at any time.</li>
-                <li data-i18n="ai.b3">Advice is actionable, not generic.</li>
-              </ul>
+            <!-- Empty state (optional display via CSS/JS) -->
+            <div class="empty" aria-live="polite">
+              <div class="empty__title" data-empty="title">{{empty.title}}</div>
+              <div class="empty__text" data-empty="text">{{empty.text}}</div>
             </div>
-
-            <div class="trust">
-              <div class="bubble bubble--muted" data-i18n="privacy.title">Privacy first</div>
-              <ul class="bullets bullets--tight">
-                <li data-i18n="privacy.b1">No bank login required.</li>
-                <li data-i18n="privacy.b2">Built with secure storage and audit-ready structure.</li>
-                <li data-i18n="privacy.b3">EU-ready approach (GDPR-aligned by design).</li>
-              </ul>
-            </div>
-
-            <div class="trust">
-              <div class="bubble bubble--muted" data-i18n="next.title">What’s next</div>
-              <ul class="bullets bullets--tight">
-                <li data-i18n="next.b1">Budgets, goals and spending limits.</li>
-                <li data-i18n="next.b2">Exports (CSV/PDF) and reporting.</li>
-                <li data-i18n="next.b3">Smarter AI insights with weekly summaries.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- PRICING -->
-      <section id="pricing" class="section section--alt" data-reveal>
-        <div class="container">
-          <div class="section__head">
-            <h2 class="section__title" data-i18n="pricing.title">Pricing</h2>
-            <p class="section__desc" data-i18n="pricing.desc">Simple tiers, straightforward upgrades.</p>
-          </div>
-
-          <div class="grid3">
-            <article class="price" data-reveal>
-              <h3 class="price__title" data-i18n="pricing.free.title">Free</h3>
-              <div class="price__value">€0</div>
-              <ul class="price__list">
-                <li data-i18n="pricing.free.l1">Transactions</li>
-                <li data-i18n="pricing.free.l2">Categories</li>
-                <li data-i18n="pricing.free.l3">Basic reports</li>
-              </ul>
-              <button class="btn btn--ghost w100" type="button" data-open="signup" data-i18n="pricing.free.cta">
-                Try it
-              </button>
-            </article>
-
-            <article class="price price--best" data-reveal>
-              <div class="price__tag" data-i18n="pricing.pro.tag">Recommended</div>
-              <h3 class="price__title" data-i18n="pricing.pro.title">Pro</h3>
-              <div class="price__value">
-                €6<span class="price__per" data-i18n="pricing.per">/mo</span>
-              </div>
-              <ul class="price__list">
-                <li data-i18n="pricing.pro.l1">Advanced analytics</li>
-                <li data-i18n="pricing.pro.l2">Export</li>
-                <li data-i18n="pricing.pro.l3">Goals & limits</li>
-              </ul>
-              <button class="btn btn--primary w100" type="button" data-open="signup" data-i18n="pricing.pro.cta">
-                Start Pro
-              </button>
-            </article>
-
-            <article class="price" data-reveal>
-              <h3 class="price__title" data-i18n="pricing.ai.title">AI</h3>
-              <div class="price__value">
-                €12<span class="price__per" data-i18n="pricing.per">/mo</span>
-              </div>
-              <ul class="price__list">
-                <li data-i18n="pricing.ai.l1">AI savings advice</li>
-                <li data-i18n="pricing.ai.l2">Category suggestions</li>
-                <li data-i18n="pricing.ai.l3">Personalized insights</li>
-              </ul>
-              <button class="btn btn--ghost w100" type="button" data-open="signup" data-i18n="pricing.ai.cta">
-                Enable AI
-              </button>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <!-- FAQ -->
-      <section id="faq" class="section" data-reveal>
-        <div class="container">
-          <div class="section__head">
-            <h2 class="section__title" data-i18n="faq.title">FAQ</h2>
-            <p class="section__desc" data-i18n="faq.desc">Quick answers to common questions.</p>
-          </div>
-
-          <div class="faq">
-            <details class="faq__item">
-              <summary data-i18n="faq.q1">Is this a finished product?</summary>
-              <p data-i18n="faq.a1">
-                This is the landing page. Next we’ll add auth, transaction storage, analytics, and the AI assistant.
-              </p>
-            </details>
-
-            <details class="faq__item">
-              <summary data-i18n="faq.q2">Can we add a dashboard quickly?</summary>
-              <p data-i18n="faq.a2">Yes. Next step is backend + database, and protected routes like /app.</p>
-            </details>
-
-            <details class="faq__item">
-              <summary data-i18n="faq.q3">How will the AI assistant work?</summary>
-              <p data-i18n="faq.a3">
-                We’ll send aggregated data (categories, totals, timeframe) and return actionable advice—without sending unnecessary personal details.
-              </p>
-            </details>
-
-            <details class="faq__item">
-              <summary data-i18n="faq.q4">Do I need to connect my bank account?</summary>
-              <p data-i18n="faq.a4">
-                No. You can start by manually logging transactions. Bank integrations can be added later as an optional feature.
-              </p>
-            </details>
-
-            <details class="faq__item">
-              <summary data-i18n="faq.q5">Is my data secure?</summary>
-              <p data-i18n="faq.a5">
-                The architecture is designed for secure storage, protected sessions, and audit-ready logging as the product evolves.
-              </p>
-            </details>
-
-            <details class="faq__item">
-              <summary data-i18n="faq.q6">Is there a free plan?</summary>
-              <p data-i18n="faq.a6">
-                Yes. You can start with Free and upgrade only when you need advanced analytics or AI features.
-              </p>
-            </details>
-          </div>
-
-          <div class="cta-box">
-            <div>
-              <h3 class="cta-box__title" data-i18n="cta.title">Ready to begin?</h3>
-              <p class="cta-box__text" data-i18n="cta.text">Create an account and we’ll build the dashboard next.</p>
-            </div>
-            <button class="btn btn--primary" type="button" data-open="signup" data-i18n="cta.button">Get started</button>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-      <div class="container footer__inner">
-        <div class="footer__left">
-          <div class="brand brand--small">
-            <span class="brand__mark" aria-hidden="true">
-              <img class="brand__logo" src="assets/logo.svg" alt="" />
-            </span>
-            <span class="brand__name">Quantiva</span>
-          </div>
-          <div class="footer__copy">
-            © <span id="year"></span> <span data-i18n="footer.rights">Quantiva. All rights reserved.</span>
-          </div>
-          <div class="footer__copy footer__micro" data-i18n="footer.micro">
-            Privacy-first • No bank credentials required • EU-ready
-          </div>
-        </div>
-
-        <div class="footer__right">
-          <a class="footer__link" href="#security" data-i18n="nav.security">Security</a>
-          <a class="footer__link" href="#pricing" data-i18n="nav.pricing">Pricing</a>
-          <a class="footer__link" href="#faq" data-i18n="nav.faq">FAQ</a>
+          </section>
         </div>
       </div>
-    </footer>
+    </section>
 
-    <!-- Floating language (bottom-right) -->
-    <div class="lang-float" data-lang-float>
-      <button class="lang-float__btn" type="button" data-lang-btn aria-label="Language">
-        <span data-lang-label>EN</span> · 🌐
-      </button>
-
-      <div class="lang-float__menu" data-lang-menu>
-        <button type="button" class="lang-float__item" data-set-lang="en">English</button>
-        <button type="button" class="lang-float__item" data-set-lang="de">Deutsch</button>
-        <button type="button" class="lang-float__item" data-set-lang="ru">Русский</button>
-      </div>
-    </div>
-
-    <!-- MODALS -->
-    <div class="modal" role="dialog" aria-modal="true" aria-label="Sign in" data-modal="login">
-      <div class="modal__backdrop" data-close></div>
-      <div class="modal__card">
-        <div class="modal__head">
-          <h3 class="modal__title" data-i18n="login.title">Sign in</h3>
-          <button class="iconbtn" type="button" aria-label="Close" data-close>×</button>
+    <!-- FEATURES -->
+    <section class="section" id="features" data-reveal>
+      <div class="container">
+        <div class="section__head">
+          <h2 class="section__title">{{features.title}}</h2>
+          <p class="section__desc">{{features.desc}}</p>
         </div>
 
-        <form class="form" id="loginForm">
-          <label class="field">
-            <span data-i18n="login.email">Email</span>
-            <input type="email" name="email" placeholder="you@domain.com" required />
-          </label>
-
-          <label class="field">
-            <span data-i18n="login.password">Password</span>
-            <input type="password" name="password" placeholder="••••••••" minlength="6" required />
-          </label>
-
-          <button class="btn btn--primary w100" type="submit" data-i18n="login.submit">Sign in</button>
-
-          <p class="form__hint">
-            <span data-i18n="login.hint1">New here?</span>
-            <button class="linklike" type="button" data-swap="signup" data-i18n="login.hint2">Create an account</button>
-          </p>
-        </form>
+        <div class="grid3">
+          <div class="card card--feature">
+            <div class="card__title">{{features.cards.c1.title}}</div>
+            <div class="card__text">{{features.cards.c1.text}}</div>
+          </div>
+          <div class="card card--feature">
+            <div class="card__title">{{features.cards.c2.title}}</div>
+            <div class="card__text">{{features.cards.c2.text}}</div>
+          </div>
+          <div class="card card--feature">
+            <div class="card__title">{{features.cards.c3.title}}</div>
+            <div class="card__text">{{features.cards.c3.text}}</div>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="modal" role="dialog" aria-modal="true" aria-label="Sign up" data-modal="signup">
-      <div class="modal__backdrop" data-close></div>
-      <div class="modal__card">
-        <div class="modal__head">
-          <h3 class="modal__title" data-i18n="signup.title">Create your account</h3>
-          <button class="iconbtn" type="button" aria-label="Close" data-close>×</button>
+    <!-- SECURITY -->
+    <section class="section" id="security" data-reveal>
+      <div class="container">
+        <div class="section__head">
+          <h2 class="section__title">{{security.title}}</h2>
+          <p class="section__desc">{{security.lead}}</p>
         </div>
 
-        <form class="form" id="signupForm">
-          <label class="field">
-            <span data-i18n="signup.name">Name</span>
-            <input type="text" name="name" placeholder="Alex" required />
-          </label>
+        <div class="grid2">
+          <div class="card">
+            <ul class="list">
+              <li class="list__item">{{security.bullets.b1}}</li>
+              <li class="list__item">{{security.bullets.b2}}</li>
+              <li class="list__item">{{security.bullets.b3}}</li>
+            </ul>
+          </div>
 
-          <label class="field">
-            <span data-i18n="signup.email">Email</span>
-            <input type="email" name="email" placeholder="you@domain.com" required />
-          </label>
+          <div class="grid3 trust">
+            <div class="card card--trust">
+              <div class="card__title">{{trust.t1.title}}</div>
+              <ul class="list list--compact">
+                <li class="list__item">{{trust.t1.b1}}</li>
+                <li class="list__item">{{trust.t1.b2}}</li>
+                <li class="list__item">{{trust.t1.b3}}</li>
+              </ul>
+            </div>
 
-          <label class="field">
-            <span data-i18n="signup.password">Password</span>
-            <input type="password" name="password" placeholder="min 6 characters" minlength="6" required />
-          </label>
+            <div class="card card--trust">
+              <div class="card__title">{{trust.t2.title}}</div>
+              <ul class="list list--compact">
+                <li class="list__item">{{trust.t2.b1}}</li>
+                <li class="list__item">{{trust.t2.b2}}</li>
+                <li class="list__item">{{trust.t2.b3}}</li>
+              </ul>
+            </div>
 
-          <button class="btn btn--primary w100" type="submit" data-i18n="signup.submit">Create account</button>
+            <div class="card card--trust">
+              <div class="card__title">{{trust.t3.title}}</div>
+              <ul class="list list--compact">
+                <li class="list__item">{{trust.t3.b1}}</li>
+                <li class="list__item">{{trust.t3.b2}}</li>
+                <li class="list__item">{{trust.t3.b3}}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-          <p class="form__hint">
-            <span data-i18n="signup.hint1">Already have an account?</span>
-            <button class="linklike" type="button" data-swap="login" data-i18n="signup.hint2">Sign in</button>
-          </p>
-        </form>
+    <!-- ROADMAP -->
+    <section class="section" id="roadmap" data-reveal>
+      <div class="container">
+        <div class="section__head">
+          <h2 class="section__title">{{roadmap.title}}</h2>
+          <p class="section__desc">Demo timeline</p>
+        </div>
+
+        <div class="grid3">
+          <div class="card">
+            <div class="card__title">{{roadmap.steps.s1.title}}</div>
+            <div class="card__text">{{roadmap.steps.s1.text}}</div>
+          </div>
+          <div class="card">
+            <div class="card__title">{{roadmap.steps.s2.title}}</div>
+            <div class="card__text">{{roadmap.steps.s2.text}}</div>
+          </div>
+          <div class="card">
+            <div class="card__title">{{roadmap.steps.s3.title}}</div>
+            <div class="card__text">{{roadmap.steps.s3.text}}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="section" id="pricing" data-reveal>
+      <div class="container">
+        <div class="section__head">
+          <h2 class="section__title">{{pricing.title}}</h2>
+          <p class="section__desc">{{pricing.desc}}</p>
+        </div>
+
+        <div class="grid3">
+          <div class="card price">
+            <div class="price__tag">{{pricing.free.tag}}</div>
+            <div class="price__title">{{pricing.free.title}}</div>
+            <div class="price__price">
+              <span class="price__num">{{pricing.free.price}}</span>
+              <span class="price__per">{{pricing.free.per}}</span>
+            </div>
+            <ul class="list list--compact">
+              <li class="list__item">{{pricing.free.b1}}</li>
+              <li class="list__item">{{pricing.free.b2}}</li>
+              <li class="list__item">{{pricing.free.b3}}</li>
+            </ul>
+            <button class="btn btn--ghost" type="button" data-modal-open="signup">{{pricing.free.cta}}</button>
+          </div>
+
+          <div class="card price price--popular">
+            <div class="price__tag">{{pricing.pro.tag}}</div>
+            <div class="price__title">{{pricing.pro.title}}</div>
+            <div class="price__price">
+              <span class="price__num">{{pricing.pro.price}}</span>
+              <span class="price__per">{{pricing.pro.per}}</span>
+            </div>
+            <ul class="list list--compact">
+              <li class="list__item">{{pricing.pro.b1}}</li>
+              <li class="list__item">{{pricing.pro.b2}}</li>
+              <li class="list__item">{{pricing.pro.b3}}</li>
+            </ul>
+            <button class="btn btn--primary" type="button" data-modal-open="signup">{{pricing.pro.cta}}</button>
+          </div>
+
+          <div class="card price">
+            <div class="price__tag">{{pricing.ai.tag}}</div>
+            <div class="price__title">{{pricing.ai.title}}</div>
+            <div class="price__price">
+              <span class="price__num">{{pricing.ai.price}}</span>
+              <span class="price__per">{{pricing.ai.per}}</span>
+            </div>
+            <ul class="list list--compact">
+              <li class="list__item">{{pricing.ai.b1}}</li>
+              <li class="list__item">{{pricing.ai.b2}}</li>
+              <li class="list__item">{{pricing.ai.b3}}</li>
+            </ul>
+            <button class="btn btn--ghost" type="button" data-action="toggle-ai">{{pricing.ai.cta}}</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq" data-reveal>
+      <div class="container">
+        <div class="section__head">
+          <h2 class="section__title">{{faq.title}}</h2>
+          <p class="section__desc">{{faq.desc}}</p>
+        </div>
+
+        <div class="faq">
+          <details class="faq__item">
+            <summary class="faq__q">{{faq.q1}}</summary>
+            <div class="faq__a">{{faq.a1}}</div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__q">{{faq.q2}}</summary>
+            <div class="faq__a">{{faq.a2}}</div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__q">{{faq.q3}}</summary>
+            <div class="faq__a">{{faq.a3}}</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" data-reveal>
+      <div class="container cta__inner">
+        <div class="cta__copy">
+          <h2 class="cta__title">{{cta.title}}</h2>
+          <p class="cta__text">{{cta.text}}</p>
+        </div>
+        <div class="cta__actions">
+          <button class="btn btn--primary" type="button" data-modal-open="signup">{{cta.button}}</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="container footer__inner">
+      <div class="footer__left">
+        <div class="footer__brand">
+          <span class="brand__mark" aria-hidden="true">Q</span>
+          <span class="brand__name">Quantiva</span>
+        </div>
+        <div class="footer__micro">{{footer.micro}}</div>
+      </div>
+
+      <div class="footer__right">
+        <div class="footer__rights">{{footer.rights}}</div>
       </div>
     </div>
+  </footer>
 
-    <div class="toast" aria-live="polite" aria-atomic="true" id="toast"></div>
+  <!-- Floating language switcher -->
+  <div class="lang-float" aria-label="Language switcher">
+    <button class="lang-float__btn" id="langBtn" type="button" aria-label="{{lang.title}}">
+      <span class="lang-float__icon" aria-hidden="true">🌐</span>
+      <span class="lang-float__label" data-lang-label>EN</span>
+    </button>
 
-    <script src="app.js"></script>
-  </body>
+    <div class="lang-float__menu" id="langMenu" role="menu" aria-label="{{lang.title}}">
+      <button class="lang-float__item" type="button" role="menuitem" data-lang="en">{{lang.en}}</button>
+      <button class="lang-float__item" type="button" role="menuitem" data-lang="de">{{lang.de}}</button>
+      <button class="lang-float__item" type="button" role="menuitem" data-lang="ru">{{lang.ru}}</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Sign in -->
+  <div class="modal" data-modal="signin" id="modalSignIn" aria-hidden="true">
+    <div class="modal__backdrop"></div>
+    <div class="modal__panel" role="dialog" aria-modal="true">
+      <div class="modal__head">
+        <div class="modal__title">{{modal.signin.title}}</div>
+        <button class="iconbtn" type="button" data-modal-close aria-label="Close">✕</button>
+      </div>
+
+      <p class="modal__hint">{{modal.signin.hint}}</p>
+
+      <form id="signInForm" data-auth="signin">
+        <label class="field">
+          <span class="field__label">{{modal.email}}</span>
+          <input class="input" type="email" required placeholder="{{modal.email}}" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">{{modal.password}}</span>
+          <input class="input" type="password" required placeholder="{{modal.password}}" />
+        </label>
+
+        <button class="btn btn--primary btn--full" type="submit">{{modal.submit}}</button>
+
+        <div class="modal__foot">
+          <span class="muted">{{modal.noAccount}}</span>
+          <a href="#" class="link" id="toCreateLink">{{modal.createLink}}</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Create account -->
+  <div class="modal" data-modal="signup" id="modalCreate" aria-hidden="true">
+    <div class="modal__backdrop"></div>
+    <div class="modal__panel" role="dialog" aria-modal="true">
+      <div class="modal__head">
+        <div class="modal__title">{{modal.signup.title}}</div>
+        <button class="iconbtn" type="button" data-modal-close aria-label="Close">✕</button>
+      </div>
+
+      <p class="modal__hint">{{modal.signup.hint}}</p>
+
+      <form id="createForm" data-auth="signup">
+        <label class="field">
+          <span class="field__label">{{modal.email}}</span>
+          <input class="input" type="email" required placeholder="{{modal.email}}" />
+        </label>
+
+        <label class="field">
+          <span class="field__label">{{modal.password}}</span>
+          <input class="input" type="password" required placeholder="{{modal.password}}" />
+        </label>
+
+        <button class="btn btn--primary btn--full" type="submit">{{modal.submit}}</button>
+
+        <div class="modal__foot">
+          <span class="muted">{{modal.already}}</span>
+          <a href="#" class="link" id="toSignInLink">{{modal.signLink}}</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" style="display:none"></div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
 </html>
