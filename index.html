@@ -1,512 +1,593 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0B0D12" />
-  <meta name="description" content="Quantiva — AI accounting demo landing." />
-  <title>Quantiva</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quantiva — AI Accounting</title>
+    <meta
+      name="description"
+      content="Quantiva helps you track income and expenses and get AI-powered savings advice."
+    />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
-  <link rel="stylesheet" href="styles.css" />
-</head>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
 
-<body>
-  <!-- Background layers -->
-  <div class="bg" aria-hidden="true">
-    <div class="bg__top"></div>
-    <div class="bg__base"></div>
-  </div>
+  <body>
+    <!-- Header -->
+    <header class="header" id="header">
+      <div class="container">
+        <div class="header__inner">
+          <a class="brand brand--small" href="#top" aria-label="Quantiva home">
+            <span class="brand__mark" aria-hidden="true">
+              <!-- Simple Q mark (SVG) -->
+              <svg class="brand__logo" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 3c4.97 0 9 3.58 9 8s-4.03 8-9 8-9-3.58-9-8 4.03-8 9-8Z"
+                  stroke="rgba(255,255,255,.85)"
+                  stroke-width="1.6"
+                />
+                <path
+                  d="M12 7.4c-2.2 0-3.6 1.1-3.6 2.7 0 1.1.7 1.9 2 2.4.8.3 1.3.8 1.3 1.6v.7"
+                  stroke="rgba(255,255,255,.85)"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                />
+                <circle cx="12" cy="17.4" r="1" fill="rgba(255,255,255,.85)" />
+              </svg>
+            </span>
+            <span class="brand__name" data-i18n="brand.name">Quantiva</span>
+          </a>
 
-  <!-- HEADER -->
-  <header class="header" role="banner">
-    <div class="container header__inner">
-      <a class="brand" href="#top" aria-label="Quantiva home">
-        <span class="brand__mark" aria-hidden="true">Q</span>
-        <span class="brand__name">Quantiva</span>
-      </a>
+          <nav class="nav" aria-label="Primary navigation">
+            <a class="nav__link" href="#features" data-i18n="nav.features">Features</a>
+            <a class="nav__link" href="#security" data-i18n="nav.security">Security</a>
+            <a class="nav__link" href="#pricing" data-i18n="nav.pricing">Pricing</a>
+            <a class="nav__link" href="#faq" data-i18n="nav.faq">FAQ</a>
+          </nav>
 
-      <nav class="nav" aria-label="Primary">
-        <a class="nav__link" href="#features">{{nav.features}}</a>
-        <a class="nav__link" href="#security">{{nav.security}}</a>
-        <a class="nav__link" href="#pricing">{{nav.pricing}}</a>
-        <a class="nav__link" href="#faq">{{nav.faq}}</a>
-      </nav>
-
-      <div class="header__actions">
-        <button class="btn btn--ghost btn--sm" id="signInBtn" data-modal-open="signin" type="button">
-          {{nav.signin}}
-        </button>
-        <button class="btn btn--primary btn--sm" id="getStartedBtn" data-modal-open="signup" type="button">
-          {{nav.getstarted}}
-        </button>
-
-        <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Mobile nav (toggled by app.js) -->
-    <div class="mobile-nav" aria-label="Mobile Navigation" style="display:none">
-      <div class="container mobile-nav__inner">
-        <a class="mobile-nav__link" href="#features">{{nav.features}}</a>
-        <a class="mobile-nav__link" href="#security">{{nav.security}}</a>
-        <a class="mobile-nav__link" href="#pricing">{{nav.pricing}}</a>
-        <a class="mobile-nav__link" href="#faq">{{nav.faq}}</a>
-
-        <div class="mobile-nav__actions">
-          <button class="btn btn--ghost" data-modal-open="signin" type="button">{{nav.signin}}</button>
-          <button class="btn btn--primary" data-modal-open="signup" type="button">{{nav.getstarted}}</button>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- MAIN -->
-  <main id="top" class="main" role="main">
-
-    <!-- HERO -->
-    <section class="hero">
-      <div class="container hero__inner">
-        <div class="hero__copy">
-          <div class="pill">
-            <span class="pill__dot" aria-hidden="true"></span>
-            <span class="pill__text">{{hero.pill}}</span>
-          </div>
-
-          <h1 class="hero__title">
-            <span class="hero__line">{{hero.title1}}</span>
-            <span class="hero__line hero__line--accent">{{hero.title2}}</span>
-          </h1>
-
-          <p class="hero__subtitle">{{hero.subtitle}}</p>
-
-          <div class="hero__cta">
-            <button class="btn btn--primary" data-modal-open="signup" type="button">{{hero.cta1}}</button>
-            <a class="btn btn--ghost" href="#features">{{hero.cta2}}</a>
-          </div>
-
-          <div class="stats" aria-label="Highlights">
-            <div class="stat">
-              <div class="stat__value">{{hero.stat1.value}}</div>
-              <div class="stat__label">{{hero.stat1.label}}</div>
+          <div class="header__actions">
+            <div class="header__btns">
+              <button class="btn btn--sm btn--ghost" id="openSignIn" type="button" data-i18n="cta.signIn">
+                Sign in
+              </button>
+              <button class="btn btn--sm btn--primary" id="openGetStarted" type="button" data-i18n="cta.getStarted">
+                Get started
+              </button>
             </div>
-            <div class="stat">
-              <div class="stat__value">{{hero.stat2.value}}</div>
-              <div class="stat__label">{{hero.stat2.label}}</div>
-            </div>
-            <div class="stat">
-              <div class="stat__value">{{hero.stat3.value}}</div>
-              <div class="stat__label">{{hero.stat3.label}}</div>
-            </div>
+
+            <button class="iconbtn burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false">
+              <span class="burger__line"></span>
+              <span class="burger__line"></span>
+              <span class="burger__line"></span>
+            </button>
           </div>
         </div>
 
-        <!-- Overview panel -->
-        <div class="panel-wrap" data-reveal>
-          <section class="panel" id="overviewPanel" aria-label="Overview panel">
-            <div class="panel__top">
-              <div class="panel__title">
-                <span class="bubble">{{panel.title}}</span>
-                <span class="chip">{{panel.chip}}</span>
+        <!-- Mobile nav -->
+        <div class="mobile-nav" id="mobileNav">
+          <a class="mobile-nav__link" href="#features" data-i18n="nav.features">Features</a>
+          <a class="mobile-nav__link" href="#security" data-i18n="nav.security">Security</a>
+          <a class="mobile-nav__link" href="#pricing" data-i18n="nav.pricing">Pricing</a>
+          <a class="mobile-nav__link" href="#faq" data-i18n="nav.faq">FAQ</a>
+
+          <div class="mobile-nav__actions">
+            <button class="btn btn--lg btn--ghost w100" id="openSignInMobile" type="button" data-i18n="cta.signIn">
+              Sign in
+            </button>
+            <button class="btn btn--lg btn--primary w100" id="openGetStartedMobile" type="button" data-i18n="cta.getStarted">
+              Get started
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main" id="top">
+      <!-- HERO -->
+      <section class="hero">
+        <div class="container">
+          <div class="hero__grid">
+            <!-- Left -->
+            <div class="hero__content">
+              <div class="pill" data-reveal>
+                <span class="dot" aria-hidden="true"></span>
+                <span data-i18n="hero.pill">Next-gen AI accounting</span>
               </div>
 
-              <div class="seg" role="tablist" aria-label="Scenario">
-                <button class="seg__btn is-active" type="button" data-scenario="student" aria-pressed="true">
-                  {{demo.student}}
+              <h1 class="hero__title" data-reveal>
+                <span data-i18n="hero.title">Track income and expenses. Get AI-powered savings advice.</span>
+              </h1>
+
+              <p class="hero__subtitle" data-reveal data-i18n="hero.subtitle">
+                Quantiva helps you log transactions, see daily/monthly analytics, and turn spending chaos into a clear plan.
+              </p>
+
+              <div class="hero__cta" data-reveal>
+                <button class="btn btn--lg btn--primary" id="heroPrimary" type="button" data-i18n="hero.primary">
+                  Create account
                 </button>
-                <button class="seg__btn" type="button" data-scenario="freelancer" aria-pressed="false">
-                  {{demo.freelancer}}
-                </button>
-                <button class="seg__btn" type="button" data-scenario="family" aria-pressed="false">
-                  {{demo.family}}
-                </button>
+                <a class="btn btn--lg btn--ghost" href="#features" data-i18n="hero.secondary">Explore features</a>
+              </div>
+
+              <div class="hero__stats" data-reveal>
+                <div class="stat" tabindex="0">
+                  <div class="stat__value" data-i18n="stats.one.value">30 sec</div>
+                  <div class="stat__label" data-i18n="stats.one.label">to your first report</div>
+                </div>
+                <div class="stat" tabindex="0">
+                  <div class="stat__value" data-i18n="stats.two.value">1 click</div>
+                  <div class="stat__label" data-i18n="stats.two.label">fast transaction logging</div>
+                </div>
+                <div class="stat" tabindex="0">
+                  <div class="stat__value" data-i18n="stats.three.value">AI</div>
+                  <div class="stat__label" data-i18n="stats.three.label">personalized recommendations</div>
+                </div>
               </div>
             </div>
 
-            <div class="panel__grid">
-              <div class="kpi card card--kpi">
-                <div class="card__head">
-                  <div class="card__label">{{panel.balance.label}}</div>
-                  <div class="card__hint">{{panel.balance.hint}}</div>
-                </div>
-                <div class="card__value" id="kpiBalance">€0.00</div>
-              </div>
+            <!-- Right: Overview panel -->
+            <div class="hero__panel" data-reveal>
+              <div class="panel" id="overviewPanel">
+                <div class="panel__top">
+                  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <span class="bubble" data-i18n="panel.overview">Overview</span>
+                    <span class="bubble bubble--muted" id="monthLabel" data-i18n="panel.month">December</span>
+                  </div>
 
-              <div class="kpi card card--kpi">
-                <div class="card__head">
-                  <div class="card__label">{{panel.spend.label}}</div>
-                  <div class="card__hint">{{panel.spend.hint}}</div>
-                </div>
-                <div class="card__value" id="kpiSpending">€0.00</div>
-              </div>
-
-              <div class="card card--chart">
-                <div class="card__head">
-                  <div class="card__label">Weekly</div>
-                  <div class="card__hint">Demo</div>
-                </div>
-
-                <div class="bars" role="img" aria-label="Chart">
-                  <div class="bar">
-                    <div class="bar__fill" data-bar-fill></div>
-                    <div class="bar__label">{{panel.chart.mon}}</div>
-                  </div>
-                  <div class="bar">
-                    <div class="bar__fill" data-bar-fill></div>
-                    <div class="bar__label">{{panel.chart.tue}}</div>
-                  </div>
-                  <div class="bar">
-                    <div class="bar__fill" data-bar-fill></div>
-                    <div class="bar__label">{{panel.chart.wed}}</div>
-                  </div>
-                  <div class="bar">
-                    <div class="bar__fill" data-bar-fill></div>
-                    <div class="bar__label">{{panel.chart.thu}}</div>
-                  </div>
-                  <div class="bar">
-                    <div class="bar__fill" data-bar-fill></div>
-                    <div class="bar__label">{{panel.chart.fri}}</div>
+                  <div class="seg" role="tablist" aria-label="Scenario">
+                    <button class="seg__btn is-active" type="button" data-scenario="student" role="tab" aria-selected="true" data-i18n="seg.student">
+                      Student
+                    </button>
+                    <button class="seg__btn" type="button" data-scenario="freelancer" role="tab" aria-selected="false" data-i18n="seg.freelancer">
+                      Freelancer
+                    </button>
+                    <button class="seg__btn" type="button" data-scenario="family" role="tab" aria-selected="false" data-i18n="seg.family">
+                      Family
+                    </button>
                   </div>
                 </div>
-              </div>
 
-              <div class="card card--ai ai-tip">
-                <div class="card__head">
-                  <div class="badge">{{panel.aitip.badge}}</div>
+                <div class="cards">
+                  <div class="card kpi" tabindex="0">
+                    <div class="card__label" data-i18n="kpi.balance.label">Balance</div>
+                    <div class="card__hint" id="balanceHint" data-i18n="kpi.balance.hint">+8.4% over 30 days</div>
+                    <div class="card__value" id="balanceValue">€1,284.20</div>
+                    <span class="sk sk--text" aria-hidden="true"></span>
+                  </div>
 
-                  <button class="ai-why" id="aiWhyBtn" type="button" aria-label="{{ai.why}}">
-                    {{ai.why}}
+                  <div class="card kpi" tabindex="0">
+                    <div class="card__label" data-i18n="kpi.spending.label">Spending</div>
+                    <div class="card__hint" id="spendHint" data-i18n="kpi.spending.hint">-2.1% this week</div>
+                    <div class="card__value" id="spendValue">€642.10</div>
+                    <span class="sk sk--text" aria-hidden="true"></span>
+                  </div>
+                </div>
+
+                <div class="chart" aria-label="Weekly demo chart">
+                  <div class="card__label" data-i18n="chart.title">Weekly</div>
+
+                  <!-- OLD chart format (stable with control CSS) -->
+                  <div class="chart__row">
+                    <div class="chart__label" data-i18n="days.mon">Mon</div>
+                    <div class="bar">
+                      <span class="bar__fill" id="barMon" style="width: 62%"></span>
+                      <span class="sk sk--bar" aria-hidden="true"></span>
+                    </div>
+                  </div>
+
+                  <div class="chart__row">
+                    <div class="chart__label" data-i18n="days.tue">Tue</div>
+                    <div class="bar">
+                      <span class="bar__fill" id="barTue" style="width: 38%"></span>
+                      <span class="sk sk--bar" aria-hidden="true"></span>
+                    </div>
+                  </div>
+
+                  <div class="chart__row">
+                    <div class="chart__label" data-i18n="days.wed">Wed</div>
+                    <div class="bar">
+                      <span class="bar__fill" id="barWed" style="width: 84%"></span>
+                      <span class="sk sk--bar" aria-hidden="true"></span>
+                    </div>
+                  </div>
+
+                  <div class="chart__row">
+                    <div class="chart__label" data-i18n="days.thu">Thu</div>
+                    <div class="bar">
+                      <span class="bar__fill" id="barThu" style="width: 52%"></span>
+                      <span class="sk sk--bar" aria-hidden="true"></span>
+                    </div>
+                  </div>
+
+                  <div class="chart__row">
+                    <div class="chart__label" data-i18n="days.fri">Fri</div>
+                    <div class="bar">
+                      <span class="bar__fill" id="barFri" style="width: 74%"></span>
+                      <span class="sk sk--bar" aria-hidden="true"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ai-tip" id="aiTipCard">
+                  <div class="ai-tip__row">
+                    <span class="ai-tip__badge" data-i18n="ai.badge">AI tip</span>
+                    <button class="ai-why" id="aiWhyBtn" type="button" aria-expanded="false" data-i18n="ai.why">
+                      Why?
+                    </button>
+
+                    <div class="tip" id="aiTipTooltip" role="dialog" aria-label="AI reasoning preview">
+                      <div class="tip__title" data-i18n="ai.tooltip.title">Why this suggestion?</div>
+                      <div class="tip__text" data-i18n="ai.tooltip.text">
+                        Based on your food & transport spending over the last 30 days, we estimate a weekly cap would reduce volatility.
+                      </div>
+                    </div>
+                  </div>
+
+                  <p class="ai-tip__text" id="aiTipText" data-i18n="ai.tip">
+                    Try limiting food delivery to once a week — estimated savings ≈ €65/month.
+                  </p>
+
+                  <button class="btn btn--sm btn--ghost" id="toggleAI" type="button" data-i18n="ai.toggle">
+                    Enable AI assistant
                   </button>
-                </div>
 
-                <p class="ai-tip__text" id="aiTipText">
-                  {{panel.aitip.text}}
-                </p>
-
-                <button class="btn btn--ghost btn--sm" data-action="toggle-ai" type="button">
-                  {{panel.aitip.cta}}
-                </button>
-
-                <!-- Popover -->
-                <div class="tip" id="aiTipPopover" role="dialog" aria-label="AI explanation">
-                  <div class="tip__inner">
-                    <div class="tip__title">{{ai.whyTitle}}</div>
-                    <div class="tip__text">{{ai.whyText}}</div>
+                  <div class="empty" id="emptyState">
+                    <div class="empty__title" data-i18n="empty.title">No data yet</div>
+                    <div class="empty__text" data-i18n="empty.text">
+                      Add your first transaction to unlock insights and weekly summaries.
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            <!-- /Right -->
+          </div>
+        </div>
+      </section>
 
-            <!-- Optional empty state block -->
-            <div class="empty" aria-live="polite">
-              <div class="empty__title">{{empty.title}}</div>
-              <div class="empty__text">{{empty.text}}</div>
+      <!-- FEATURES -->
+      <section class="section" id="features" data-reveal>
+        <div class="container">
+          <div class="section__head">
+            <h2 class="section__title" data-i18n="features.title">Features built for clarity</h2>
+            <p class="section__desc" data-i18n="features.desc">
+              Fast logging, smart categories, and AI insights that stay understandable.
+            </p>
+          </div>
+
+          <div class="grid3">
+            <div class="feature" tabindex="0">
+              <div class="feature__title" data-i18n="features.cards.one.title">Categories</div>
+              <p class="feature__text" data-i18n="features.cards.one.text">
+                Auto-detect categories and keep budgeting consistent.
+              </p>
             </div>
-          </section>
-        </div>
-      </div>
-    </section>
 
-    <!-- FEATURES -->
-    <section class="section" id="features" data-reveal>
-      <div class="container">
-        <div class="section__head">
-          <h2 class="section__title">{{features.title}}</h2>
-          <p class="section__desc">{{features.desc}}</p>
-        </div>
+            <div class="feature" tabindex="0">
+              <div class="feature__title" data-i18n="features.cards.two.title">Reports</div>
+              <p class="feature__text" data-i18n="features.cards.two.text">
+                Daily and monthly summaries with clean trends.
+              </p>
+            </div>
 
-        <div class="grid3">
-          <div class="card card--feature">
-            <div class="card__title">{{features.cards.c1.title}}</div>
-            <div class="card__text">{{features.cards.c1.text}}</div>
-          </div>
-          <div class="card card--feature">
-            <div class="card__title">{{features.cards.c2.title}}</div>
-            <div class="card__text">{{features.cards.c2.text}}</div>
-          </div>
-          <div class="card card--feature">
-            <div class="card__title">{{features.cards.c3.title}}</div>
-            <div class="card__text">{{features.cards.c3.text}}</div>
+            <div class="feature" tabindex="0">
+              <div class="feature__title" data-i18n="features.cards.three.title">AI suggestions</div>
+              <p class="feature__text" data-i18n="features.cards.three.text">
+                Practical tips based on aggregated patterns.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- SECURITY + TRUST -->
-    <section class="section" id="security" data-reveal>
-      <div class="container">
-        <div class="section__head">
-          <h2 class="section__title">{{security.title}}</h2>
-          <p class="section__desc">{{security.lead}}</p>
-        </div>
+      <!-- SECURITY -->
+      <section class="section" id="security" data-reveal>
+        <div class="container">
+          <div class="section__head">
+            <h2 class="section__title" data-i18n="security.title">Security by design</h2>
+            <p class="section__desc" data-i18n="security.desc">
+              We structure the system so it can scale safely from day one. Today it’s a landing page — next it becomes a full product.
+            </p>
+          </div>
 
-        <div class="grid2">
-          <div class="card">
-            <ul class="list">
-              <li class="list__item">{{security.bullets.b1}}</li>
-              <li class="list__item">{{security.bullets.b2}}</li>
-              <li class="list__item">{{security.bullets.b3}}</li>
+          <div class="callout">
+            <ul class="bullets">
+              <li data-i18n="security.bullets.one">Clear separation between public pages and your private app</li>
+              <li data-i18n="security.bullets.two">Session-based auth and protected forms</li>
+              <li data-i18n="security.bullets.three">Ready for database storage and audit logging</li>
             </ul>
           </div>
 
-          <div class="grid3 trust">
-            <div class="card card--trust">
-              <div class="card__title">{{trust.t1.title}}</div>
-              <ul class="list list--compact">
-                <li class="list__item">{{trust.t1.b1}}</li>
-                <li class="list__item">{{trust.t1.b2}}</li>
-                <li class="list__item">{{trust.t1.b3}}</li>
+          <div class="trust-grid">
+            <div class="trust" tabindex="0">
+              <div class="feature__title" data-i18n="trust.one.title">How AI works</div>
+              <ul class="bullets bullets--tight">
+                <li data-i18n="trust.one.a">AI uses aggregated totals and category trends (not raw bank credentials).</li>
+                <li data-i18n="trust.one.b">You can enable/disable AI at any time.</li>
+                <li data-i18n="trust.one.c">Advice is actionable, not generic.</li>
               </ul>
             </div>
 
-            <div class="card card--trust">
-              <div class="card__title">{{trust.t2.title}}</div>
-              <ul class="list list--compact">
-                <li class="list__item">{{trust.t2.b1}}</li>
-                <li class="list__item">{{trust.t2.b2}}</li>
-                <li class="list__item">{{trust.t2.b3}}</li>
+            <div class="trust" tabindex="0">
+              <div class="feature__title" data-i18n="trust.two.title">Privacy first</div>
+              <ul class="bullets bullets--tight">
+                <li data-i18n="trust.two.a">No bank login required.</li>
+                <li data-i18n="trust.two.b">Built with secure storage and audit-ready structure.</li>
+                <li data-i18n="trust.two.c">EU-ready approach (GDPR-aligned by design).</li>
               </ul>
             </div>
 
-            <div class="card card--trust">
-              <div class="card__title">{{trust.t3.title}}</div>
-              <ul class="list list--compact">
-                <li class="list__item">{{trust.t3.b1}}</li>
-                <li class="list__item">{{trust.t3.b2}}</li>
-                <li class="list__item">{{trust.t3.b3}}</li>
+            <div class="trust" tabindex="0">
+              <div class="feature__title" data-i18n="trust.three.title">What’s next</div>
+              <ul class="bullets bullets--tight">
+                <li data-i18n="trust.three.a">Budgets, goals and spending limits.</li>
+                <li data-i18n="trust.three.b">Exports (CSV/PDF) and reporting.</li>
+                <li data-i18n="trust.three.c">Smarter AI insights with weekly summaries.</li>
               </ul>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ROADMAP -->
-    <section class="section" id="roadmap" data-reveal>
-      <div class="container">
-        <div class="section__head">
-          <h2 class="section__title">{{roadmap.title}}</h2>
-        </div>
-
-        <div class="grid3">
-          <div class="card">
-            <div class="card__title">{{roadmap.steps.s1.title}}</div>
-            <div class="card__text">{{roadmap.steps.s1.text}}</div>
+      <!-- ROADMAP -->
+      <section class="section" id="roadmap" data-reveal>
+        <div class="container">
+          <div class="section__head">
+            <h2 class="section__title" data-i18n="roadmap.title">Product roadmap</h2>
+            <p class="section__desc" data-i18n="roadmap.desc">
+              A clear path from landing page to a real, daily-use product.
+            </p>
           </div>
-          <div class="card">
-            <div class="card__title">{{roadmap.steps.s2.title}}</div>
-            <div class="card__text">{{roadmap.steps.s2.text}}</div>
-          </div>
-          <div class="card">
-            <div class="card__title">{{roadmap.steps.s3.title}}</div>
-            <div class="card__text">{{roadmap.steps.s3.text}}</div>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- PRICING -->
-    <section class="section" id="pricing" data-reveal>
-      <div class="container">
-        <div class="section__head">
-          <h2 class="section__title">{{pricing.title}}</h2>
-          <p class="section__desc">{{pricing.desc}}</p>
-        </div>
-
-        <div class="grid3">
-          <div class="card price">
-            <div class="price__tag">{{pricing.free.tag}}</div>
-            <div class="price__title">{{pricing.free.title}}</div>
-            <div class="price__price">
-              <span class="price__num">{{pricing.free.price}}</span>
-              <span class="price__per">{{pricing.free.per}}</span>
+          <div class="grid3">
+            <div class="feature" tabindex="0">
+              <div class="feature__title" data-i18n="roadmap.one.title">Landing + Auth</div>
+              <p class="feature__text" data-i18n="roadmap.one.text">Sign up / sign in and basic navigation.</p>
             </div>
-            <ul class="list list--compact">
-              <li class="list__item">{{pricing.free.b1}}</li>
-              <li class="list__item">{{pricing.free.b2}}</li>
-              <li class="list__item">{{pricing.free.b3}}</li>
-            </ul>
-            <button class="btn btn--ghost" type="button" data-modal-open="signup">{{pricing.free.cta}}</button>
-          </div>
-
-          <div class="card price price--popular">
-            <div class="price__tag">{{pricing.pro.tag}}</div>
-            <div class="price__title">{{pricing.pro.title}}</div>
-            <div class="price__price">
-              <span class="price__num">{{pricing.pro.price}}</span>
-              <span class="price__per">{{pricing.pro.per}}</span>
+            <div class="feature" tabindex="0">
+              <div class="feature__title" data-i18n="roadmap.two.title">Transactions + Analytics</div>
+              <p class="feature__text" data-i18n="roadmap.two.text">Income/expense logging, filters, daily/monthly reports.</p>
             </div>
-            <ul class="list list--compact">
-              <li class="list__item">{{pricing.pro.b1}}</li>
-              <li class="list__item">{{pricing.pro.b2}}</li>
-              <li class="list__item">{{pricing.pro.b3}}</li>
-            </ul>
-            <button class="btn btn--primary" type="button" data-modal-open="signup">{{pricing.pro.cta}}</button>
-          </div>
-
-          <div class="card price">
-            <div class="price__tag">{{pricing.ai.tag}}</div>
-            <div class="price__title">{{pricing.ai.title}}</div>
-            <div class="price__price">
-              <span class="price__num">{{pricing.ai.price}}</span>
-              <span class="price__per">{{pricing.ai.per}}</span>
+            <div class="feature" tabindex="0">
+              <div class="feature__title" data-i18n="roadmap.three.title">AI Assistant</div>
+              <p class="feature__text" data-i18n="roadmap.three.text">AI-powered advice, using aggregated transaction context.</p>
             </div>
-            <ul class="list list--compact">
-              <li class="list__item">{{pricing.ai.b1}}</li>
-              <li class="list__item">{{pricing.ai.b2}}</li>
-              <li class="list__item">{{pricing.ai.b3}}</li>
-            </ul>
-            <button class="btn btn--ghost" type="button" data-action="toggle-ai">{{pricing.ai.cta}}</button>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- FAQ -->
-    <section class="section" id="faq" data-reveal>
-      <div class="container">
-        <div class="section__head">
-          <h2 class="section__title">{{faq.title}}</h2>
-          <p class="section__desc">{{faq.desc}}</p>
+      <!-- PRICING -->
+      <section class="section" id="pricing" data-reveal>
+        <div class="container">
+          <div class="section__head">
+            <h2 class="section__title" data-i18n="pricing.title">Pricing</h2>
+            <p class="section__desc" data-i18n="pricing.desc">Start free. Upgrade when you need more automation.</p>
+          </div>
+
+          <div class="grid3">
+            <div class="price" tabindex="0">
+              <div class="price__tag" data-i18n="pricing.free.tag">Free</div>
+              <div class="price__title" data-i18n="pricing.free.title">Starter</div>
+              <div class="price__value">€0 <span class="price__per" data-i18n="pricing.per">/mo</span></div>
+              <ul class="price__list">
+                <li data-i18n="pricing.free.a">Basic reports</li>
+                <li data-i18n="pricing.free.b">Manual categories</li>
+                <li data-i18n="pricing.free.c">Limited insights</li>
+              </ul>
+              <button class="btn btn--sm btn--ghost" type="button" data-i18n="pricing.free.cta">Try it</button>
+            </div>
+
+            <div class="price price--best" tabindex="0">
+              <div class="price__tag" data-i18n="pricing.pro.tag">Popular</div>
+              <div class="price__title" data-i18n="pricing.pro.title">Pro</div>
+              <div class="price__value">€9 <span class="price__per" data-i18n="pricing.per">/mo</span></div>
+              <ul class="price__list">
+                <li data-i18n="pricing.pro.a">Smart categories</li>
+                <li data-i18n="pricing.pro.b">Goals & limits</li>
+                <li data-i18n="pricing.pro.c">Exports (CSV/PDF)</li>
+              </ul>
+              <button class="btn btn--sm btn--primary" type="button" data-i18n="pricing.pro.cta">Start Pro</button>
+            </div>
+
+            <div class="price" tabindex="0">
+              <div class="price__tag" data-i18n="pricing.ai.tag">New</div>
+              <div class="price__title" data-i18n="pricing.ai.title">AI</div>
+              <div class="price__value">€19 <span class="price__per" data-i18n="pricing.per">/mo</span></div>
+              <ul class="price__list">
+                <li data-i18n="pricing.ai.a">Personalized insights</li>
+                <li data-i18n="pricing.ai.b">Weekly summaries</li>
+                <li data-i18n="pricing.ai.c">Reasoning preview</li>
+              </ul>
+              <button class="btn btn--sm btn--ghost" id="pricingAI" type="button" data-i18n="pricing.ai.cta">
+                Enable AI
+              </button>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <div class="faq">
-          <details class="faq__item">
-            <summary class="faq__q">{{faq.q1}}</summary>
-            <div class="faq__a">{{faq.a1}}</div>
-          </details>
+      <!-- FAQ -->
+      <section class="section" id="faq" data-reveal>
+        <div class="container">
+          <div class="section__head">
+            <h2 class="section__title" data-i18n="faq.title">FAQ</h2>
+            <p class="section__desc" data-i18n="faq.desc">Short answers to common questions.</p>
+          </div>
 
-          <details class="faq__item">
-            <summary class="faq__q">{{faq.q2}}</summary>
-            <div class="faq__a">{{faq.a2}}</div>
-          </details>
+          <div class="faq">
+            <details class="faq__item">
+              <summary data-i18n="faq.q1">Do I need to connect my bank account?</summary>
+              <p data-i18n="faq.a1">No. Quantiva can work without bank login. You stay in control.</p>
+            </details>
 
-          <details class="faq__item">
-            <summary class="faq__q">{{faq.q3}}</summary>
-            <div class="faq__a">{{faq.a3}}</div>
-          </details>
+            <details class="faq__item">
+              <summary data-i18n="faq.q2">What does “AI” actually use?</summary>
+              <p data-i18n="faq.a2">Aggregated totals and category trends, not raw credentials.</p>
+            </details>
+
+            <details class="faq__item">
+              <summary data-i18n="faq.q3">Can I turn AI off?</summary>
+              <p data-i18n="faq.a3">Yes — one tap. The UI shows what changes when AI is off.</p>
+            </details>
+          </div>
+
+          <div class="cta-box" data-reveal>
+            <div>
+              <div class="cta-box__title" data-i18n="ctaBox.title">Ready to try Quantiva?</div>
+              <p class="cta-box__text" data-i18n="ctaBox.text">Create an account and get your first overview in under a minute.</p>
+            </div>
+            <button class="btn btn--lg btn--primary" id="ctaGetStarted" type="button" data-i18n="cta.getStarted">
+              Get started
+            </button>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- CTA -->
-    <section class="cta" data-reveal>
-      <div class="container cta__inner">
-        <div class="cta__copy">
-          <h2 class="cta__title">{{cta.title}}</h2>
-          <p class="cta__text">{{cta.text}}</p>
-        </div>
-        <div class="cta__actions">
-          <button class="btn btn--primary" type="button" data-modal-open="signup">{{cta.button}}</button>
-        </div>
-      </div>
-    </section>
-  </main>
+      <!-- FOOTER -->
+      <footer class="footer" data-reveal>
+        <div class="container">
+          <div class="footer__inner">
+            <div>
+              <div class="footer__brand">
+                <span class="brand__mark" aria-hidden="true">
+                  <svg class="brand__logo" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 3c4.97 0 9 3.58 9 8s-4.03 8-9 8-9-3.58-9-8 4.03-8 9-8Z"
+                      stroke="rgba(255,255,255,.85)"
+                      stroke-width="1.6"
+                    />
+                    <path
+                      d="M12 7.4c-2.2 0-3.6 1.1-3.6 2.7 0 1.1.7 1.9 2 2.4.8.3 1.3.8 1.3 1.6v.7"
+                      stroke="rgba(255,255,255,.85)"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
+                    <circle cx="12" cy="17.4" r="1" fill="rgba(255,255,255,.85)" />
+                  </svg>
+                </span>
+                <span class="brand__name" data-i18n="brand.name">Quantiva</span>
+              </div>
 
-  <!-- FOOTER -->
-  <footer class="footer" role="contentinfo">
-    <div class="container footer__inner">
-      <div class="footer__left">
-        <div class="footer__brand">
-          <span class="brand__mark" aria-hidden="true">Q</span>
-          <span class="brand__name">Quantiva</span>
-        </div>
-        <div class="footer__micro">{{footer.micro}}</div>
-      </div>
+              <div class="footer__copy" data-i18n="footer.copy">
+                Privacy-first. No bank credentials required. We never store raw transaction descriptions.
+              </div>
+              <div class="footer__micro" data-i18n="footer.micro">
+                EU-ready • GDPR-aligned by design.
+              </div>
+            </div>
 
-      <div class="footer__right">
-        <div class="footer__rights">{{footer.rights}}</div>
+            <div class="footer__right">
+              <a class="footer__link" href="#features" data-i18n="nav.features">Features</a>
+              <a class="footer__link" href="#security" data-i18n="nav.security">Security</a>
+              <a class="footer__link" href="#pricing" data-i18n="nav.pricing">Pricing</a>
+              <a class="footer__link" href="#faq" data-i18n="nav.faq">FAQ</a>
+              <span class="muted">© <span id="year"></span></span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <!-- Floating language -->
+    <div class="lang-float" aria-label="Language switcher">
+      <button class="lang-float__btn" id="langBtn" type="button" aria-haspopup="true" aria-expanded="false">
+        <span aria-hidden="true">🌐</span>
+        <span class="lang-float__label" id="langLabel">EN</span>
+      </button>
+      <div class="lang-float__menu" id="langMenu" role="menu" aria-label="Language menu">
+        <button class="lang-float__item" type="button" data-lang="en" role="menuitem">English</button>
+        <button class="lang-float__item" type="button" data-lang="ru" role="menuitem">Русский</button>
+        <button class="lang-float__item" type="button" data-lang="de" role="menuitem">Deutsch</button>
       </div>
     </div>
-  </footer>
 
-  <!-- Floating language switcher -->
-  <div class="lang-float" aria-label="Language switcher">
-    <button class="lang-float__btn" id="langBtn" type="button" aria-label="{{lang.title}}">
-      <span class="lang-float__icon" aria-hidden="true">🌐</span>
-      <span class="lang-float__label" data-lang-label>EN</span>
-    </button>
-
-    <div class="lang-float__menu" id="langMenu" role="menu" aria-label="{{lang.title}}">
-      <button class="lang-float__item" type="button" role="menuitem" data-lang="en">{{lang.en}}</button>
-      <button class="lang-float__item" type="button" role="menuitem" data-lang="de">{{lang.de}}</button>
-      <button class="lang-float__item" type="button" role="menuitem" data-lang="ru">{{lang.ru}}</button>
-    </div>
-  </div>
-
-  <!-- MODAL: Sign in -->
-  <div class="modal" data-modal="signin" id="modalSignIn" aria-hidden="true">
-    <div class="modal__backdrop"></div>
-    <div class="modal__panel" role="dialog" aria-modal="true">
-      <div class="modal__head">
-        <div class="modal__title">{{modal.signin.title}}</div>
-        <button class="iconbtn" type="button" data-modal-close aria-label="Close">✕</button>
-      </div>
-
-      <p class="modal__hint">{{modal.signin.hint}}</p>
-
-      <form id="signInForm">
-        <label class="field">
-          <span class="field__label">{{modal.email}}</span>
-          <input class="input" type="email" required placeholder="{{modal.email}}" />
-        </label>
-
-        <label class="field">
-          <span class="field__label">{{modal.password}}</span>
-          <input class="input" type="password" required placeholder="{{modal.password}}" />
-        </label>
-
-        <button class="btn btn--primary btn--full" type="submit">{{modal.submit}}</button>
-
-        <div class="modal__foot">
-          <span class="muted">{{modal.noAccount}}</span>
-          <a href="#" class="link" id="toCreateLink">{{modal.createLink}}</a>
+    <!-- Sign in modal -->
+    <div class="modal" id="signInModal" aria-hidden="true">
+      <div class="modal__backdrop" data-close="signIn"></div>
+      <div class="modal__card" role="dialog" aria-modal="true" aria-label="Sign in">
+        <div class="modal__head">
+          <h3 class="modal__title" data-i18n="modal.signIn.title">Sign in</h3>
+          <button class="iconbtn" type="button" data-close="signIn" aria-label="Close">✕</button>
         </div>
-      </form>
-    </div>
-  </div>
 
-  <!-- MODAL: Create account -->
-  <div class="modal" data-modal="signup" id="modalCreate" aria-hidden="true">
-    <div class="modal__backdrop"></div>
-    <div class="modal__panel" role="dialog" aria-modal="true">
-      <div class="modal__head">
-        <div class="modal__title">{{modal.signup.title}}</div>
-        <button class="iconbtn" type="button" data-modal-close aria-label="Close">✕</button>
+        <p class="modal__hint" data-i18n="modal.signIn.desc">
+          Demo form — we’ll wire up real auth later.
+        </p>
+
+        <form class="form" id="signInForm">
+          <label class="field">
+            <span data-i18n="form.email">Email</span>
+            <input type="email" required placeholder="name@domain.com" />
+          </label>
+
+          <label class="field">
+            <span data-i18n="form.password">Password</span>
+            <input type="password" required placeholder="••••••••" />
+          </label>
+
+          <button class="btn btn--lg btn--primary w100" type="submit" data-i18n="modal.signIn.submit">
+            Sign in
+          </button>
+
+          <p class="form__hint">
+            <span data-i18n="modal.signIn.alt">No account?</span>
+            <button class="linklike" type="button" id="switchToGetStarted" data-i18n="modal.signIn.toGetStarted">
+              Create one
+            </button>
+          </p>
+        </form>
       </div>
-
-      <p class="modal__hint">{{modal.signup.hint}}</p>
-
-      <form id="createForm">
-        <label class="field">
-          <span class="field__label">{{modal.email}}</span>
-          <input class="input" type="email" required placeholder="{{modal.email}}" />
-        </label>
-
-        <label class="field">
-          <span class="field__label">{{modal.password}}</span>
-          <input class="input" type="password" required placeholder="{{modal.password}}" />
-        </label>
-
-        <button class="btn btn--primary btn--full" type="submit">{{modal.submit}}</button>
-
-        <div class="modal__foot">
-          <span class="muted">{{modal.already}}</span>
-          <a href="#" class="link" id="toSignInLink">{{modal.signLink}}</a>
-        </div>
-      </form>
     </div>
-  </div>
 
-  <!-- Toast -->
-  <div class="toast" id="toast" style="display:none"></div>
+    <!-- Get started modal -->
+    <div class="modal" id="getStartedModal" aria-hidden="true">
+      <div class="modal__backdrop" data-close="getStarted"></div>
+      <div class="modal__card" role="dialog" aria-modal="true" aria-label="Get started">
+        <div class="modal__head">
+          <h3 class="modal__title" data-i18n="modal.getStarted.title">Create account</h3>
+          <button class="iconbtn" type="button" data-close="getStarted" aria-label="Close">✕</button>
+        </div>
 
-  <!-- Scripts -->
-  <script src="app.js"></script>
-</body>
+        <p class="modal__hint" data-i18n="modal.getStarted.desc">
+          Demo signup — we’ll add real onboarding soon.
+        </p>
+
+        <form class="form" id="getStartedForm">
+          <label class="field">
+            <span data-i18n="form.name">Name</span>
+            <input type="text" required placeholder="Alex" />
+          </label>
+
+          <label class="field">
+            <span data-i18n="form.email">Email</span>
+            <input type="email" required placeholder="name@domain.com" />
+          </label>
+
+          <button class="btn btn--lg btn--primary w100" type="submit" data-i18n="modal.getStarted.submit">
+            Create account
+          </button>
+
+          <p class="form__hint">
+            <span data-i18n="modal.getStarted.alt">Already have an account?</span>
+            <button class="linklike" type="button" id="switchToSignIn" data-i18n="modal.getStarted.toSignIn">
+              Sign in
+            </button>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="./app.js" defer></script>
+  </body>
 </html>
