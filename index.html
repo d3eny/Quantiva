@@ -9,11 +9,11 @@
       content="Quantiva is a minimalist fintech tool: track income and expenses, view daily/monthly analytics, and get AI savings advice."
     />
 
-    <!-- Brand font (only for the wordmark in CSS) -->
+    <!-- Premium wordmark font (ONLY for logo text) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
 
@@ -21,7 +21,8 @@
   </head>
 
   <body>
-    <header class="header">
+    <!-- HEADER -->
+    <header class="header" data-header>
       <div class="container header__inner">
         <a class="brand" href="#top" aria-label="Quantiva">
           <span class="brand__mark" aria-hidden="true">
@@ -38,15 +39,14 @@
         </nav>
 
         <div class="header__actions">
-          <!-- Language switcher -->
+          <div class="header__btns">
+            <button class="btn btn--ghost" type="button" data-open="login" data-i18n="nav.signin">
+              Sign in
+            </button>
+            <button class="btn btn--primary" type="button" data-open="signup" data-i18n="nav.getstarted">
+              Get started
+            </button>
           </div>
-
-          <button class="btn btn--ghost" type="button" data-open="login" data-i18n="nav.signin">
-            Sign in
-          </button>
-          <button class="btn btn--primary" type="button" data-open="signup" data-i18n="nav.getstarted">
-            Get started
-          </button>
 
           <button class="iconbtn burger" type="button" aria-label="Open menu" data-burger>
             <span class="burger__line"></span>
@@ -56,6 +56,7 @@
         </div>
       </div>
 
+      <!-- Mobile nav -->
       <div class="mobile-nav" data-mobile-nav>
         <a class="mobile-nav__link" href="#features" data-i18n="nav.features">Features</a>
         <a class="mobile-nav__link" href="#security" data-i18n="nav.security">Security</a>
@@ -63,13 +64,10 @@
         <a class="mobile-nav__link" href="#faq" data-i18n="nav.faq">FAQ</a>
 
         <div class="mobile-nav__actions">
-          <!-- mobile language -->
-          </div>
-
-          <button class="btn btn--ghost" type="button" data-open="login" data-i18n="nav.signin">
+          <button class="btn btn--ghost w100" type="button" data-open="login" data-i18n="nav.signin">
             Sign in
           </button>
-          <button class="btn btn--primary" type="button" data-open="signup" data-i18n="nav.getstarted">
+          <button class="btn btn--primary w100" type="button" data-open="signup" data-i18n="nav.getstarted">
             Get started
           </button>
         </div>
@@ -77,6 +75,7 @@
     </header>
 
     <main id="top">
+      <!-- HERO -->
       <section class="hero">
         <div class="container hero__grid">
           <div class="hero__content">
@@ -110,18 +109,19 @@
                 <div class="stat__value" data-i18n="hero.stat2.value">1 click</div>
                 <div class="stat__label" data-i18n="hero.stat2.label">fast transaction logging</div>
               </div>
-              <div class="stat">
+              <div class="stat stat--wide">
                 <div class="stat__value" data-i18n="hero.stat3.value">AI</div>
                 <div class="stat__label" data-i18n="hero.stat3.label">personalized recommendations</div>
               </div>
             </div>
           </div>
 
+          <!-- Right preview panel -->
           <div class="hero__panel" aria-label="Dashboard preview">
             <div class="panel">
               <div class="panel__top">
                 <div class="bubble" data-i18n="panel.title">Overview</div>
-                <div class="bubble" data-i18n="panel.chip">December</div>
+                <div class="bubble bubble--muted" data-i18n="panel.chip">December</div>
               </div>
 
               <div class="cards">
@@ -130,6 +130,7 @@
                   <div class="card__value">€ 1,284.20</div>
                   <div class="card__hint" data-i18n="panel.balance.hint">+8.4% over 30 days</div>
                 </div>
+
                 <div class="card">
                   <div class="card__label" data-i18n="panel.spend.label">Spending</div>
                   <div class="card__value">€ 642.10</div>
@@ -172,10 +173,9 @@
             </div>
           </div>
         </div>
-
-        <!-- top background glow is in styles.css now (NOT overlaying content) -->
       </section>
 
+      <!-- FEATURES -->
       <section id="features" class="section">
         <div class="container">
           <div class="section__head">
@@ -211,6 +211,7 @@
         </div>
       </section>
 
+      <!-- SECURITY -->
       <section id="security" class="section section--alt">
         <div class="container">
           <div class="split">
@@ -264,6 +265,7 @@
         </div>
       </section>
 
+      <!-- PRICING -->
       <section id="pricing" class="section">
         <div class="container">
           <div class="section__head">
@@ -319,6 +321,7 @@
         </div>
       </section>
 
+      <!-- FAQ -->
       <section id="faq" class="section section--alt">
         <div class="container">
           <div class="section__head">
@@ -364,6 +367,7 @@
       </section>
     </main>
 
+    <!-- FOOTER -->
     <footer class="footer">
       <div class="container footer__inner">
         <div class="footer__left">
@@ -385,6 +389,19 @@
         </div>
       </div>
     </footer>
+
+    <!-- Floating language (bottom-right) -->
+    <div class="lang-float" data-lang-float>
+      <button class="lang-float__btn" type="button" data-lang-btn aria-label="Language">
+        <span data-lang-label>EN</span> · 🌐
+      </button>
+
+      <div class="lang-float__menu" data-lang-menu>
+        <button type="button" class="lang-float__item" data-set-lang="en">English</button>
+        <button type="button" class="lang-float__item" data-set-lang="de">Deutsch</button>
+        <button type="button" class="lang-float__item" data-set-lang="ru">Русский</button>
+      </div>
+    </div>
 
     <!-- MODALS -->
     <div class="modal" role="dialog" aria-modal="true" aria-label="Sign in" data-modal="login">
@@ -456,31 +473,6 @@
 
     <div class="toast" aria-live="polite" aria-atomic="true" id="toast"></div>
 
-    <!-- Floating language (bottom-right) -->
-<div class="lang-float" data-lang-float>
-  <button class="lang-float__btn" type="button" data-lang-btn aria-label="Language">
-    <span data-lang-label>EN</span> · 🌐
-  </button>
-
-  <div class="lang-float__menu" data-lang-menu>
-    <button type="button" class="lang-float__item" data-set-lang="en">English</button>
-    <button type="button" class="lang-float__item" data-set-lang="de">Deutsch</button>
-    <button type="button" class="lang-float__item" data-set-lang="ru">Русский</button>
-  </div>
-</div>
-
     <script src="app.js"></script>
   </body>
-  <div class="hero-right">
-  <div class="overview-card">
-
-    <!-- ✅ ЭТО ВСТАВЛЯЕТСЯ В index.html -->
-    <span class="overview-badge">Overview</span>
-
-    <!-- остальной контент карточки -->
-  </div>
-</div>
 </html>
-
-
-
