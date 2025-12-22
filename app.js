@@ -26,6 +26,8 @@
     return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
+  const LANG_KEY = "quantiva_lang";
+
   /* -----------------------------
      Header hide on scroll (Safari-like)
   ----------------------------- */
@@ -238,7 +240,7 @@
     panel.classList.add("is-loading");
     setEmptyState(false);
 
-    // smooth “premium” timing (not too fast, not too slow)
+    // smooth premium” timing (not too fast, not too slow)
     const t = prefersReducedMotion() ? 0 : 1100;
 
     window.setTimeout(() => {
@@ -795,7 +797,7 @@
       "faq.title": "FAQ",
       "faq.desc": "Короткие ответы на частые вопросы.",
       "faq.q1": "Это уже готовый продукт?",
-      "faq.a1": "Это лендинг. Дальше — auth, хранение транзакций, аналитика и ИИ‑ассистент.",
+      "faq.a1": "Это ленднг. Дальше — auth, хранение транзакций, аналитика и ИИ‑ассистент.",
       "faq.q2": "Можно быстро сделать dashboard?",
       "faq.a2": "Да. Следующий шаг — backend + база данных и защищённые роуты типа /app.",
       "faq.q3": "Как будет работать ИИ‑ассистент?",
