@@ -931,5 +931,12 @@ document.getElementById("registerForm").addEventListener("submit", (e) => {
 
   alert("Form is valid (next: backend)");
 });
+const captchaResponse = grecaptcha.getResponse();
+if (!captchaResponse) {
+  alert("Please confirm captcha");
+  return;
+}
+
+
 
 
