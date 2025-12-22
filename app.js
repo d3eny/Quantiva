@@ -902,3 +902,34 @@
   // setEmptyState(true);
 
 })();
+
+const overlay = document.getElementById("auth-overlay");
+
+function openRegister() {
+  overlay.classList.remove("hidden");
+}
+
+function closeRegister() {
+  overlay.classList.add("hidden");
+}
+
+document.getElementById("registerForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const pass = document.getElementById("password").value;
+  const repeat = document.getElementById("passwordRepeat").value;
+
+  if (pass.length < 8) {
+    alert("Password must be at least 8 characters");
+    return;
+  }
+
+  if (pass !== repeat) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  alert("Form is valid (next: backend)");
+});
+
+
