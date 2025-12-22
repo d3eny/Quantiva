@@ -240,7 +240,7 @@
     panel.classList.add("is-loading");
     setEmptyState(false);
 
-    // smooth premium” timing (not too fast, not too slow)
+    // smooth “premium” timing (not too fast, not too slow)
     const t = prefersReducedMotion() ? 0 : 1100;
 
     window.setTimeout(() => {
@@ -675,7 +675,7 @@
       "hero.subtitle":
         "Quantiva помогает быстро добавлять транзакции, смотреть аналитику по дням/месяцам и превращать хаос в план.",
       "hero.cta1": "Создать аккаунт",
-      "hero.cta2": "Смотреть функции",
+      "hero.cta2": "Смотреь функции",
       "hero.stat1.value": "30 сек",
       "hero.stat1.label": "до первого отчёта",
       "hero.stat2.value": "1 клик",
@@ -797,7 +797,7 @@
       "faq.title": "FAQ",
       "faq.desc": "Короткие ответы на частые вопросы.",
       "faq.q1": "Это уже готовый продукт?",
-      "faq.a1": "Это ленднг. Дальше — auth, хранение транзакций, аналитика и ИИ‑ассистент.",
+      "faq.a1": "Это лендинг. Дальше — auth, хранение транзакций, аналитика и ИИ‑ассистент.",
       "faq.q2": "Можно быстро сделать dashboard?",
       "faq.a2": "Да. Следующий шаг — backend + база данных и защищённые роуты типа /app.",
       "faq.q3": "Как будет работать ИИ‑ассистент?",
@@ -832,8 +832,6 @@
       "signup.hint2": "Войти",
     },
   };
-
-  const LANG_KEY = "quantiva_lang";
 
   function setLang(lang) {
     const L = dict[lang] ? lang : "en";
@@ -975,28 +973,32 @@
 const overlay = document.getElementById("auth-overlay");
 
 function openRegister() {
-  overlay.classList.remove("hidden");
+  if (overlay) overlay.classList.remove("hidden");
 }
 
 function closeRegister() {
-  overlay.classList.add("hidden");
+  if (overlay) overlay.classList.add("hidden");
 }
 
-document.getElementById("registerForm").addEventListener("submit", (e) => {
-  e.preventDefault();
+const registerForm = document.getElementById("registerForm");
 
-  const pass = document.getElementById("password").value;
-  const repeat = document.getElementById("passwordRepeat").value;
+if (registerForm) {
+  registerForm.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-  if (pass.length < 8) {
-    alert("Password must be at least 8 characters");
-    return;
-  }
+    const pass = document.getElementById("password").value;
+    const repeat = document.getElementById("passwordRepeat").value;
 
-  if (pass !== repeat) {
-    alert("Passwords do not match");
-    return;
-  }
+    if (pass.length < 8) {
+      alert("Password must be at least 8 characters");
+      return;
+    }
 
-  alert("Form is valid (next: backend)");
-});
+    if (pass !== repeat) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    alert("Form is valid (next: backend)");
+  });
+}
