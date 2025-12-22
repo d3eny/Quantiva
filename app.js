@@ -154,10 +154,11 @@
       tip: "Create a weekly grocery cap — small limits reduce month-end overspend without feeling restrictive.",
     },
     business: {
-     balance: 18450.75,
-     spending: 7320.40,
-     bars: [55, 72, 68, 80, 74],
-     tip: "Maintain a 3–6 month cash buffer to stabilize operating expenses."
+      balance: "€ 18450.75",
+      spending: "€ 7320.40",
+      bars: [55, 72, 68, 80, 74],
+      showEmpty: false,
+      tip: "Maintain a 3–6 month cash buffer to stabilize operating expenses."
    }
 
   
@@ -933,6 +934,7 @@ document.getElementById("registerForm").addEventListener("submit", (e) => {
 
   alert("Form is valid (next: backend)");
 });
+
 
 
 
