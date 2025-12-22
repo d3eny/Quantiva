@@ -247,11 +247,11 @@ input {
 }
 
 .brand__name {
-  font-family: "Playfair Display", ui-serif, Georgia, serif;
-  letter-spacing: 0.01em;
-  font-weight: 600;
-  font-size: 18px;
+  font-family: "Marion", ui-serif, Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
 }
+
 
 .brand--small .brand__mark {
   width: 26px;
@@ -1430,4 +1430,5 @@ input {
   .panel { padding: 14px; }
   .price__value { font-size: 30px; }
 }
+
 
