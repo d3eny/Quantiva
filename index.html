@@ -141,20 +141,20 @@
                   type="button"
                   role="tab"
                   aria-selected="false"
-                  data-scenario="business"
-                  data-i18n="demo.business"
+                  data-scenario="family"
+                  data-i18n="demo.family"
                 >
-                  Business
+                  Family
                 </button>
                 <button
                   class="seg__btn"
                   type="button"
                   role="tab"
                   aria-selected="false"
-                  data-scenario="family"
-                  data-i18n="demo.family"
+                  data-scenario="business"
+                  data-i18n="demo.business"
                 >
-                  Family
+                  Business
                 </button>
               </div>
 
@@ -165,7 +165,7 @@
                     <span class="sk sk--text" aria-hidden="true"></span>
                     <span class="kpi" data-kpi-text>€ 1,284.20</span>
                   </div>
-                  <div class="card__hint" data-i18n="panel.balance.hint">+8.4% over 30 days</div>
+                  <div class="card__hint" data-i18n="panel.balance.hint">+4.2% over 30 days</div>
                 </div>
 
                 <div class="card" tabindex="0">
@@ -174,7 +174,7 @@
                     <span class="sk sk--text" aria-hidden="true"></span>
                     <span class="kpi" data-kpi-text>€ 642.10</span>
                   </div>
-                  <div class="card__hint" data-i18n="panel.spend.hint">−2.1% this week</div>
+                  <div class="card__hint" data-i18n="panel.spend.hint">−1.1% this week</div>
                 </div>
               </div>
 
@@ -336,15 +336,15 @@
             </article>
 
             <article class="feature" data-reveal>
-              <div class="feature__icon" aria-hidden="true">🧑‍💻</div>
-              <h3 class="feature__title" data-i18n="aud.a2.title">Business</h3>
-              <p class="feature__text" data-i18n="aud.a2.text">Track revenue, expenses and cash flow with clarity.</p>
-            </article>
-
-            <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">👨‍👩‍👧</div>
               <h3 class="feature__title" data-i18n="aud.a3.title">Families</h3>
               <p class="feature__text" data-i18n="aud.a3.text">Budget monthly expenses with clarity and goals.</p>
+            </article>
+
+            <article class="feature" data-reveal>
+              <div class="feature__icon" aria-hidden="true">🧑‍💻</div>
+              <h3 class="feature__title" data-i18n="aud.a2.title">Business</h3>
+              <p class="feature__text" data-i18n="aud.a2.text">Track revenue, expenses and cash flow with clarity.</p>
             </article>
           </div>
         </div>
@@ -357,7 +357,7 @@
             <div>
               <h2 class="section__title" data-i18n="security.title">Security by design</h2>
               <p class="section__desc" data-i18n="security.desc">
-                We structure the system so it can scale safely from day one. Today it’s a landing page—next it becomes a full product.
+                We structure the system so it can scale safely from day one. Today it’s a landing page — next it becomes a full product.
               </p>
 
               <ul class="bullets">
@@ -443,46 +443,53 @@
 
           <div class="grid3">
             <article class="price" data-reveal>
-              <h3 class="price__title" data-i18n="pricing.free.title">Free</h3>
-              <div class="price__value">€0</div>
+              <h3 class="price__title" data-i18n="pricing.free.title">Student</h3>
+              <div class="price__value">
+                <span data-i18n="pricing.free.price">€2.99</span><span class="price__per" data-i18n="pricing.per">/mo</span>
+              </div>
               <ul class="price__list">
-                <li data-i18n="pricing.free.l1">Transactions</li>
-                <li data-i18n="pricing.free.l2">Categories</li>
-                <li data-i18n="pricing.free.l3">Basic reports</li>
+                <li data-i18n="pricing.free.l1">Transactions + categories</li>
+                <li data-i18n="pricing.free.l2">Basic analytics (monthly/daily)</li>
+                <li data-i18n="pricing.free.l3">1 user, single device sync</li>
+                <li data-i18n="pricing.free.l4">Made affordable for students</li>
               </ul>
               <button class="btn btn--ghost w100" type="button" data-open="signup" data-i18n="pricing.free.cta">
-                Try it
+                Start Student
               </button>
             </article>
 
             <article class="price price--best" data-reveal>
               <div class="price__tag" data-i18n="pricing.pro.tag">Recommended</div>
-              <h3 class="price__title" data-i18n="pricing.pro.title">Pro</h3>
+              <h3 class="price__title" data-i18n="pricing.pro.title">Family</h3>
               <div class="price__value">
-                €6<span class="price__per" data-i18n="pricing.per">/mo</span>
+                <span data-i18n="pricing.pro.price">€12</span><span class="price__per" data-i18n="pricing.per">/mo</span>
               </div>
               <ul class="price__list">
-                <li data-i18n="pricing.pro.l1">Advanced analytics</li>
-                <li data-i18n="pricing.pro.l2">Export</li>
-                <li data-i18n="pricing.pro.l3">Goals & limits</li>
+                <li data-i18n="pricing.pro.l1">Up to 5 users</li>
+                <li data-i18n="pricing.pro.l2">Shared budgets and goals</li>
+                <li data-i18n="pricing.pro.l3">Exports (CSV/PDF)</li>
+                <li data-i18n="pricing.pro.l4">Priority support light</li>
+                <li data-i18n="pricing.pro.l5">Priced for multi-user access</li>
               </ul>
               <button class="btn btn--primary w100" type="button" data-open="signup" data-i18n="pricing.pro.cta">
-                Start Pro
+                Start Family
               </button>
             </article>
 
             <article class="price" data-reveal>
-              <h3 class="price__title" data-i18n="pricing.ai.title">AI</h3>
+              <h3 class="price__title" data-i18n="pricing.ai.title">Business</h3>
               <div class="price__value">
-                €12<span class="price__per" data-i18n="pricing.per">/mo</span>
+                <span data-i18n="pricing.ai.price">€30</span><span class="price__per" data-i18n="pricing.per">/mo</span>
               </div>
               <ul class="price__list">
-                <li data-i18n="pricing.ai.l1">AI savings advice</li>
-                <li data-i18n="pricing.ai.l2">Category suggestions</li>
-                <li data-i18n="pricing.ai.l3">Personalized insights</li>
+                <li data-i18n="pricing.ai.l1">Advanced analytics + cash-flow</li>
+                <li data-i18n="pricing.ai.l2">Team roles & multi-account workspace</li>
+                <li data-i18n="pricing.ai.l3">AI insights and weekly summaries</li>
+                <li data-i18n="pricing.ai.l4">Exports and reporting</li>
+                <li data-i18n="pricing.ai.l5">Priced for deep analytics and AI</li>
               </ul>
               <button class="btn btn--ghost w100" type="button" data-open="signup" data-i18n="pricing.ai.cta">
-                Enable AI
+                Start Business
               </button>
             </article>
           </div>
@@ -532,9 +539,9 @@
             </details>
 
             <details class="faq__item">
-              <summary data-i18n="faq.q6">Is there a free plan?</summary>
+              <summary data-i18n="faq.q6">Is there a low-cost plan?</summary>
               <p data-i18n="faq.a6">
-                Yes. You can start with Free and upgrade only when you need advanced analytics or AI features.
+                Yes. Student is €2.99/mo, with Family and Business upgrades when you need more collaboration or AI insights.
               </p>
             </details>
           </div>
@@ -659,9 +666,3 @@
   </body>
  </div>
 </html>
-
-
-
-
-
-
