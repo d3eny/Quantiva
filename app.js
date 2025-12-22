@@ -1,722 +1,846 @@
 /* =========================================================
-   Quantiva — app.js (FULL + stable moustache i18n)
-   Works with index.html that uses {{path.to.key}} placeholders.
-   Also supports data-i18n attributes (optional).
+   Quantiva — app.js (FULL, aligned with index.html you got)
+   Features:
+   - i18n via data-i18n + floating language menu (EN/RU/DE)
+   - Scenario switcher (Student/Freelancer/Family) updates KPIs + chart + AI tip
+   - Fake skeleton loading on first paint + when switching scenario
+   - Hide header on scroll (Safari-like)
+   - Mobile burger menu
+   - Modals (Sign in / Get started) + switch between them
+   - AI tip tooltip ("Why?") + AI on/off (shows empty state)
+   - Scroll-reveal (IntersectionObserver)
+   - Toast notifications
    ========================================================= */
 
 (() => {
   "use strict";
 
-  /* -----------------------------
-     Helpers
-  ----------------------------- */
+  // -----------------------------
+  // Helpers
+  // -----------------------------
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-  const prefersReducedMotion = () =>
-    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
-  const safeText = (el, v) => el && (el.textContent = String(v ?? ""));
-  const safeHTML = (el, v) => el && (el.innerHTML = String(v ?? ""));
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
 
-  function formatEUR(value, lang) {
-    const locale = lang === "de" ? "de-DE" : lang === "ru" ? "ru-RU" : "en-GB";
+  function formatEUR(amount, locale) {
     try {
-      return new Intl.NumberFormat(locale, {
-        style: "currency",
-        currency: "EUR",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(Number(value));
+      return new Intl.NumberFormat(locale, { style: "currency", currency: "EUR", maximumFractionDigits: 2 }).format(amount);
     } catch {
-      return `€ ${Number(value).toFixed(2)}`;
+      // fallback
+      return `€${amount.toFixed(2)}`;
     }
   }
 
-  function interpolate(str, vars = {}) {
-    return String(str).replace(/\{(\w+)\}/g, (_, k) =>
-      vars[k] != null ? String(vars[k]) : `{${k}}`
-    );
-  }
-
-  function deepGet(obj, path) {
-    const parts = String(path).split(".");
-    let cur = obj;
-    for (const p of parts) {
-      if (!cur || typeof cur !== "object") return undefined;
-      cur = cur[p];
-    }
-    return cur;
-  }
-
-  function normalizeLang(x) {
-    const v = String(x || "").toLowerCase();
-    if (v === "en" || v.startsWith("en")) return "en";
-    if (v === "de" || v.startsWith("de")) return "de";
-    if (v === "ru" || v.startsWith("ru")) return "ru";
-    return "en";
-  }
-
-  /* -----------------------------
-     Dictionary (FULL)
-     Keys match index.html placeholders like {{features.title}}
-  ----------------------------- */
-  const translations = {
+  // -----------------------------
+  // i18n dictionary (KEEP FULL)
+  // -----------------------------
+  const I18N = {
     en: {
-      nav: {
-        features: "Features",
-        security: "Security",
-        pricing: "Pricing",
-        faq: "FAQ",
-        signin: "Sign in",
-        getstarted: "Get started",
-      },
+      "brand.name": "Quantiva",
 
-      hero: {
-        pill: "Next‑gen AI accounting",
-        title1: "Track income and expenses.",
-        title2: "Get AI‑powered savings advice.",
-        subtitle:
-          "Quantiva helps you log transactions, see daily/monthly analytics, and turn spending chaos into a clear plan.",
-        cta1: "Create account",
-        cta2: "Explore features",
-        stat1: { value: "30 sec", label: "to your first report" },
-        stat2: { value: "1 click", label: "fast transaction logging" },
-        stat3: { value: "AI", label: "personalized recommendations" },
-      },
+      "nav.features": "Features",
+      "nav.security": "Security",
+      "nav.pricing": "Pricing",
+      "nav.faq": "FAQ",
 
-      panel: {
-        title: "Overview",
-        chip: "December",
-        balance: { label: "Balance", hint: "+8.4% over 30 days" },
-        spend: { label: "Spending", hint: "-2.1% this week" },
-        chart: { mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri" },
-        aitip: {
-          badge: "AI tip",
-          text: "Try limiting food delivery to once a week — estimated savings ≈ €{v}/month.",
-          cta: "Enable AI assistant",
-        },
-      },
+      "cta.signIn": "Sign in",
+      "cta.getStarted": "Get started",
 
-      demo: { student: "Student", freelancer: "Freelancer", family: "Family" },
+      "hero.pill": "Next-gen AI accounting",
+      "hero.title": "Track income and expenses. Get AI-powered savings advice.",
+      "hero.subtitle": "Quantiva helps you log transactions, see daily/monthly analytics, and turn spending chaos into a clear plan.",
+      "hero.primary": "Create account",
+      "hero.secondary": "Explore features",
 
-      ai: {
-        why: "Why?",
-        whyTitle: "Why this suggestion?",
-        whyText:
-          "Based on your food & transport spending over the last 30 days and weekly trends. Demo explanation.",
-      },
+      "stats.one.value": "30 sec",
+      "stats.one.label": "to your first report",
+      "stats.two.value": "1 click",
+      "stats.two.label": "fast transaction logging",
+      "stats.three.value": "AI",
+      "stats.three.label": "personalized recommendations",
 
-      empty: {
-        title: "No data yet",
-        text: "Add your first transaction to unlock insights.",
-      },
+      "panel.overview": "Overview",
+      "panel.month": "December",
 
-      features: {
-        title: "Features built for clarity",
-        desc: "Fast logging, smart categories, and AI insights that stay understandable.",
-        cards: {
-          c1: { title: "Categories", text: "Auto-detect categories and keep budgeting consistent." },
-          c2: { title: "Reports", text: "Daily and monthly summaries with clean trends." },
-          c3: { title: "AI suggestions", text: "Practical tips based on aggregated patterns." },
-        },
-      },
+      "seg.student": "Student",
+      "seg.freelancer": "Freelancer",
+      "seg.family": "Family",
 
-      security: {
-        title: "Security by design",
-        lead:
-          "We structure the system so it can scale safely from day one. Today it’s a landing page — next it becomes a full product.",
-        bullets: {
-          b1: "Clear separation between public pages and your private app",
-          b2: "Session-based auth and protected forms",
-          b3: "Ready for database storage and audit logging",
-        },
-      },
+      "kpi.balance.label": "Balance",
+      "kpi.balance.hint": "+8.4% over 30 days",
+      "kpi.spending.label": "Spending",
+      "kpi.spending.hint": "-2.1% this week",
 
-      trust: {
-        t1: {
-          title: "How AI works",
-          b1: "AI uses aggregated totals and category trends (not raw bank credentials).",
-          b2: "You can enable/disable AI at any time.",
-          b3: "Advice is actionable, not generic.",
-        },
-        t2: {
-          title: "Privacy first",
-          b1: "No bank login required.",
-          b2: "Built with secure storage and audit-ready structure.",
-          b3: "EU-ready approach (GDPR-aligned by design).",
-        },
-        t3: {
-          title: "What’s next",
-          b1: "Budgets, goals and spending limits.",
-          b2: "Exports (CSV/PDF) and reporting.",
-          b3: "Smarter AI insights with weekly summaries.",
-        },
-      },
+      "chart.title": "Weekly",
+      "days.mon": "Mon",
+      "days.tue": "Tue",
+      "days.wed": "Wed",
+      "days.thu": "Thu",
+      "days.fri": "Fri",
 
-      roadmap: {
-        title: "Product roadmap",
-        steps: {
-          s1: { title: "Landing + Auth", text: "Sign up / sign in and basic navigation." },
-          s2: { title: "Transactions + Analytics", text: "Income/expense logging, filters, daily/monthly reports." },
-          s3: { title: "AI Assistant", text: "AI-powered advice, using aggregated transaction context." },
-        },
-      },
+      "ai.badge": "AI tip",
+      "ai.why": "Why?",
+      "ai.tip": "Try limiting food delivery to once a week — estimated savings ≈ €65/month.",
+      "ai.toggle": "Enable AI assistant",
+      "ai.tooltip.title": "Why this suggestion?",
+      "ai.tooltip.text": "Based on your food & transport spending over the last 30 days, we estimate a weekly cap would reduce volatility.",
 
-      pricing: {
-        title: "Pricing",
-        desc: "Start free. Upgrade when you need more automation.",
-        free: {
-          tag: "Free",
-          title: "Starter",
-          price: "€0",
-          per: "/mo",
-          b1: "Basic reports",
-          b2: "Manual categories",
-          b3: "Limited insights",
-          cta: "Try it",
-        },
-        pro: {
-          tag: "Popular",
-          title: "Pro",
-          price: "€9",
-          per: "/mo",
-          b1: "Smart categories",
-          b2: "Goals & limits",
-          b3: "Exports (CSV/PDF)",
-          cta: "Start Pro",
-        },
-        ai: {
-          tag: "New",
-          title: "AI",
-          price: "€19",
-          per: "/mo",
-          b1: "Personalized insights",
-          b2: "Weekly summaries",
-          b3: "Reasoning preview",
-          cta: "Enable AI",
-        },
-      },
+      "empty.title": "No data yet",
+      "empty.text": "Add your first transaction to unlock insights and weekly summaries.",
 
-      faq: {
-        title: "FAQ",
-        desc: "Quick answers to common questions.",
-        q1: "Is this a finished product?",
-        a1: "Not yet — it’s a polished demo that shows the product direction clearly.",
-        q2: "Can we add a dashboard quickly?",
-        a2: "Yes. The UI is ready for an /app prototype or a real backend later.",
-        q3: "How will the AI assistant work?",
-        a3: "AI uses aggregated context (categories & trends) and explains the “why”.",
-      },
+      "features.title": "Features built for clarity",
+      "features.desc": "Fast logging, smart categories, and AI insights that stay understandable.",
+      "features.cards.one.title": "Categories",
+      "features.cards.one.text": "Auto-detect categories and keep budgeting consistent.",
+      "features.cards.two.title": "Reports",
+      "features.cards.two.text": "Daily and monthly summaries with clean trends.",
+      "features.cards.three.title": "AI suggestions",
+      "features.cards.three.text": "Practical tips based on aggregated patterns.",
 
-      cta: {
-        title: "Ready to begin?",
-        text: "Create an account and we’ll build the dashboard next.",
-        button: "Get started",
-      },
+      "security.title": "Security by design",
+      // IMPORTANT: keep spaces around em dash
+      "security.desc": "We structure the system so it can scale safely from day one. Today it’s a landing page — next it becomes a full product.",
+      "security.bullets.one": "Clear separation between public pages and your private app",
+      "security.bullets.two": "Session-based auth and protected forms",
+      "security.bullets.three": "Ready for database storage and audit logging",
 
-      footer: {
-        rights: "© 2025 Quantiva. All rights reserved.",
-        micro:
-          "Privacy-first. No bank credentials required. We never store raw transaction descriptions.",
-      },
+      "trust.one.title": "How AI works",
+      "trust.one.a": "AI uses aggregated totals and category trends (not raw bank credentials).",
+      "trust.one.b": "You can enable/disable AI at any time.",
+      "trust.one.c": "Advice is actionable, not generic.",
 
-      modal: {
-        signin: { title: "Sign in", hint: "Use any email/password (demo)." },
-        signup: { title: "Create account", hint: "We’ll send nothing — this is a demo." },
-        email: "Email",
-        password: "Password",
-        submit: "Continue",
-        noAccount: "No account?",
-        createLink: "Create one",
-        already: "Already have an account?",
-        signLink: "Sign in",
-      },
+      "trust.two.title": "Privacy first",
+      "trust.two.a": "No bank login required.",
+      "trust.two.b": "Built with secure storage and audit-ready structure.",
+      "trust.two.c": "EU-ready approach (GDPR-aligned by design).",
 
-      lang: { title: "Language", en: "English", de: "Deutsch", ru: "Русский" },
+      "trust.three.title": "What’s next",
+      "trust.three.a": "Budgets, goals and spending limits.",
+      "trust.three.b": "Exports (CSV/PDF) and reporting.",
+      "trust.three.c": "Smarter AI insights with weekly summaries.",
 
-      toast: {
-        created: "Account created (demo).",
-        signed: "Signed in (demo).",
-        aiOn: "AI enabled (demo).",
-        aiOff: "AI disabled (demo).",
-      },
-    },
+      "roadmap.title": "Product roadmap",
+      "roadmap.desc": "A clear path from landing page to a real, daily-use product.",
+      "roadmap.one.title": "Landing + Auth",
+      "roadmap.one.text": "Sign up / sign in and basic navigation.",
+      "roadmap.two.title": "Transactions + Analytics",
+      "roadmap.two.text": "Income/expense logging, filters, daily/monthly reports.",
+      "roadmap.three.title": "AI Assistant",
+      "roadmap.three.text": "AI-powered advice, using aggregated transaction context.",
 
-    de: {
-      nav: { features: "Funktionen", security: "Sicherheit", pricing: "Preise", faq: "FAQ", signin: "Anmelden", getstarted: "Starten" },
+      "pricing.title": "Pricing",
+      "pricing.desc": "Start free. Upgrade when you need more automation.",
+      "pricing.per": "/mo",
 
-      hero: {
-        pill: "Next‑Gen KI‑Buchhaltung",
-        title1: "Einnahmen und Ausgaben verfolgen.",
-        title2: "KI‑Spar‑Tipps erhalten.",
-        subtitle:
-          "Quantiva hilft dir, Transaktionen schnell zu erfassen, Tages/Monats‑Analysen zu sehen und Chaos in einen klaren Plan zu verwandeln.",
-        cta1: "Konto erstellen",
-        cta2: "Funktionen ansehen",
-        stat1: { value: "30 Sek.", label: "bis zum ersten Report" },
-        stat2: { value: "1 Klick", label: "schnelles Erfassen" },
-        stat3: { value: "KI", label: "personalisierte Empfehlungen" },
-      },
+      "pricing.free.tag": "Free",
+      "pricing.free.title": "Starter",
+      "pricing.free.a": "Basic reports",
+      "pricing.free.b": "Manual categories",
+      "pricing.free.c": "Limited insights",
+      "pricing.free.cta": "Try it",
 
-      panel: {
-        title: "Übersicht",
-        chip: "Dezember",
-        balance: { label: "Kontostand", hint: "+8,4% in 30 Tagen" },
-        spend: { label: "Ausgaben", hint: "-2,1% diese Woche" },
-        chart: { mon: "Mo", tue: "Di", wed: "Mi", thu: "Do", fri: "Fr" },
-        aitip: { badge: "KI‑Tipp", text: "Reduziere Lieferessen auf 1× pro Woche — Ersparnis ≈ €{v}/Monat.", cta: "KI‑Assistent aktivieren" },
-      },
+      "pricing.pro.tag": "Popular",
+      "pricing.pro.title": "Pro",
+      "pricing.pro.a": "Smart categories",
+      "pricing.pro.b": "Goals & limits",
+      "pricing.pro.c": "Exports (CSV/PDF)",
+      "pricing.pro.cta": "Start Pro",
 
-      demo: { student: "Student", freelancer: "Freelancer", family: "Familie" },
+      "pricing.ai.tag": "New",
+      "pricing.ai.title": "AI",
+      "pricing.ai.a": "Personalized insights",
+      "pricing.ai.b": "Weekly summaries",
+      "pricing.ai.c": "Reasoning preview",
+      "pricing.ai.cta": "Enable AI",
 
-      ai: { why: "Warum?", whyTitle: "Warum dieser Vorschlag?", whyText: "Basierend auf Essen/Transport‑Ausgaben (30 Tage) und Wochen‑Trends. Demo‑Erklärung." },
+      "faq.title": "FAQ",
+      "faq.desc": "Short answers to common questions.",
+      "faq.q1": "Do I need to connect my bank account?",
+      "faq.a1": "No. Quantiva can work without bank login. You stay in control.",
+      "faq.q2": "What does “AI” actually use?",
+      "faq.a2": "Aggregated totals and category trends, not raw credentials.",
+      "faq.q3": "Can I turn AI off?",
+      "faq.a3": "Yes — one tap. The UI shows what changes when AI is off.",
 
-      empty: { title: "Noch keine Daten", text: "Füge die erste Transaktion hinzu, um Insights zu sehen." },
+      "ctaBox.title": "Ready to try Quantiva?",
+      "ctaBox.text": "Create an account and get your first overview in under a minute.",
 
-      features: {
-        title: "Funktionen für Klarheit",
-        desc: "Schnelles Logging, smarte Kategorien und verständliche KI‑Insights.",
-        cards: {
-          c1: { title: "Kategorien", text: "Auto‑Kategorien und konsistentes Budgeting." },
-          c2: { title: "Reports", text: "Tages‑/Monats‑Übersichten mit Trends." },
-          c3: { title: "KI‑Vorschläge", text: "Praktische Tipps auf Basis aggregierter Muster." },
-        },
-      },
+      "footer.copy": "Privacy-first. No bank credentials required. We never store raw transaction descriptions.",
+      "footer.micro": "EU-ready • GDPR-aligned by design.",
 
-      security: {
-        title: "Security by design",
-        lead: "Wir strukturieren das System so, dass es sicher skalieren kann. Heute Landing — morgen Vollprodukt.",
-        bullets: { b1: "Klare Trennung zwischen Public‑Bereich und privater App", b2: "Session‑Auth und geschützte Formulare", b3: "Bereit für DB‑Speicherung und Audit‑Logging" },
-      },
+      "modal.signIn.title": "Sign in",
+      "modal.signIn.desc": "Demo form — we’ll wire up real auth later.",
+      "modal.signIn.submit": "Sign in",
+      "modal.signIn.alt": "No account?",
+      "modal.signIn.toGetStarted": "Create one",
 
-      trust: {
-        t1: { title: "So arbeitet KI", b1: "KI nutzt aggregierte Summen & Trends (keine Bank‑Credentials).", b2: "KI jederzeit an/aus.", b3: "Tipps sind konkret." },
-        t2: { title: "Privacy first", b1: "Kein Bank‑Login nötig.", b2: "Audit‑ready Struktur.", b3: "EU‑ready (GDPR‑aligned)." },
-        t3: { title: "Was als Nächstes kommt", b1: "Budgets, Ziele und Limits.", b2: "Export (CSV/PDF).", b3: "Wochen‑Summaries." },
-      },
+      "modal.getStarted.title": "Create account",
+      "modal.getStarted.desc": "Demo signup — we’ll add real onboarding soon.",
+      "modal.getStarted.submit": "Create account",
+      "modal.getStarted.alt": "Already have an account?",
+      "modal.getStarted.toSignIn": "Sign in",
 
-      roadmap: {
-        title: "Roadmap",
-        steps: {
-          s1: { title: "Landing + Auth", text: "Registrierung/Anmeldung und Navigation." },
-          s2: { title: "Transaktionen + Analysen", text: "Einnahmen/Ausgaben, Filter, Tages/Monats‑Reports." },
-          s3: { title: "KI‑Assistent", text: "Tipps auf Basis aggregierten Kontexts." },
-        },
-      },
-
-      pricing: {
-        title: "Preise",
-        desc: "Kostenlos starten. Upgraden, wenn du mehr brauchst.",
-        free: { tag: "Gratis", title: "Starter", price: "0€", per: "/Monat", b1: "Basis‑Reports", b2: "Manuelle Kategorien", b3: "Limitierte Insights", cta: "Testen" },
-        pro:  { tag: "Beliebt", title: "Pro", price: "9€", per: "/Monat", b1: "Smarte Kategorien", b2: "Ziele & Limits", b3: "Export (CSV/PDF)", cta: "Pro starten" },
-        ai:   { tag: "Neu", title: "KI", price: "19€", per: "/Monat", b1: "Personalisierte Insights", b2: "Wochen‑Summary", b3: "Reasoning‑Preview", cta: "KI aktivieren" },
-      },
-
-      faq: {
-        title: "FAQ",
-        desc: "Kurze Antworten auf häufige Fragen.",
-        q1: "Ist das ein fertiges Produkt?",
-        a1: "Noch nicht — aber eine polierte Demo mit klarer Vision.",
-        q2: "Schnell ein Dashboard?",
-        a2: "Ja. UI ist bereit für /app‑Prototyp oder später Backend.",
-        q3: "Wie arbeitet der KI‑Assistent?",
-        a3: "KI nutzt Trends und erklärt das „Warum“.",
-      },
-
-      cta: { title: "Bereit?", text: "Konto erstellen — als Nächstes bauen wir das Dashboard.", button: "Starten" },
-
-      footer: { rights: "© 2025 Quantiva. Alle Rechte vorbehalten.", micro: "Privacy‑first. Keine Bank‑Credentials nötig. Keine rohen Transaktionsbeschreibungen." },
-
-      modal: {
-        signin: { title: "Anmelden", hint: "Beliebige E‑Mail/Passwort (Demo)." },
-        signup: { title: "Konto erstellen", hint: "Wir senden nichts — Demo." },
-        email: "E‑Mail",
-        password: "Passwort",
-        submit: "Weiter",
-        noAccount: "Kein Konto?",
-        createLink: "Erstellen",
-        already: "Schon ein Konto?",
-        signLink: "Anmelden",
-      },
-
-      lang: { title: "Sprache", en: "English", de: "Deutsch", ru: "Русский" },
-
-      toast: { created: "Konto erstellt (Demo).", signed: "Angemeldet (Demo).", aiOn: "KI aktiviert (Demo).", aiOff: "KI deaktiviert (Demo)." },
+      "form.name": "Name",
+      "form.email": "Email",
+      "form.password": "Password",
     },
 
     ru: {
-      nav: { features: "Функции", security: "Безопасность", pricing: "Цены", faq: "FAQ", signin: "Войти", getstarted: "Начать" },
+      "brand.name": "Quantiva",
 
-      hero: {
-        pill: "Новая ИИ‑бухгалтерия",
-        title1: "Учитывай доходы и расходы.",
-        title2: "Получай ИИ‑советы по экономии.",
-        subtitle:
-          "Quantiva помогает быстро добавлять транзакции, смотреть аналитику по дням/месяцам и превращать хаос в план.",
-        cta1: "Создать аккаунт",
-        cta2: "Смотреть функции",
-        stat1: { value: "30 сек", label: "до первого отчёта" },
-        stat2: { value: "1 клик", label: "быстрый ввод" },
-        stat3: { value: "ИИ", label: "персональные рекомендации" },
-      },
+      "nav.features": "Функции",
+      "nav.security": "Безопасность",
+      "nav.pricing": "Тарифы",
+      "nav.faq": "FAQ",
 
-      panel: {
-        title: "Обзор",
-        chip: "Декабрь",
-        balance: { label: "Баланс", hint: "+8,4% за 30 дней" },
-        spend: { label: "Расходы", hint: "-2,1% на этой неделе" },
-        chart: { mon: "Пн", tue: "Вт", wed: "Ср", thu: "Чт", fri: "Пт" },
-        aitip: { badge: "ИИ‑совет", text: "Ограничь доставку еды до 1 раза в неделю — экономия ≈ €{v}/мес.", cta: "Включить ИИ‑ассистента" },
-      },
+      "cta.signIn": "Войти",
+      "cta.getStarted": "Начать",
 
-      demo: { student: "Студент", freelancer: "Фрилансер", family: "Семья" },
+      "hero.pill": "Бухгалтерия нового поколения",
+      "hero.title": "Учитывай доходы и расходы. Получай ИИ‑советы по экономии.",
+      "hero.subtitle": "Quantiva помогает быстро добавлять транзакции, смотреть аналитику по дням/месяцам и превращать хаос в понятный план.",
+      "hero.primary": "Создать аккаунт",
+      "hero.secondary": "Смотреть функции",
 
-      ai: { why: "Почему?", whyTitle: "Почему такая рекомендация?", whyText: "На основе тренда трат на еду/транспорт за 30 дней и недельных изменений. Демо‑объяснение." },
+      note: "",
+      "stats.one.value": "30 сек",
+      "stats.one.label": "до первого отчёта",
+      "stats.two.value": "1 клик",
+      "stats.two.label": "быстрый ввод",
+      "stats.three.value": "ИИ",
+      "stats.three.label": "персональные рекомендации",
 
-      empty: { title: "Пока нет данных", text: "Добавь первую транзакцию, чтобы открыть инсайты." },
+      "panel.overview": "Обзор",
+      "panel.month": "Декабрь",
 
-      features: {
-        title: "Функции для ясности",
-        desc: "Быстрый ввод, умные категории и ИИ‑инсайты без «магии».",
-        cards: {
-          c1: { title: "Категории", text: "Подсказки категорий и стабильный учёт бюджета." },
-          c2: { title: "Отчёты", text: "Сводки по дням и месяцам с понятными трендами." },
-          c3: { title: "ИИ‑рекомендации", text: "Практичные советы на основе агрегированных паттернов." },
-        },
-      },
+      "seg.student": "Студент",
+      "seg.freelancer": "Фрилансер",
+      "seg.family": "Семья",
 
-      security: {
-        title: "Безопасность по умолчанию",
-        lead: "Мы строим структуру так, чтобы продукт безопасно масштабировался. Сегодня это лендинг — завтра полноценный продукт.",
-        bullets: { b1: "Разделение публичной части и приватной app‑зоны", b2: "Сессии и защищённые формы", b3: "Готово к БД и аудит‑логам" },
-      },
+      "kpi.balance.label": "Баланс",
+      "kpi.balance.hint": "+8,4% за 30 дней",
+      "kpi.spending.label": "Расходы",
+      "kpi.spending.hint": "-2,1% на этой неделе",
 
-      trust: {
-        t1: { title: "Как работает ИИ", b1: "ИИ использует агрегированные суммы и тренды категорий (без банковских логинов).", b2: "ИИ можно включать/выключать в любой момент.", b3: "Советы конкретные, а не «общие слова»." },
-        t2: { title: "Privacy first", b1: "Подключение банка не требуется.", b2: "Безопасная структура и готовность к аудиту.", b3: "EU‑ready подход (GDPR‑aligned)." },
-        t3: { title: "Что дальше", b1: "Бюджеты, цели и лимиты.", b2: "Экспорт (CSV/PDF) и отчётность.", b3: "Умные ИИ‑сводки по неделям." },
-      },
+      "chart.title": "Неделя",
+      "days.mon": "Пн",
+      "days.tue": "Вт",
+      "days.wed": "Ср",
+      "days.thu": "Чт",
+      "days.fri": "Пт",
 
-      roadmap: {
-        title: "Roadmap",
-        steps: {
-          s1: { title: "Лендинг + Auth", text: "Регистрация/вход и навигация." },
-          s2: { title: "Транзакции + Аналитика", text: "Ввод, фильтры, отчёты по дням/месяцам." },
-          s3: { title: "ИИ‑ассистент", text: "Советы на основе агрегированного контекста." },
-        },
-      },
+      "ai.badge": "ИИ‑совет",
+      "ai.why": "Почему?",
+      "ai.tip": "Ограничь доставку еды до 1 раза в неделю — экономия ≈ €65/мес.",
+      "ai.toggle": "Включить ИИ‑ассистента",
+      "ai.tooltip.title": "Почему такая рекомендация?",
+      "ai.tooltip.text": "На основе ваших трат на еду и транспорт за последние 30 дней — недельный лимит снижает «скачки» расходов.",
 
-      pricing: {
-        title: "Цены",
-        desc: "Начни бесплатно. Обновляйся, когда понадобится больше автоматизации.",
-        free: { tag: "Бесплатно", title: "Starter", price: "0€", per: "/мес", b1: "Базовые отчёты", b2: "Ручные категории", b3: "Ограниченные инсайты", cta: "Попробовать" },
-        pro:  { tag: "Популярно", title: "Pro", price: "9€", per: "/мес", b1: "Умные категории", b2: "Цели и лимиты", b3: "Экспорт (CSV/PDF)", cta: "Start Pro" },
-        ai:   { tag: "Новое", title: "ИИ", price: "19€", per: "/мес", b1: "Персональные инсайты", b2: "Еженедельные сводки", b3: "Пояснение «почему»", cta: "Включить ИИ" },
-      },
+      "empty.title": "Пока нет данных",
+      "empty.text": "Добавь первую транзакцию, чтобы открыть инсайты и недельные отчёты.",
 
-      faq: {
-        title: "FAQ",
-        desc: "Короткие ответы на частые вопросы.",
-        q1: "Это готовый продукт?",
-        a1: "Пока нет — но это отполированная демо‑версия, показывающая направление продукта.",
-        q2: "Можно быстро добавить дашборд?",
-        a2: "Да. UI уже готов для /app‑прототипа или реального бэкенда позже.",
-        q3: "Как будет работать ИИ‑ассистент?",
-        a3: "ИИ использует агрегированные тренды и объясняет «почему».",
-      },
+      "features.title": "Функции для ясности",
+      "features.desc": "Быстрый ввод, умные категории и понятные ИИ‑инсайты.",
+      "features.cards.one.title": "Категории",
+      "features.cards.one.text": "Авто‑категоризация и стабильный бюджет.",
+      "features.cards.two.title": "Отчёты",
+      "features.cards.two.text": "Дневные и месячные сводки с чистыми трендами.",
+      "features.cards.three.title": "ИИ‑подсказки",
+      "features.cards.three.text": "Практичные советы на основе агрегированных паттернов.",
 
-      cta: { title: "Готов начать?", text: "Создай аккаунт — дальше соберём дашборд.", button: "Начать" },
+      "security.title": "Безопасность по дизайну",
+      "security.desc": "Мы строим систему так, чтобы она безопасно масштабировалась с первого дня. Сегодня это лендинг — дальше станет полноценным продуктом.",
+      "security.bullets.one": "Чёткое разделение публичной части и личного кабинета",
+      "security.bullets.two": "Сессионная авторизация и защищённые формы",
+      "security.bullets.three": "Готовность к базе данных и аудит‑логам",
 
-      footer: { rights: "© 2025 Quantiva. Все права защищены.", micro: "Privacy‑first. Банковские доступы не нужны. Мы не храним сырые описания транзакций." },
+      "trust.one.title": "Как работает ИИ",
+      "trust.one.a": "ИИ использует агрегированные суммы и тренды по категориям (не банковские данные).",
+      "trust.one.b": "ИИ можно включать/выключать в любой момент.",
+      "trust.one.c": "Советы конкретные, а не «общие слова».",
 
-      modal: {
-        signin: { title: "Войти", hint: "Любой email/пароль (демо)." },
-        signup: { title: "Создать аккаунт", hint: "Мы ничего не отправляем — демо." },
-        email: "Email",
-        password: "Пароль",
-        submit: "Продолжить",
-        noAccount: "Нет аккаунта?",
-        createLink: "Создать",
-        already: "Уже есть аккаунт?",
-        signLink: "Войти",
-      },
+      "trust.two.title": "Приватность",
+      "trust.two.a": "Вход в банк не нужен.",
+      "trust.two.b": "Архитектура готова к безопасному хранению и аудитам.",
+      "trust.two.c": "EU‑подход (GDPR‑aligned by design).",
 
-      lang: { title: "Язык", en: "English", de: "Deutsch", ru: "Русский" },
+      "trust.three.title": "Что дальше",
+      "trust.three.a": "Бюджеты, цели и лимиты трат.",
+      "trust.three.b": "Экспорт (CSV/PDF) и отчётность.",
+      "trust.three.c": "Умнее ИИ‑инсайты и недельные сводки.",
 
-      toast: { created: "Аккаунт создан (демо).", signed: "Вход выполнен (демо).", aiOn: "ИИ включён (демо).", aiOff: "ИИ выключен (демо)." },
+      "roadmap.title": "Дорожная карта",
+      "roadmap.desc": "Понятный путь от лендинга к реальному продукту.",
+      "roadmap.one.title": "Лендинг + вход",
+      "roadmap.one.text": "Регистрация/вход и базовая навигация.",
+      "roadmap.two.title": "Транзакции + аналитика",
+      "roadmap.two.text": "Учёт доходов/расходов, фильтры, дневные/месячные отчёты.",
+      "roadmap.three.title": "ИИ‑ассистент",
+      "roadmap.three.text": "ИИ‑советы на основе агрегированного контекста.",
+
+      "pricing.title": "Тарифы",
+      "pricing.desc": "Начни бесплатно. Обновляйся, когда понадобится больше автоматизации.",
+      "pricing.per": "/мес",
+
+      "pricing.free.tag": "Free",
+      "pricing.free.title": "Starter",
+      "pricing.free.a": "Базовые отчёты",
+      "pricing.free.b": "Ручные категории",
+      "pricing.free.c": "Ограниченные инсайты",
+      "pricing.free.cta": "Попробовать",
+
+      "pricing.pro.tag": "Popular",
+      "pricing.pro.title": "Pro",
+      "pricing.pro.a": "Умные категории",
+      "pricing.pro.b": "Цели и лимиты",
+      "pricing.pro.c": "Экспорт (CSV/PDF)",
+      "pricing.pro.cta": "Старт Pro",
+
+      "pricing.ai.tag": "New",
+      "pricing.ai.title": "ИИ",
+      "pricing.ai.a": "Персональные инсайты",
+      "pricing.ai.b": "Недельные сводки",
+      "pricing.ai.c": "Пояснение логики",
+      "pricing.ai.cta": "Включить ИИ",
+
+      "faq.title": "FAQ",
+      "faq.desc": "Короткие ответы на частые вопросы.",
+      "faq.q1": "Нужно подключать банк?",
+      "faq.a1": "Нет. Quantiva может работать без входа в банк — контроль у тебя.",
+      "faq.q2": "Что использует «ИИ»?",
+      "faq.a2": "Агрегированные суммы и тренды по категориям, а не «сырые» данные.",
+      "faq.q3": "Можно выключить ИИ?",
+      "faq.a3": "Да — одним нажатием. Интерфейс покажет, что меняется.",
+
+      "ctaBox.title": "Готов попробовать Quantiva?",
+      "ctaBox.text": "Создай аккаунт и получи первый обзор меньше чем за минуту.",
+
+      "footer.copy": "Privacy‑first. Вход в банк не нужен. Мы не храним «сырые» описания транзакций.",
+      "footer.micro": "EU‑ready • GDPR‑aligned by design.",
+
+      "modal.signIn.title": "Войти",
+      "modal.signIn.desc": "Демо‑форма — подключим реальную авторизацию позже.",
+      "modal.signIn.submit": "Войти",
+      "modal.signIn.alt": "Нет аккаунта?",
+      "modal.signIn.toGetStarted": "Создать",
+
+      "modal.getStarted.title": "Создать аккаунт",
+      "modal.getStarted.desc": "Демо‑регистрация — скоро добавим онбординг.",
+      "modal.getStarted.submit": "Создать аккаунт",
+      "modal.getStarted.alt": "Уже есть аккаунт?",
+      "modal.getStarted.toSignIn": "Войти",
+
+      "form.name": "Имя",
+      "form.email": "Почта",
+      "form.password": "Пароль",
+    },
+
+    de: {
+      "brand.name": "Quantiva",
+
+      "nav.features": "Funktionen",
+      "nav.security": "Sicherheit",
+      "nav.pricing": "Preise",
+      "nav.faq": "FAQ",
+
+      "cta.signIn": "Anmelden",
+      "cta.getStarted": "Loslegen",
+
+      "hero.pill": "Next‑Gen KI‑Accounting",
+      "hero.title": "Einnahmen & Ausgaben im Blick. KI‑Spar‑Tipps inklusive.",
+      "hero.subtitle": "Quantiva hilft beim schnellen Erfassen von Transaktionen, bietet Tages/Monats‑Analysen und macht aus Chaos einen Plan.",
+      "hero.primary": "Account erstellen",
+      "hero.secondary": "Funktionen ansehen",
+
+      "stats.one.value": "30 Sek",
+      "stats.one.label": "bis zum ersten Report",
+      "stats.two.value": "1 Klick",
+      "stats.two.label": "schnelles Logging",
+      "stats.three.value": "KI",
+      "stats.three.label": "personalisierte Empfehlungen",
+
+      "panel.overview": "Übersicht",
+      "panel.month": "Dezember",
+
+      "seg.student": "Student",
+      "seg.freelancer": "Freelancer",
+      "seg.family": "Familie",
+
+      "kpi.balance.label": "Saldo",
+      "kpi.balance.hint": "+8,4% in 30 Tagen",
+      "kpi.spending.label": "Ausgaben",
+      "kpi.spending.hint": "-2,1% diese Woche",
+
+      "chart.title": "Woche",
+      "days.mon": "Mo",
+      "days.tue": "Di",
+      "days.wed": "Mi",
+      "days.thu": "Do",
+      "days.fri": "Fr",
+
+      "ai.badge": "KI‑Tipp",
+      "ai.why": "Warum?",
+      "ai.tip": "Lieferessen auf 1× pro Woche begrenzen — geschätzte Ersparnis ≈ €65/Monat.",
+      "ai.toggle": "KI‑Assistent aktivieren",
+      "ai.tooltip.title": "Warum dieser Vorschlag?",
+      "ai.tooltip.text": "Basierend auf Ausgaben für Essen & Transport der letzten 30 Tage — ein Wochenlimit reduziert Volatilität.",
+
+      "empty.title": "Noch keine Daten",
+      "empty.text": "Füge deine erste Transaktion hinzu, um Insights und Wochen‑Summaries freizuschalten.",
+
+      "features.title": "Funktionen für Klarheit",
+      "features.desc": "Schnelles Logging, smarte Kategorien und verständliche KI‑Insights.",
+      "features.cards.one.title": "Kategorien",
+      "features.cards.one.text": "Automatische Kategorien und konsistentes Budgeting.",
+      "features.cards.two.title": "Reports",
+      "features.cards.two.text": "Tägliche und monatliche Zusammenfassungen mit klaren Trends.",
+      "features.cards.three.title": "KI‑Vorschläge",
+      "features.cards.three.text": "Praktische Tipps auf Basis aggregierter Muster.",
+
+      "security.title": "Sicherheit by design",
+      "security.desc": "Wir bauen so, dass es von Tag eins sicher skaliert. Heute ist es eine Landing Page — als Nächstes ein echtes Produkt.",
+      "security.bullets.one": "Klare Trennung zwischen öffentlichen Seiten und privater App",
+      "security.bullets.two": "Session‑basierte Auth & geschützte Formulare",
+      "security.bullets.three": "Bereit für DB‑Storage und Audit‑Logging",
+
+      "trust.one.title": "Wie KI arbeitet",
+      "trust.one.a": "KI nutzt aggregierte Summen & Kategorien‑Trends (keine Bank‑Credentials).",
+      "trust.one.b": "KI jederzeit aktivierbar/deaktivierbar.",
+      "trust.one.c": "Tipps sind konkret, nicht generisch.",
+
+      "trust.two.title": "Privacy first",
+      "trust.two.a": "Kein Bank‑Login nötig.",
+      "trust.two.b": "Sichere Speicherung & audit‑ready Struktur.",
+      "trust.two.c": "EU‑ready (GDPR‑aligned by design).",
+
+      "trust.three.title": "Was als Nächstes kommt",
+      "trust.three.a": "Budgets, Ziele & Ausgabenlimits.",
+      "trust.three.b": "Export (CSV/PDF) und Reporting.",
+      "trust.three.c": "Smartere KI‑Insights mit Wochen‑Summaries.",
+
+      "roadmap.title": "Roadmap",
+      "roadmap.desc": "Ein klarer Weg von Landing Page zu Daily‑Use‑Produkt.",
+      "roadmap.one.title": "Landing + Auth",
+      "roadmap.one.text": "Sign up / sign in und Basis‑Navigation.",
+      "roadmap.two.title": "Transaktionen + Analytics",
+      "roadmap.two.text": "Einnahmen/Ausgaben, Filter, Tages/Monats‑Reports.",
+      "roadmap.three.title": "KI‑Assistent",
+      "roadmap.three.text": "KI‑Beratung auf Basis aggregiertem Kontext.",
+
+      "pricing.title": "Preise",
+      "pricing.desc": "Starte kostenlos. Upgrade, wenn du mehr Automatisierung brauchst.",
+      "pricing.per": "/Monat",
+
+      "pricing.free.tag": "Free",
+      "pricing.free.title": "Starter",
+      "pricing.free.a": "Basis‑Reports",
+      "pricing.free.b": "Manuelle Kategorien",
+      "pricing.free.c": "Begrenzte Insights",
+      "pricing.free.cta": "Testen",
+
+      "pricing.pro.tag": "Popular",
+      "pricing.pro.title": "Pro",
+      "pricing.pro.a": "Smarte Kategorien",
+      "pricing.pro.b": "Ziele & Limits",
+      "pricing.pro.c": "Export (CSV/PDF)",
+      "pricing.pro.cta": "Pro starten",
+
+      "pricing.ai.tag": "New",
+      "pricing.ai.title": "KI",
+      "pricing.ai.a": "Personalisierte Insights",
+      "pricing.ai.b": "Wochen‑Summaries",
+      "pricing.ai.c": "Reasoning‑Preview",
+      "pricing.ai.cta": "KI aktivieren",
+
+      "faq.title": "FAQ",
+      "faq.desc": "Kurze Antworten auf häufige Fragen.",
+      "faq.q1": "Muss ich mein Bankkonto verbinden?",
+      "faq.a1": "Nein. Quantiva funktioniert auch ohne Bank‑Login.",
+      "faq.q2": "Was nutzt „KI“?",
+      "faq.a2": "Aggregierte Summen und Kategorien‑Trends.",
+      "faq.q3": "Kann ich KI ausschalten?",
+      "faq.a3": "Ja — mit einem Tap. Die UI zeigt den Unterschied.",
+
+      "ctaBox.title": "Bereit für Quantiva?",
+      "ctaBox.text": "Erstelle einen Account und erhalte deine Übersicht in unter einer Minute.",
+
+      "footer.copy": "Privacy‑first. Kein Bank‑Login nötig. Wir speichern keine Roh‑Transaktionsbeschreibungen.",
+      "footer.micro": "EU‑ready • GDPR‑aligned by design.",
+
+      "modal.signIn.title": "Anmelden",
+      "modal.signIn.desc": "Demo‑Formular — echte Auth folgt später.",
+      "modal.signIn.submit": "Anmelden",
+      "modal.signIn.alt": "Noch kein Account?",
+      "modal.signIn.toGetStarted": "Erstellen",
+
+      "modal.getStarted.title": "Account erstellen",
+      "modal.getStarted.desc": "Demo‑Signup — Onboarding folgt bald.",
+      "modal.getStarted.submit": "Account erstellen",
+      "modal.getStarted.alt": "Schon einen Account?",
+      "modal.getStarted.toSignIn": "Anmelden",
+
+      "form.name": "Name",
+      "form.email": "E‑Mail",
+      "form.password": "Passwort",
     },
   };
 
-  /* -----------------------------
-     State
-  ----------------------------- */
+  const LANGS = ["en", "ru", "de"];
+  const LOCALES = { en: "en-US", ru: "ru-RU", de: "de-DE" };
+
+  function getSavedLang() {
+    const fromStorage = localStorage.getItem("quantiva_lang");
+    if (fromStorage && LANGS.includes(fromStorage)) return fromStorage;
+
+    const nav = (navigator.language || "en").slice(0, 2).toLowerCase();
+    if (LANGS.includes(nav)) return nav;
+    return "en";
+  }
+
+  function setLang(lang) {
+    if (!LANGS.includes(lang)) return;
+    state.lang = lang;
+    localStorage.setItem("quantiva_lang", lang);
+    applyI18n();
+    updateLangUI();
+    // scenario refresh (to update translated hints/tips)
+    renderScenario(state.scenario, { withSkeleton: false });
+  }
+
+  function t(key) {
+    const table = I18N[state.lang] || I18N.en;
+    return table[key] ?? (I18N.en[key] ?? key);
+  }
+
+  function applyI18n() {
+    $$("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      const value = t(key);
+      if (value == null) return;
+      el.textContent = value;
+    });
+    // year
+    const yearEl = $("#year");
+    if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+  }
+
+  // -----------------------------
+  // State + Scenario data
+  // -----------------------------
   const state = {
-    lang: "en",
-    scenario: "student", // student | freelancer | family
-    aiEnabled: true,     // demo toggle
+    lang: getSavedLang(),
+    scenario: "student",
+    aiEnabled: true,
+    tooltipOpen: false,
+    mobileNavOpen: false,
   };
 
-  const SCENARIOS = {
-    student:   { balance: 1284.2,  spending: 642.1,  savings: 65,  bars: [0.52, 0.34, 0.76, 0.45, 0.62] },
-    freelancer:{ balance: 3920.55, spending: 1210.4, savings: 110, bars: [0.32, 0.58, 0.41, 0.66, 0.49] },
-    family:    { balance: 5640.9,  spending: 2385.75,savings: 180, bars: [0.61, 0.43, 0.71, 0.54, 0.69] },
-  };
-
-  function t(path) {
-    const dict = translations[state.lang] || translations.en;
-    const v = deepGet(dict, path);
-    if (v != null) return v;
-
-    const fb = deepGet(translations.en, path);
-    if (fb != null) return fb;
-
-    // leave placeholder if missing (so you see what key is missing)
-    return `{{${path}}}`;
-  }
-
-  /* -----------------------------
-     Stable moustache renderer
-     IMPORTANT: never use /g regex in test() (it skips randomly).
-  ----------------------------- */
-  const MUSTACHE_REPLACE = /\{\{\s*([^}]+?)\s*\}\}/g;
-  const MUSTACHE_TEST = /\{\{\s*[^}]+?\s*\}\}/; // no "g"
-
-  function replaceMustacheInString(str) {
-    if (!str || typeof str !== "string") return str;
-    return str.replace(MUSTACHE_REPLACE, (_, key) => {
-      const val = t(key.trim());
-      return (typeof val === "string" || typeof val === "number") ? String(val) : String(val ?? "");
-    });
-  }
-
-  function renderMustacheInTextNodes() {
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-      acceptNode(node) {
-        const s = node.nodeValue;
-        if (!s) return NodeFilter.FILTER_REJECT;
-        return MUSTACHE_TEST.test(s) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+  const scenarios = {
+    student: {
+      balance: 1284.2,
+      spending: 642.1,
+      balanceHintKey: "kpi.balance.hint",
+      spendHintKey: "kpi.spending.hint",
+      bars: { mon: 62, tue: 38, wed: 84, thu: 52, fri: 74 },
+      aiTipKey: "ai.tip",
+    },
+    freelancer: {
+      balance: 3240.5,
+      spending: 1189.3,
+      balanceHintCustom: { en: "+12.1% over 30 days", ru: "+12,1% за 30 дней", de: "+12,1% in 30 Tagen" },
+      spendHintCustom: { en: "+3.4% this week", ru: "+3,4% на этой неделе", de: "+3,4% diese Woche" },
+      bars: { mon: 48, tue: 72, wed: 63, thu: 81, fri: 55 },
+      aiTipCustom: {
+        en: "Set aside 20% of income weekly — keeps taxes predictable and stress low.",
+        ru: "Откладывай 20% дохода каждую неделю — так налоги становятся предсказуемыми.",
+        de: "Lege wöchentlich 20% zurück — so bleiben Steuern planbar.",
       },
-    });
+    },
+    family: {
+      balance: 2105.9,
+      spending: 1540.6,
+      balanceHintCustom: { en: "+4.9% over 30 days", ru: "+4,9% за 30 дней", de: "+4,9% in 30 Tagen" },
+      spendHintCustom: { en: "-5.2% this week", ru: "-5,2% на этой неделе", de: "-5,2% diese Woche" },
+      bars: { mon: 58, tue: 66, wed: 44, thu: 77, fri: 69 },
+      aiTipCustom: {
+        en: "Create a weekly grocery cap — families save most when food is planned.",
+        ru: "Поставь недельный лимит на продукты — семьи больше всего экономят на планировании еды.",
+        de: "Setze ein Wochenlimit für Einkäufe — Planung spart am meisten.",
+      },
+    },
+  };
 
-    const nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
+  // -----------------------------
+  // Elements
+  // -----------------------------
+  const els = {
+    header: $("#header"),
+    burger: $("#burger"),
+    mobileNav: $("#mobileNav"),
 
-    nodes.forEach((node) => {
-      node.nodeValue = replaceMustacheInString(node.nodeValue);
-    });
+    // buttons opening modals
+    openSignIn: $("#openSignIn"),
+    openGetStarted: $("#openGetStarted"),
+    openSignInMobile: $("#openSignInMobile"),
+    openGetStartedMobile: $("#openGetStartedMobile"),
+    heroPrimary: $("#heroPrimary"),
+    ctaGetStarted: $("#ctaGetStarted"),
+    pricingAI: $("#pricingAI"),
+    openGetStarted2: $("#openGetStarted2"),
+
+    // panel
+    panel: $("#overviewPanel"),
+    monthLabel: $("#monthLabel"),
+    balanceValue: $("#balanceValue"),
+    spendValue: $("#spendValue"),
+    balanceHint: $("#balanceHint"),
+    spendHint: $("#spendHint"),
+    barMon: $("#barMon"),
+    barTue: $("#barTue"),
+    barWed: $("#barWed"),
+    barThu: $("#barThu"),
+    barFri: $("#barFri"),
+
+    // seg
+    segButtons: $$("[data-scenario]"),
+
+    // AI
+    aiTipCard: $("#aiTipCard"),
+    aiTipText: $("#aiTipText"),
+    toggleAI: $("#toggleAI"),
+    aiWhyBtn: $("#aiWhyBtn"),
+    aiTipTooltip: $("#aiTipTooltip"),
+    emptyState: $("#emptyState"),
+
+    // lang
+    langBtn: $("#langBtn"),
+    langLabel: $("#langLabel"),
+    langMenu: $("#langMenu"),
+    langItems: $$("#langMenu [data-lang]"),
+
+    // modals
+    signInModal: $("#signInModal"),
+    getStartedModal: $("#getStartedModal"),
+    signInForm: $("#signInForm"),
+    getStartedForm: $("#getStartedForm"),
+    switchToGetStarted: $("#switchToGetStarted"),
+    switchToSignIn: $("#switchToSignIn"),
+
+    // toast
+    toast: $("#toast"),
+  };
+
+  // -----------------------------
+  // Toast
+  // -----------------------------
+  let toastTimer = null;
+  function showToast(text) {
+    if (!els.toast) return;
+    els.toast.textContent = text;
+    els.toast.style.display = "block";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      els.toast.style.display = "none";
+    }, 2200);
   }
 
-  function renderMustacheInAttributes() {
-    const ATTRS = ["placeholder", "title", "aria-label", "aria-describedby", "value", "alt"];
-    $$("*").forEach((el) => {
-      for (const a of ATTRS) {
-        const v = el.getAttribute(a);
-        if (!v || !MUSTACHE_TEST.test(v)) continue;
-        el.setAttribute(a, replaceMustacheInString(v));
+  // -----------------------------
+  // Mobile nav
+  // -----------------------------
+  function setMobileNav(open) {
+    state.mobileNavOpen = !!open;
+    if (!els.mobileNav || !els.burger) return;
+
+    els.mobileNav.style.display = open ? "block" : "none";
+    els.burger.setAttribute("aria-expanded", String(open));
+  }
+
+  // -----------------------------
+  // Modals
+  // -----------------------------
+  function openModal(which) {
+    const modal = which === "signIn" ? els.signInModal : els.getStartedModal;
+    if (!modal) return;
+
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal(which) {
+    const modal = which === "signIn" ? els.signInModal : els.getStartedModal;
+    if (!modal) return;
+
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  function closeAllModals() {
+    closeModal("signIn");
+    closeModal("getStarted");
+  }
+
+  // -----------------------------
+  // Tooltip
+  // -----------------------------
+  function setTooltip(open) {
+    state.tooltipOpen = !!open;
+    if (!els.aiTipTooltip || !els.aiWhyBtn) return;
+
+    els.aiTipTooltip.classList.toggle("is-open", open);
+    els.aiWhyBtn.setAttribute("aria-expanded", String(open));
+  }
+
+  // -----------------------------
+  // AI enabled / empty state
+  // -----------------------------
+  function setAIEnabled(enabled) {
+    state.aiEnabled = !!enabled;
+
+    if (!els.emptyState || !els.toggleAI || !els.aiTipText) return;
+
+    // When AI disabled: show empty state + change button text
+    if (!state.aiEnabled) {
+      els.emptyState.classList.add("is-on");
+      els.aiTipText.style.opacity = "0.45";
+      els.toggleAI.textContent = state.lang === "ru" ? "Включить ИИ‑ассистента" : t("ai.toggle");
+    } else {
+      els.emptyState.classList.remove("is-on");
+      els.aiTipText.style.opacity = "";
+      els.toggleAI.textContent = state.lang === "ru" ? "Выключить ИИ‑ассистента" : "Disable AI assistant";
+      // We avoid adding a new i18n key; keep it simple & consistent
+      // If you want: add i18n key for "Disable..."
+    }
+  }
+
+  // -----------------------------
+  // Skeleton loading
+  // -----------------------------
+  function setPanelLoading(loading) {
+    if (!els.panel) return;
+    els.panel.classList.toggle("is-loading", !!loading);
+  }
+
+  function withFakeLoading(fn, ms = 520) {
+    if (prefersReducedMotion) {
+      fn();
+      return;
+    }
+    setPanelLoading(true);
+    window.setTimeout(() => {
+      fn();
+      // let bars animate to new width
+      window.setTimeout(() => setPanelLoading(false), 180);
+    }, ms);
+  }
+
+  // -----------------------------
+  // Scenario rendering
+  // -----------------------------
+  function renderScenario(scenarioKey, opts = { withSkeleton: true }) {
+    const sc = scenarios[scenarioKey] || scenarios.student;
+    const locale = LOCALES[state.lang] || "en-US";
+
+    const apply = () => {
+      // KPIs
+      if (els.balanceValue) els.balanceValue.textContent = formatEUR(sc.balance, locale);
+      if (els.spendValue) els.spendValue.textContent = formatEUR(sc.spending, locale);
+
+      // Hints
+      if (els.balanceHint) {
+        if (sc.balanceHintCustom) els.balanceHint.textContent = sc.balanceHintCustom[state.lang] || sc.balanceHintCustom.en;
+        else els.balanceHint.textContent = t(sc.balanceHintKey || "kpi.balance.hint");
       }
-    });
-  }
+      if (els.spendHint) {
+        if (sc.spendHintCustom) els.spendHint.textContent = sc.spendHintCustom[state.lang] || sc.spendHintCustom.en;
+        else els.spendHint.textContent = t(sc.spendHintKey || "kpi.spending.hint");
+      }
 
-  function applyDataI18nCompat() {
-    $$("[data-i18n]").forEach((el) => safeText(el, t(el.getAttribute("data-i18n"))));
-    $$("[data-i18n-html]").forEach((el) => safeHTML(el, t(el.getAttribute("data-i18n-html"))));
-    $$("[data-i18n-placeholder]").forEach((el) =>
-      el.setAttribute("placeholder", t(el.getAttribute("data-i18n-placeholder")))
-    );
-  }
+      // Bars
+      const bars = sc.bars || scenarios.student.bars;
+      const setW = (el, w) => {
+        if (!el) return;
+        const safe = clamp(Number(w) || 0, 6, 100);
+        el.style.width = `${safe}%`;
+      };
+      setW(els.barMon, bars.mon);
+      setW(els.barTue, bars.tue);
+      setW(els.barWed, bars.wed);
+      setW(els.barThu, bars.thu);
+      setW(els.barFri, bars.fri);
 
-  function renderAllTexts() {
-    // 1) optional old system
-    applyDataI18nCompat();
-    // 2) moustache system
-    renderMustacheInTextNodes();
-    renderMustacheInAttributes();
-  }
+      // AI tip
+      if (els.aiTipText) {
+        if (sc.aiTipCustom) els.aiTipText.textContent = sc.aiTipCustom[state.lang] || sc.aiTipCustom.en;
+        else els.aiTipText.textContent = t(sc.aiTipKey || "ai.tip");
+      }
 
-  /* -----------------------------
-     UI: Scenario demo
-  ----------------------------- */
-  function renderScenario() {
-    const d = SCENARIOS[state.scenario] || SCENARIOS.student;
-
-    const bal = $("#kpiBalance");
-    const sp = $("#kpiSpending");
-    if (bal) safeText(bal, formatEUR(d.balance, state.lang));
-    if (sp) safeText(sp, formatEUR(d.spending, state.lang));
-
-    const tipText = $("#aiTipText");
-    if (tipText) {
-      const base = t("panel.aitip.text");
-      safeText(tipText, interpolate(base, { v: d.savings }));
-    }
-
-    const fills = $$("[data-bar-fill], .bar__fill");
-    fills.forEach((el, i) => {
-      const v = d.bars[i] ?? 0.3;
-      el.style.width = `${clamp(v, 0.08, 0.98) * 100}%`;
-    });
-
-    $$(".seg__btn").forEach((btn) => {
-      const s = (btn.dataset.scenario || "").toLowerCase();
-      const active = s === state.scenario;
-      btn.classList.toggle("is-active", active);
-      btn.setAttribute("aria-pressed", active ? "true" : "false");
-    });
-  }
-
-  function fakeLoading(done) {
-    const panel = $("#overviewPanel");
-    if (!panel || prefersReducedMotion()) return done?.();
-
-    panel.classList.add("is-loading");
-    setTimeout(() => {
-      panel.classList.remove("is-loading");
-      done?.();
-    }, 520);
-  }
-
-  function initScenarioTabs() {
-    const btns = $$(".seg__btn");
-    if (!btns.length) return;
-
-    btns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const s = (btn.dataset.scenario || "").toLowerCase();
-        if (!SCENARIOS[s]) return;
-        state.scenario = s;
-        localStorage.setItem("quantiva_scenario", s);
-        fakeLoading(() => renderScenario());
+      // Seg buttons states
+      els.segButtons.forEach((btn) => {
+        const isActive = btn.getAttribute("data-scenario") === scenarioKey;
+        btn.classList.toggle("is-active", isActive);
+        btn.setAttribute("aria-selected", isActive ? "true" : "false");
       });
-    });
+    };
+
+    if (opts.withSkeleton) withFakeLoading(apply, 420);
+    else apply();
   }
 
-  /* -----------------------------
-     UI: Tooltip "Why?"
-  ----------------------------- */
-  function initTooltip() {
-    const btn = $("#aiWhyBtn");
-    const pop = $("#aiTipPopover");
-    if (!btn || !pop) return;
-
-    const close = () => pop.classList.remove("is-open");
-
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      pop.classList.toggle("is-open");
-    });
-
-    document.addEventListener("click", close);
-    window.addEventListener("scroll", close, { passive: true });
-    window.addEventListener("resize", close);
-  }
-
-  /* -----------------------------
-     UI: Floating language menu
-  ----------------------------- */
-  function updateLangChip() {
-    const chip = $("#langBtn");
-    const label = $('[data-lang-label]');
-    if (chip) chip.setAttribute("data-lang", state.lang);
-    if (label) safeText(label, state.lang.toUpperCase());
-  }
-
-  function setLang(next) {
-    state.lang = normalizeLang(next);
-    localStorage.setItem("quantiva_lang", state.lang);
-    document.documentElement.setAttribute("lang", state.lang);
-
-    renderAllTexts();
-    updateLangChip();
-
-    // re-render dynamic pieces
-    renderScenario();
-
-    // refresh tooltip content if it has text nodes
-    // (it is also moustache-rendered, but this keeps it safe even if DOM changes)
-    const pop = $("#aiTipPopover");
-    if (pop) {
-      // nothing required; kept for future extension
-    }
-  }
-
-  function initLanguage() {
-    const btn = $("#langBtn");
-    const menu = $("#langMenu");
-    if (!btn || !menu) return;
-
-    const close = () => menu.classList.remove("is-open");
-
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      menu.classList.toggle("is-open");
-    });
-
-    $$(".lang-float__item", menu).forEach((item) => {
-      item.addEventListener("click", () => {
-        const next = item.dataset.lang;
-        setLang(next);
-        close();
-      });
-    });
-
-    document.addEventListener("click", close);
-    document.addEventListener("keydown", (e) => e.key === "Escape" && close());
-  }
-
-  /* -----------------------------
-     UI: Header hide-on-scroll (Safari-like)
-  ----------------------------- */
-  function initHeaderHide() {
-    const header = $(".header");
-    if (!header) return;
+  // -----------------------------
+  // Header hide on scroll
+  // -----------------------------
+  function setupHeaderHideOnScroll() {
+    if (!els.header) return;
 
     let lastY = window.scrollY || 0;
-    let acc = 0;
+    let ticking = false;
 
-    const showAtTop = 40;
-    const hideAfter = 80;
-    const delta = 10;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
 
-    window.addEventListener(
-      "scroll",
-      () => {
+      window.requestAnimationFrame(() => {
         const y = window.scrollY || 0;
-        const dy = y - lastY;
+        const delta = y - lastY;
+
+        // small scrolls ignored
+        if (Math.abs(delta) > 6) {
+          const goingDown = delta > 0;
+          const pastHero = y > 80;
+
+          if (goingDown && pastHero) {
+            els.header.classList.add("is-hidden");
+            // also close tooltips / menus while scrolling
+            setTooltip(false);
+            closeLangMenu();
+          } else {
+            els.header.classList.remove("is-hidden");
+          }
+        }
+
         lastY = y;
+        ticking = false;
+      });
+    };
 
-        if (y < showAtTop) {
-          header.classList.remove("is-hidden");
-          acc = 0;
-          return;
-        }
-
-        if (Math.abs(dy) < 2) return;
-        acc += dy;
-
-        if (acc > delta && y > hideAfter) {
-          header.classList.add("is-hidden");
-          acc = 0;
-        } else if (acc < -delta) {
-          header.classList.remove("is-hidden");
-          acc = 0;
-        }
-      },
-      { passive: true }
-    );
+    window.addEventListener("scroll", onScroll, { passive: true });
   }
 
-  /* -----------------------------
-     UI: Reveal on scroll
-  ----------------------------- */
-  function initReveal() {
+  // -----------------------------
+  // Scroll reveal
+  // -----------------------------
+  function setupReveal() {
     const items = $$("[data-reveal]");
     if (!items.length) return;
 
-    if (prefersReducedMotion() || !("IntersectionObserver" in window)) {
+    if (prefersReducedMotion || !("IntersectionObserver" in window)) {
       items.forEach((el) => el.classList.add("is-in"));
       return;
     }
@@ -724,225 +848,250 @@
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (!e.isIntersecting) return;
-          e.target.classList.add("is-in");
-          io.unobserve(e.target);
+          if (e.isIntersecting) {
+            e.target.classList.add("is-in");
+            io.unobserve(e.target);
+          }
         });
       },
-      { threshold: 0.14 }
+      { threshold: 0.12 }
     );
 
     items.forEach((el) => io.observe(el));
   }
 
-  /* -----------------------------
-     UI: Smooth anchors
-  ----------------------------- */
-  function initAnchors() {
-    $$('a[href^="#"]').forEach((a) => {
-      a.addEventListener("click", (e) => {
-        const href = a.getAttribute("href");
-        if (!href || href === "#") return;
-
-        const el = document.getElementById(href.slice(1));
-        if (!el) return;
-
-        e.preventDefault();
-        el.scrollIntoView({
-          behavior: prefersReducedMotion() ? "auto" : "smooth",
-          block: "start",
-        });
-      });
-    });
+  // -----------------------------
+  // Language menu
+  // -----------------------------
+  function closeLangMenu() {
+    if (!els.langMenu || !els.langBtn) return;
+    els.langMenu.classList.remove("is-open");
+    els.langBtn.setAttribute("aria-expanded", "false");
   }
 
-  /* -----------------------------
-     UI: Burger mobile nav (optional)
-  ----------------------------- */
-  function initBurger() {
-    const burger = $("#burger");
-    const mobileNav = $(".mobile-nav");
-    if (!burger || !mobileNav) return;
+  function toggleLangMenu() {
+    if (!els.langMenu || !els.langBtn) return;
+    const open = !els.langMenu.classList.contains("is-open");
+    els.langMenu.classList.toggle("is-open", open);
+    els.langBtn.setAttribute("aria-expanded", String(open));
+    if (open) setTooltip(false);
+  }
 
-    const setOpen = (open) => {
-      burger.setAttribute("aria-expanded", open ? "true" : "false");
-      mobileNav.style.display = open ? "block" : "none";
-      mobileNav.classList.toggle("is-open", open);
-    };
+  function updateLangUI() {
+    if (!els.langLabel) return;
+    els.langLabel.textContent = state.lang.toUpperCase();
+  }
 
-    let open = false;
+  // -----------------------------
+  // Wiring events
+  // -----------------------------
+  function wireEvents() {
+    // burger
+    if (els.burger) {
+      els.burger.addEventListener("click", () => {
+        setMobileNav(!state.mobileNavOpen);
+      });
+    }
 
-    burger.addEventListener("click", () => {
-      open = !open;
-      setOpen(open);
-    });
+    // close mobile nav when clicking a link
+    if (els.mobileNav) {
+      $$("#mobileNav a").forEach((a) => {
+        a.addEventListener("click", () => setMobileNav(false));
+      });
+    }
 
-    $$(".mobile-nav__link", mobileNav).forEach((l) => {
-      l.addEventListener("click", () => {
-        open = false;
-        setOpen(open);
+    // open modals (desktop)
+    const openSignInAll = [els.openSignIn, els.openSignInMobile].filter(Boolean);
+    openSignInAll.forEach((btn) =>
+      btn.addEventListener("click", () => {
+        setMobileNav(false);
+        openModal("signIn");
+      })
+    );
+
+    const openGetStartedAll = [
+      els.openGetStarted,
+      els.openGetStartedMobile,
+      els.heroPrimary,
+      els.ctaGetStarted,
+      els.openGetStarted2,
+    ].filter(Boolean);
+
+    openGetStartedAll.forEach((btn) =>
+      btn.addEventListener("click", () => {
+        setMobileNav(false);
+        openModal("getStarted");
+      })
+    );
+
+    if (els.pricingAI) {
+      els.pricingAI.addEventListener("click", () => {
+        setMobileNav(false);
+        // quick premium feel
+        showToast(state.lang === "ru" ? "ИИ включён в Pro/AI планах (демо)" : "AI is included in Pro/AI plans (demo)");
+        openModal("getStarted");
+      });
+    }
+
+    // close modals by backdrop / close buttons
+    $$("[data-close]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const which = el.getAttribute("data-close");
+        if (which === "signIn" || which === "getStarted") closeModal(which);
       });
     });
 
-    window.addEventListener("resize", () => {
-      // auto-close when leaving mobile
-      if (window.innerWidth > 920 && open) {
-        open = false;
-        setOpen(false);
+    // ESC closes
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeAllModals();
+        closeLangMenu();
+        setTooltip(false);
+        setMobileNav(false);
       }
     });
-  }
 
-  /* -----------------------------
-     Toast + Modals
-  ----------------------------- */
-  function toast(msg) {
-    const el = $("#toast");
-    if (!el || !msg) return;
+    // switch between modals
+    if (els.switchToGetStarted) {
+      els.switchToGetStarted.addEventListener("click", () => {
+        closeModal("signIn");
+        openModal("getStarted");
+      });
+    }
+    if (els.switchToSignIn) {
+      els.switchToSignIn.addEventListener("click", () => {
+        closeModal("getStarted");
+        openModal("signIn");
+      });
+    }
 
-    el.style.display = "block";
-    el.style.opacity = "0";
-    safeText(el, msg);
-
-    el.style.transition = "opacity 220ms cubic-bezier(0.22,0.61,0.36,1)";
-    requestAnimationFrame(() => (el.style.opacity = "1"));
-
-    clearTimeout(toast._t);
-    toast._t = setTimeout(() => {
-      el.style.opacity = "0";
-      setTimeout(() => (el.style.display = "none"), 260);
-    }, 1500);
-  }
-
-  function initModals() {
-    const modals = $$(".modal");
-    if (!modals.length) return;
-
-    const getModal = (name) => $(`[data-modal="${name}"]`);
-    const open = (m) => {
-      if (!m) return;
-      m.classList.add("is-open");
-      document.body.style.overflow = "hidden";
-      const first = $("input, button", m);
-      first && first.focus?.({ preventScroll: true });
-    };
-    const close = (m) => {
-      if (!m) return;
-      m.classList.remove("is-open");
-      document.body.style.overflow = "";
-    };
-
-    // openers
-    $$("[data-modal-open]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
+    // submit demo forms
+    if (els.signInForm) {
+      els.signInForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        const name = btn.getAttribute("data-modal-open");
-        open(getModal(name));
+        closeModal("signIn");
+        showToast(state.lang === "ru" ? "Вход выполнен (демо)" : state.lang === "de" ? "Anmeldung (Demo)" : "Signed in (demo)");
+      });
+    }
+    if (els.getStartedForm) {
+      els.getStartedForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        closeModal("getStarted");
+        showToast(state.lang === "ru" ? "Аккаунт создан (демо)" : state.lang === "de" ? "Account erstellt (Demo)" : "Account created (demo)");
+      });
+    }
+
+    // scenario seg
+    els.segButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-scenario");
+        if (!key || key === state.scenario) return;
+        state.scenario = key;
+        setTooltip(false);
+        renderScenario(key, { withSkeleton: true });
       });
     });
 
-    // close buttons + backdrop
-    modals.forEach((m) => {
-      const backdrop = $(".modal__backdrop", m);
-      const closeBtn = $("[data-modal-close]", m);
-      backdrop && backdrop.addEventListener("click", () => close(m));
-      closeBtn && closeBtn.addEventListener("click", () => close(m));
+    // AI tooltip
+    if (els.aiWhyBtn) {
+      els.aiWhyBtn.addEventListener("click", () => {
+        toggleLangMenu(false);
+        setTooltip(!state.tooltipOpen);
+      });
+    }
+
+    // close tooltip by click outside
+    document.addEventListener("click", (e) => {
+      const target = e.target;
+
+      // lang
+      if (els.langMenu && els.langBtn) {
+        const insideLang = els.langMenu.contains(target) || els.langBtn.contains(target);
+        if (!insideLang) closeLangMenu();
+      }
+
+      // tooltip
+      if (els.aiTipTooltip && els.aiWhyBtn) {
+        const insideTip = els.aiTipTooltip.contains(target) || els.aiWhyBtn.contains(target);
+        if (!insideTip) setTooltip(false);
+      }
     });
 
-    // switch links
-    const toCreate = $("#toCreateLink");
-    const toSign = $("#toSignInLink");
-    toCreate &&
-      toCreate.addEventListener("click", (e) => {
-        e.preventDefault();
-        close(getModal("signin"));
-        open(getModal("signup"));
+    // toggle AI
+    if (els.toggleAI) {
+      els.toggleAI.addEventListener("click", () => {
+        setAIEnabled(!state.aiEnabled);
+        showToast(
+          state.aiEnabled
+            ? state.lang === "ru"
+              ? "ИИ включён"
+              : state.lang === "de"
+              ? "KI aktiviert"
+              : "AI enabled"
+            : state.lang === "ru"
+            ? "ИИ выключен"
+            : state.lang === "de"
+            ? "KI deaktiviert"
+            : "AI disabled"
+        );
       });
-    toSign &&
-      toSign.addEventListener("click", (e) => {
-        e.preventDefault();
-        close(getModal("signup"));
-        open(getModal("signin"));
+    }
+
+    // language
+    if (els.langBtn) {
+      els.langBtn.addEventListener("click", () => {
+        setTooltip(false);
+        toggleLangMenu();
       });
-
-    // forms (demo)
-    const signForm = $("#signInForm");
-    const createForm = $("#createForm");
-
-    signForm &&
-      signForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        close(getModal("signin"));
-        toast(t("toast.signed"));
-      });
-
-    createForm &&
-      createForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        close(getModal("signup"));
-        toast(t("toast.created"));
-      });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key !== "Escape") return;
-      close(getModal("signin"));
-      close(getModal("signup"));
-      const menu = $("#langMenu");
-      menu && menu.classList.remove("is-open");
-      const tip = $("#aiTipPopover");
-      tip && tip.classList.remove("is-open");
-    });
-  }
-
-  /* -----------------------------
-     AI toggle (demo)
-  ----------------------------- */
-  function initAiToggle() {
-    $$('[data-action="toggle-ai"]').forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        state.aiEnabled = !state.aiEnabled;
-        toast(state.aiEnabled ? t("toast.aiOn") : t("toast.aiOff"));
-
-        // Optional visual dim if you style it in CSS
-        const panel = $("#overviewPanel");
-        panel && panel.classList.toggle("ai-off", !state.aiEnabled);
+    }
+    els.langItems.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const lang = btn.getAttribute("data-lang");
+        closeLangMenu();
+        if (lang) setLang(lang);
+        showToast(state.lang === "ru" ? "Язык: Русский" : state.lang === "de" ? "Sprache: Deutsch" : "Language: English");
       });
     });
   }
 
-  /* -----------------------------
-     Boot
-  ----------------------------- */
-  function boot() {
-    state.lang = normalizeLang(localStorage.getItem("quantiva_lang") || navigator.language);
-    state.scenario = (localStorage.getItem("quantiva_scenario") || "student").toLowerCase();
-    if (!SCENARIOS[state.scenario]) state.scenario = "student";
+  // -----------------------------
+  // Init
+  // -----------------------------
+  function init() {
+    // set initial lang label
+    updateLangUI();
 
-    document.documentElement.setAttribute("lang", state.lang);
+    // i18n text fill
+    applyI18n();
 
-    // Translate once
-    renderAllTexts();
-    updateLangChip();
+    // month label text (kept via i18n)
+    if (els.monthLabel) els.monthLabel.textContent = t("panel.month");
 
-    // Init UI
-    initHeaderHide();
-    initReveal();
-    initAnchors();
-    initScenarioTabs();
-    initTooltip();
-    initLanguage();
-    initBurger();
-    initModals();
-    initAiToggle();
+    // initial states
+    setMobileNav(false);
+    setTooltip(false);
 
-    // First render with premium fake loading
-    fakeLoading(() => renderScenario());
+    // AI default: ON (no empty state)
+    setAIEnabled(true);
+
+    // initial scenario with "premium" fake loading once
+    setPanelLoading(true);
+    window.setTimeout(() => {
+      renderScenario(state.scenario, { withSkeleton: false });
+      setPanelLoading(false);
+    }, prefersReducedMotion ? 0 : 520);
+
+    // reveal + header behavior
+    setupReveal();
+    setupHeaderHideOnScroll();
+
+    // events
+    wireEvents();
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
+    document.addEventListener("DOMContentLoaded", init);
   } else {
-    boot();
+    init();
   }
 })();
