@@ -145,13 +145,7 @@
       showEmpty: false,
       tip: "Try limiting food delivery to once a week — estimated savings ≈ €65/month.",
     },
-    freelancer: {
-      balance: "€ 3,920.45",
-      spending: "€ 1,148.90",
-      bars: [28, 64, 42, 74, 51],
-      showEmpty: false,
-      tip: "Set aside 25% from each invoice — it stabilizes taxes and monthly budget predictability.",
-    },
+
     family: {
       balance: "€ 2,105.70",
       spending: "€ 1,534.30",
@@ -159,6 +153,14 @@
       showEmpty: false,
       tip: "Create a weekly grocery cap — small limits reduce month-end overspend without feeling restrictive.",
     },
+    business: {
+     balance: 18450.75,
+     spending: 7320.40,
+     bars: [55, 72, 68, 80, 74],
+     tip: "Maintain a 3–6 month cash buffer to stabilize operating expenses."
+   }
+
+  
   };
 
   const aiText = $(".ai-tip__text", panel || document);
@@ -931,6 +933,7 @@ document.getElementById("registerForm").addEventListener("submit", (e) => {
 
   alert("Form is valid (next: backend)");
 });
+
 
 
 
