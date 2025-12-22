@@ -6,7 +6,7 @@
    - Skeleton loading (fake) for preview panel
    - Empty state toggles (demo)
    - AI "Why?" tooltip (click/outside/Esc)
-   - Scenario demo (Student/Freelancer/Family) updates KPIs + chart
+   - Scenario demo (Student/Family/Business) updates KPIs + chart
    - Language switch (EN/DE/RU) via data-i18n + localStorage
    - Modals (login/signup), swap, close, toast
    ========================================================= */
@@ -143,7 +143,15 @@
       spending: "€ 642.10",
       bars: [55, 32, 78, 46, 66],
       showEmpty: false,
-      tip: "Try limiting food delivery to once a week — estimated savings ≈ €65/month.",
+      tip: {
+        en: "Try limiting food delivery to once a week — estimated savings ≈ €65/month.",
+        de: "Begrenze Lieferdienste auf 1×/Woche — geschätzte Ersparnis ≈ 65 €/Monat.",
+        ru: "Ограничь доставку еды до 1 раза в неделю — экономия ≈ €65/мес.",
+      },
+      hints: {
+        balance: { en: "+4.2% over 30 days", de: "+4,2% in 30 Tagen", ru: "+4,2% за 30 дней" },
+        spending: { en: "−1.1% this week", de: "−1,1% diese Woche", ru: "−1,1% на этой неделе" },
+      },
     },
 
     family: {
@@ -151,20 +159,38 @@
       spending: "€ 1,534.30",
       bars: [62, 58, 71, 66, 74],
       showEmpty: false,
-      tip: "Create a weekly grocery cap — small limits reduce month-end overspend without feeling restrictive.",
+      tip: {
+        en: "Create a weekly grocery cap — small limits reduce month-end overspend without feeling restrictive.",
+        de: "Setze ein wöchentliches Haushaltslimit – kleine Grenzen senken das Monatsende ohne Verzichtsgefühl.",
+        ru: "Ставь недельный лимит на продукты — небольшие рамки снижают перерасход в конце месяца.",
+      },
+      hints: {
+        balance: { en: "+6.8% over 30 days", de: "+6,8% in 30 Tagen", ru: "+6,8% за 30 дней" },
+        spending: { en: "−1.7% this week", de: "−1,7% diese Woche", ru: "−1,7% на этой неделе" },
+      },
     },
     business: {
-      balance: "€ 18450.75",
-      spending: "€ 7320.40",
+      balance: "€ 18,450.75",
+      spending: "€ 7,320.40",
       bars: [55, 72, 68, 80, 74],
       showEmpty: false,
-      tip: "Maintain a 3–6 month cash buffer to stabilize operating expenses."
-   }
-
-  
+      tip: {
+        en: "Maintain a 3–6 month cash buffer to stabilize operating expenses.",
+        de: "Halte eine Cash-Reserve für 3–6 Monate, um Betriebskosten zu stabilisieren.",
+        ru: "Держите резерв 3–6 месяцев оборотки, чтобы сглаживать операционные расходы.",
+      },
+      hints: {
+        balance: { en: "+12.6% over 30 days", de: "+12,6% in 30 Tagen", ru: "+12,6% за 30 дней" },
+        spending: { en: "+3.9% this week", de: "+3,9% diese Woche", ru: "+3,9% на этой неделе" },
+      },
+    },
   };
 
   const aiText = $(".ai-tip__text", panel || document);
+  const kpiBalanceHint = $(`[data-i18n="panel.balance.hint"]`, panel || document);
+  const kpiSpendingHint = $(`[data-i18n="panel.spend.hint"]`, panel || document);
+
+  let currentScenario = "student";
 
   function setBars(percentArr) {
     if (!barFills.length) return;
@@ -183,6 +209,13 @@
     if (aiText) aiText.textContent = text;
   }
 
+  function setHints(key) {
+    const sc = scenarios[key];
+    const lang = localStorage.getItem(LANG_KEY) || "en";
+    if (kpiBalanceHint && sc?.hints?.balance?.[lang]) kpiBalanceHint.textContent = sc.hints.balance[lang];
+    if (kpiSpendingHint && sc?.hints?.spending?.[lang]) kpiSpendingHint.textContent = sc.hints.spending[lang];
+  }
+
   function setEmptyState(on) {
     if (!empty) return;
     empty.classList.toggle("is-on", !!on);
@@ -191,9 +224,11 @@
 
   function applyScenario(key) {
     const sc = scenarios[key] || scenarios.student;
+    currentScenario = key;
     setKPIs(sc);
     setBars(sc.bars);
-    setTip(sc.tip);
+    setTip(sc.tip?.[localStorage.getItem(LANG_KEY) || "en"] || sc.tip);
+    setHints(key);
     setEmptyState(sc.showEmpty);
   }
 
@@ -308,12 +343,12 @@
       "panel.title": "Overview",
       "panel.chip": "December",
       "demo.student": "Student",
-      "demo.freelancer": "Freelancer",
       "demo.family": "Family",
+      "demo.business": "Business",
       "panel.balance.label": "Balance",
-      "panel.balance.hint": "+8.4% over 30 days",
+      "panel.balance.hint": "+4.2% over 30 days",
       "panel.spend.label": "Spending",
-      "panel.spend.hint": "−2.1% this week",
+      "panel.spend.hint": "−1.1% this week",
       "panel.chart.mon": "Mon",
       "panel.chart.tue": "Tue",
       "panel.chart.wed": "Wed",
@@ -352,13 +387,13 @@
       "aud.desc": "Designed for real-life money routines.",
       "aud.a1.title": "Students",
       "aud.a1.text": "Control daily spending and avoid surprises.",
-      "aud.a2.title": "Freelancers",
-      "aud.a2.text": "Track irregular income and plan ahead.",
+      "aud.a2.title": "Business",
+      "aud.a2.text": "Track revenue, expenses and cash flow with clarity.",
       "aud.a3.title": "Families",
       "aud.a3.text": "Budget monthly expenses with clarity and goals.",
 
       "security.title": "Security by design",
-      "security.desc": "We structure the system so it can scale safely from day one. Today it’s a landing page—next it becomes a full product.",
+      "security.desc": "We structure the system so it can scale safely from day one. Today it’s a landing page — next it becomes a full product.",
       "security.b1": "Clear separation between public pages and your private app",
       "security.b2": "Session-based auth and protected forms",
       "security.b3": "Ready for database storage and audit logging",
@@ -388,22 +423,30 @@
 
       "pricing.title": "Pricing",
       "pricing.desc": "Simple tiers, straightforward upgrades.",
-      "pricing.free.title": "Free",
-      "pricing.free.l1": "Transactions",
-      "pricing.free.l2": "Categories",
-      "pricing.free.l3": "Basic reports",
-      "pricing.free.cta": "Try it",
+      "pricing.free.title": "Student",
+      "pricing.free.l1": "Transactions + categories",
+      "pricing.free.l2": "Basic analytics (monthly/daily)",
+      "pricing.free.l3": "1 user, single device sync",
+      "pricing.free.l4": "Made affordable for students",
+      "pricing.free.price": "€2.99",
+      "pricing.free.cta": "Start Student",
       "pricing.pro.tag": "Recommended",
-      "pricing.pro.title": "Pro",
-      "pricing.pro.l1": "Advanced analytics",
-      "pricing.pro.l2": "Export",
-      "pricing.pro.l3": "Goals & limits",
-      "pricing.pro.cta": "Start Pro",
-      "pricing.ai.title": "AI",
-      "pricing.ai.l1": "AI savings advice",
-      "pricing.ai.l2": "Category suggestions",
-      "pricing.ai.l3": "Personalized insights",
-      "pricing.ai.cta": "Enable AI",
+      "pricing.pro.title": "Family",
+      "pricing.pro.l1": "Up to 5 users",
+      "pricing.pro.l2": "Shared budgets and goals",
+      "pricing.pro.l3": "Exports (CSV/PDF)",
+      "pricing.pro.l4": "Priority support light",
+      "pricing.pro.l5": "Priced for multi-user access",
+      "pricing.pro.price": "€12",
+      "pricing.pro.cta": "Start Family",
+      "pricing.ai.title": "Business",
+      "pricing.ai.l1": "Advanced analytics + cash-flow",
+      "pricing.ai.l2": "Team roles & multi-account workspace",
+      "pricing.ai.l3": "AI insights and weekly summaries",
+      "pricing.ai.l4": "Exports and reporting",
+      "pricing.ai.l5": "Priced for deep analytics and AI",
+      "pricing.ai.price": "€30",
+      "pricing.ai.cta": "Start Business",
       "pricing.per": "/mo",
 
       "faq.title": "FAQ",
@@ -419,8 +462,8 @@
       "faq.a4": "No. You can start by manually logging transactions. Bank integrations can be added later as an optional feature.",
       "faq.q5": "Is my data secure?",
       "faq.a5": "The architecture is designed for secure storage, protected sessions, and audit-ready logging as the product evolves.",
-      "faq.q6": "Is there a free plan?",
-      "faq.a6": "Yes. You can start with Free and upgrade only when you need advanced analytics or AI features.",
+      "faq.q6": "Is there a low-cost plan?",
+      "faq.a6": "Yes. Student is €2.99/mo, with Family and Business upgrades when you need more collaboration or AI insights.",
 
       "cta.title": "Ready to begin?",
       "cta.text": "Create an account and we’ll build the dashboard next.",
@@ -470,12 +513,12 @@
       "panel.title": "Übersicht",
       "panel.chip": "Dezember",
       "demo.student": "Student",
-      "demo.freelancer": "Freelancer",
       "demo.family": "Familie",
+      "demo.business": "Business",
       "panel.balance.label": "Kontostand",
-      "panel.balance.hint": "+8,4% in 30 Tagen",
+      "panel.balance.hint": "+4,2% in 30 Tagen",
       "panel.spend.label": "Ausgaben",
-      "panel.spend.hint": "−2,1% diese Woche",
+      "panel.spend.hint": "−1,1% diese Woche",
       "panel.chart.mon": "Mo",
       "panel.chart.tue": "Di",
       "panel.chart.wed": "Mi",
@@ -515,14 +558,14 @@
       "aud.desc": "Für echte Finanz‑Routinen im Alltag.",
       "aud.a1.title": "Studierende",
       "aud.a1.text": "Tägliche Ausgaben kontrollieren, Überraschungen vermeiden.",
-      "aud.a2.title": "Freelancer",
-      "aud.a2.text": "Unregelmäßige Einnahmen tracken und planen.",
+      "aud.a2.title": "Business",
+      "aud.a2.text": "Einnahmen, Ausgaben und Cashflow klar verfolgen.",
       "aud.a3.title": "Familien",
       "aud.a3.text": "Monatsbudget mit Zielen und Klarheit managen.",
 
       "security.title": "Sicherheit by design",
       "security.desc":
-        "Wir bauen die Struktur so, dass sie sicher skalieren kann. Heute Landing Page – morgen ein Produkt.",
+        "Wir bauen die Struktur so, dass sie sicher skalieren kann. Heute Landing Page — morgen ein Produkt.",
       "security.b1": "Klare Trennung zwischen öffentlichen Seiten und privater App",
       "security.b2": "Sessions & geschützte Formulare",
       "security.b3": "Bereit für Datenbank & Audit‑Logging",
@@ -552,22 +595,30 @@
 
       "pricing.title": "Preise",
       "pricing.desc": "Einfache Pakete, klare Upgrades.",
-      "pricing.free.title": "Free",
-      "pricing.free.l1": "Transaktionen",
-      "pricing.free.l2": "Kategorien",
-      "pricing.free.l3": "Basis‑Reports",
-      "pricing.free.cta": "Testen",
+      "pricing.free.title": "Student",
+      "pricing.free.l1": "Transaktionen + Kategorien",
+      "pricing.free.l2": "Basis-Analysen (monatlich/täglich)",
+      "pricing.free.l3": "1 Nutzer, Sync auf einem Gerät",
+      "pricing.free.l4": "Preiswert für Studierende",
+      "pricing.free.price": "€2,99",
+      "pricing.free.cta": "Student starten",
       "pricing.pro.tag": "Empfohlen",
-      "pricing.pro.title": "Pro",
-      "pricing.pro.l1": "Erweiterte Analysen",
-      "pricing.pro.l2": "Export",
-      "pricing.pro.l3": "Ziele & Limits",
-      "pricing.pro.cta": "Pro starten",
-      "pricing.ai.title": "KI",
-      "pricing.ai.l1": "KI‑Sparvorschläge",
-      "pricing.ai.l2": "Kategorie‑Vorschläge",
-      "pricing.ai.l3": "Personalisierte Insights",
-      "pricing.ai.cta": "KI aktivieren",
+      "pricing.pro.title": "Family",
+      "pricing.pro.l1": "Bis zu 5 Nutzer",
+      "pricing.pro.l2": "Geteilte Budgets und Ziele",
+      "pricing.pro.l3": "Exporte (CSV/PDF)",
+      "pricing.pro.l4": "Priority Support light",
+      "pricing.pro.l5": "Preis wegen Multi-User-Zugang",
+      "pricing.pro.price": "€12",
+      "pricing.pro.cta": "Family starten",
+      "pricing.ai.title": "Business",
+      "pricing.ai.l1": "Erweiterte Analysen + Cashflow",
+      "pricing.ai.l2": "Teamrollen & Multi-Account-Workspace",
+      "pricing.ai.l3": "KI-Insights und Wochen-Reports",
+      "pricing.ai.l4": "Exporte und Reporting",
+      "pricing.ai.l5": "Preis wegen tiefer Analytik & KI",
+      "pricing.ai.price": "€30",
+      "pricing.ai.cta": "Business starten",
       "pricing.per": "/Monat",
 
       "faq.title": "FAQ",
@@ -582,8 +633,8 @@
       "faq.a4": "Nein. Du kannst manuell starten. Bank‑Integrationen sind optional später möglich.",
       "faq.q5": "Sind meine Daten sicher?",
       "faq.a5": "Die Architektur ist für sichere Speicherung, Sessions und auditfähige Logs ausgelegt.",
-      "faq.q6": "Gibt es einen Free‑Plan?",
-      "faq.a6": "Ja. Starte kostenlos und upgrade nur bei Bedarf.",
+      "faq.q6": "Gibt es einen günstigen Einstieg?",
+      "faq.a6": "Ja. Student kostet 2,99 €/Monat, Family und Business sind für Zusammenarbeit und KI‑Insights erweiterbar.",
 
       "cta.title": "Bereit zu starten?",
       "cta.text": "Erstelle ein Konto – als Nächstes bauen wir das Dashboard.",
@@ -616,9 +667,9 @@
       "nav.signin": "Войти",
       "nav.getstarted": "Начать",
 
-      "hero.pill": "Новая AI‑бухгалтерия",
+      "hero.pill": "Новая ИИ‑бухгалтерия",
       "hero.title1": "Учитывай доходы и расходы.",
-      "hero.title2": "Получай AI‑советы по экономии.",
+      "hero.title2": "Получай ИИ‑советы по экономии.",
       "hero.subtitle":
         "Quantiva помогает быстро добавлять транзакции, смотреть аналитику по дням/месяцам и превращать хаос в план.",
       "hero.cta1": "Создать аккаунт",
@@ -627,25 +678,25 @@
       "hero.stat1.label": "до первого отчёта",
       "hero.stat2.value": "1 клик",
       "hero.stat2.label": "быстрый ввод",
-      "hero.stat3.value": "AI",
+      "hero.stat3.value": "ИИ",
       "hero.stat3.label": "персональные рекомендации",
 
       "panel.title": "Overview",
       "panel.chip": "December",
       "demo.student": "Student",
-      "demo.freelancer": "Freelancer",
       "demo.family": "Family",
+      "demo.business": "Business",
       "panel.balance.label": "Баланс",
-      "panel.balance.hint": "+8,4% за 30 дней",
+      "panel.balance.hint": "+4,2% за 30 дней",
       "panel.spend.label": "Расходы",
-      "panel.spend.hint": "−2,1% на этой неделе",
+      "panel.spend.hint": "−1,1% на этой неделе",
       "panel.chart.mon": "Пн",
       "panel.chart.tue": "Вт",
       "panel.chart.wed": "Ср",
       "panel.chart.thu": "Чт",
       "panel.chart.fri": "Пт",
-      "panel.aitip.badge": "AI‑совет",
-      "panel.aitip.cta": "Включить AI‑ассистента",
+      "panel.aitip.badge": "ИИ‑совет",
+      "panel.aitip.cta": "Включить ИИ‑ассистента",
       "panel.aitip.text": "Ограничь доставку еды до 1 раза в неделю — экономия ≈ €65/мес.",
 
       "ai.why": "Почему?",
@@ -654,7 +705,7 @@
         "По категориям Еда и Транспорт за последние 30 дней видно, что пики доставки создают основные колебания.",
 
       "empty.title": "Пока нет данных",
-      "empty.text": "Добавь первую транзакцию, чтобы открыть инсайты и AI‑рекомендации.",
+      "empty.text": "Добавь первую транзакцию, чтобы открыть инсайты и ИИ‑рекомендации.",
 
       "how.title": "Как работает Quantiva",
       "how.desc": "Три шага от хаоса к ясности.",
@@ -662,7 +713,7 @@
       "how.s1.text": "Вводи транзакции за секунды с категориями и заметками.",
       "how.s2.title": "Смотри аналитику по дням и месяцам",
       "how.s2.text": "Понимай тренды и держи бюджет под контролем.",
-      "how.s3.title": "Получай AI‑советы по экономии",
+      "how.s3.title": "Получай ИИ‑советы по экономии",
       "how.s3.text": "Практичные действия на основе агрегированных паттернов.",
 
       "features.title": "Что умеет Quantiva",
@@ -671,15 +722,15 @@
       "features.f1.text": "Быстро добавляй транзакции — без лишней рутины.",
       "features.f2.title": "Аналитика",
       "features.f2.text": "Тренды по дням/месяцам, понятные сводки и контроль бюджета.",
-      "features.f3.title": "AI‑рекомендации",
+      "features.f3.title": "ИИ‑рекомендации",
       "features.f3.text": "Ассистент анализирует паттерны и предлагает конкретные шаги экономии.",
 
       "aud.title": "Для кого сделано",
       "aud.desc": "Под реальные финансовые привычки.",
       "aud.a1.title": "Студенты",
       "aud.a1.text": "Контроль расходов и никаких сюрпризов.",
-      "aud.a2.title": "Фрилансеры",
-      "aud.a2.text": "Учет нерегулярного дохода и планирование.",
+      "aud.a2.title": "Бизнес",
+      "aud.a2.text": "Отслеживайте выручку, расходы и денежный поток без хаоса.",
       "aud.a3.title": "Семьи",
       "aud.a3.text": "Понятный месячный бюджет и цели.",
 
@@ -695,12 +746,12 @@
       "roadmap.s1.text": "Регистрация/вход и навигация.",
       "roadmap.s2.title": "Транзакции + Аналитика",
       "roadmap.s2.text": "Ввод, фильтры, отчеты по дням/месяцам.",
-      "roadmap.s3.title": "AI‑Ассистент",
+      "roadmap.s3.title": "ИИ‑ассистент",
       "roadmap.s3.text": "Советы на основе агрегированного контекста.",
 
-      "ai.title": "Как работает AI",
-      "ai.b1": "AI использует агрегированные суммы и тренды категорий (без банковских логинов).",
-      "ai.b2": "AI можно включать/выключать в любой момент.",
+      "ai.title": "Как работает ИИ",
+      "ai.b1": "ИИ использует агрегированные суммы и тренды категорий (без банковских логинов).",
+      "ai.b2": "ИИ можно включать/выключать в любой момент.",
       "ai.b3": "Советы конкретные, а не «общие слова».",
 
       "privacy.title": "Privacy first",
@@ -711,42 +762,50 @@
       "next.title": "Что дальше",
       "next.b1": "Бюджеты, цели и лимиты.",
       "next.b2": "Экспорт (CSV/PDF) и отчётность.",
-      "next.b3": "Умные недельные AI‑сводки.",
+      "next.b3": "Умные недельные ИИ‑сводки.",
 
       "pricing.title": "Цены",
       "pricing.desc": "Простые планы и понятные апгрейды.",
-      "pricing.free.title": "Free",
-      "pricing.free.l1": "Транзакции",
-      "pricing.free.l2": "Категории",
-      "pricing.free.l3": "Базовые отчёты",
-      "pricing.free.cta": "Попробовать",
+      "pricing.free.title": "Student",
+      "pricing.free.l1": "Транзакции и категории",
+      "pricing.free.l2": "Базовая аналитика (месяц/день)",
+      "pricing.free.l3": "1 пользователь, синхрон на одном устройстве",
+      "pricing.free.l4": "Доступно для студентов",
+      "pricing.free.price": "€2,99",
+      "pricing.free.cta": "Начать Student",
       "pricing.pro.tag": "Рекомендуем",
-      "pricing.pro.title": "Pro",
-      "pricing.pro.l1": "Расширенная аналитика",
-      "pricing.pro.l2": "Экспорт",
-      "pricing.pro.l3": "Цели и лимиты",
-      "pricing.pro.cta": "Старт Pro",
-      "pricing.ai.title": "AI",
-      "pricing.ai.l1": "AI‑советы по экономии",
-      "pricing.ai.l2": "Подсказки категорий",
-      "pricing.ai.l3": "Персональные инсайты",
-      "pricing.ai.cta": "Включить AI",
+      "pricing.pro.title": "Family",
+      "pricing.pro.l1": "До 5 пользователей",
+      "pricing.pro.l2": "Общие бюджеты и цели",
+      "pricing.pro.l3": "Экспорт (CSV/PDF)",
+      "pricing.pro.l4": "Лёгкий приоритетный саппорт",
+      "pricing.pro.l5": "Цена за мультидоступ",
+      "pricing.pro.price": "€12",
+      "pricing.pro.cta": "Начать Family",
+      "pricing.ai.title": "Business",
+      "pricing.ai.l1": "Расширенная аналитика и cash-flow",
+      "pricing.ai.l2": "Роли команды и рабочие области",
+      "pricing.ai.l3": "ИИ‑инсайты и недельные сводки",
+      "pricing.ai.l4": "Экспорты и отчётность",
+      "pricing.ai.l5": "Цена за глубокую аналитику и ИИ",
+      "pricing.ai.price": "€30",
+      "pricing.ai.cta": "Начать Business",
       "pricing.per": "/мес",
 
       "faq.title": "FAQ",
       "faq.desc": "Короткие ответы на частые вопросы.",
       "faq.q1": "Это уже готовый продукт?",
-      "faq.a1": "Это лендинг. Дальше — auth, хранение транзакций, аналитика и AI‑ассистент.",
+      "faq.a1": "Это лендинг. Дальше — auth, хранение транзакций, аналитика и ИИ‑ассистент.",
       "faq.q2": "Можно быстро сделать dashboard?",
       "faq.a2": "Да. Следующий шаг — backend + база данных и защищённые роуты типа /app.",
-      "faq.q3": "Как будет работать AI‑ассистент?",
+      "faq.q3": "Как будет работать ИИ‑ассистент?",
       "faq.a3": "Мы отправляем агрегированные данные (категории, суммы, период) и возвращаем конкретные рекомендации.",
       "faq.q4": "Нужно подключать банк?",
       "faq.a4": "Нет. Можно начать с ручного ввода. Интеграции банка — опционально позже.",
       "faq.q5": "Данные безопасны?",
       "faq.a5": "Архитектура рассчитана на безопасное хранение, сессии и аудит‑логи по мере развития продукта.",
-      "faq.q6": "Есть бесплатный план?",
-      "faq.a6": "Да. Начни с Free и переходи на Pro/AI при необходимости.",
+      "faq.q6": "Есть недорогой план?",
+      "faq.a6": "Да. Student стоит €2,99/мес, Family и Business — для совместной работы и ИИ‑инсайтов.",
 
       "cta.title": "Готов начать?",
       "cta.text": "Создай аккаунт — и дальше мы строим dashboard.",
@@ -785,6 +844,10 @@
       const val = dict[L][key];
       if (typeof val === "string") el.textContent = val;
     });
+
+    setHints(currentScenario);
+    const sc = scenarios[currentScenario] || scenarios.student;
+    setTip(sc.tip?.[L] || sc.tip);
   }
 
   function toggleLangMenu(open) {
@@ -812,6 +875,7 @@
   }
 
   setLang(localStorage.getItem(LANG_KEY) || "en");
+  setHints(currentScenario);
 
   /* -----------------------------
      Year in footer
@@ -934,11 +998,3 @@ document.getElementById("registerForm").addEventListener("submit", (e) => {
 
   alert("Form is valid (next: backend)");
 });
-
-
-
-
-
-
-
-
