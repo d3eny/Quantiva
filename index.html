@@ -8,6 +8,7 @@
       name="description"
       content="Quantiva is a minimalist fintech tool: track income and expenses, view daily/monthly analytics, and get AI savings advice."
     />
+
     <!-- Premium wordmark font (ONLY for logo text) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,8 +16,10 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
+
     <link rel="stylesheet" href="styles.css" />
   </head>
+
   <body>
     <!-- HEADER -->
     <header class="header" data-header>
@@ -27,12 +30,14 @@
           </span>
           <span class="brand__name">Quantiva</span>
         </a>
+
         <nav class="nav" aria-label="Navigation">
           <a class="nav__link" href="#features" data-i18n="nav.features">Features</a>
           <a class="nav__link" href="#security" data-i18n="nav.security">Security</a>
           <a class="nav__link" href="#pricing" data-i18n="nav.pricing">Pricing</a>
           <a class="nav__link" href="#faq" data-i18n="nav.faq">FAQ</a>
         </nav>
+
         <div class="header__actions">
           <div class="header__btns">
             <button class="btn btn--ghost" type="button" data-open="login" data-i18n="nav.signin">
@@ -42,6 +47,7 @@
               Get started
             </button>
           </div>
+
           <button class="iconbtn burger" type="button" aria-label="Open menu" data-burger>
             <span class="burger__line"></span>
             <span class="burger__line"></span>
@@ -49,12 +55,14 @@
           </button>
         </div>
       </div>
+
       <!-- Mobile nav -->
       <div class="mobile-nav" data-mobile-nav>
         <a class="mobile-nav__link" href="#features" data-i18n="nav.features">Features</a>
         <a class="mobile-nav__link" href="#security" data-i18n="nav.security">Security</a>
         <a class="mobile-nav__link" href="#pricing" data-i18n="nav.pricing">Pricing</a>
         <a class="mobile-nav__link" href="#faq" data-i18n="nav.faq">FAQ</a>
+
         <div class="mobile-nav__actions">
           <button class="btn btn--ghost w100" type="button" data-open="login" data-i18n="nav.signin">
             Sign in
@@ -65,6 +73,7 @@
         </div>
       </div>
     </header>
+
     <main id="top">
       <!-- HERO -->
       <section class="hero">
@@ -74,19 +83,23 @@
               <span class="dot" aria-hidden="true"></span>
               <span data-i18n="hero.pill">Next-gen AI accounting</span>
             </div>
+
             <h1 class="hero__title">
               <span data-i18n="hero.title1">Track income and expenses.</span>
               <span class="muted" data-i18n="hero.title2">Get AI-powered savings advice.</span>
             </h1>
+
             <p class="hero__subtitle" data-i18n="hero.subtitle">
               Quantiva helps you log transactions, see daily/monthly analytics, and turn spending chaos into a clear plan.
             </p>
+
             <div class="hero__cta">
               <button class="btn btn--primary btn--lg" type="button" data-open="signup" data-i18n="hero.cta1">
                 Create account
               </button>
               <a class="btn btn--ghost btn--lg" href="#how" data-i18n="hero.cta2">Explore features</a>
             </div>
+
             <div class="hero__stats" aria-label="Key metrics">
               <div class="stat">
                 <div class="stat__value" data-i18n="hero.stat1.value">30 sec</div>
@@ -102,6 +115,7 @@
               </div>
             </div>
           </div>
+
           <!-- Right preview panel -->
           <div class="hero__panel" aria-label="Dashboard preview">
             <div class="panel is-loading" data-panel>
@@ -109,6 +123,7 @@
                 <div class="bubble" data-i18n="panel.title">Overview</div>
                 <div class="bubble bubble--muted" data-i18n="panel.chip">December</div>
               </div>
+
               <!-- Scenario demo toggle -->
               <div class="seg" role="tablist" aria-label="Scenario demo" data-seg>
                 <button
@@ -142,6 +157,7 @@
                   Business
                 </button>
               </div>
+
               <div class="cards">
                 <div class="card" tabindex="0">
                   <div class="card__label" data-i18n="panel.balance.label">Balance</div>
@@ -151,6 +167,7 @@
                   </div>
                   <div class="card__hint" data-i18n="panel.balance.hint">+4.2% over 30 days</div>
                 </div>
+
                 <div class="card" tabindex="0">
                   <div class="card__label" data-i18n="panel.spend.label">Spending</div>
                   <div class="card__value" data-kpi="spending">
@@ -160,6 +177,7 @@
                   <div class="card__hint" data-i18n="panel.spend.hint">−1.1% this week</div>
                 </div>
               </div>
+
               <div class="chart" aria-label="Weekly trend" data-chart>
                 <div class="chart__row">
                   <div class="chart__label" data-i18n="panel.chart.mon">Mon</div>
@@ -196,6 +214,7 @@
                     <span class="bar__fill" style="width: 66%"></span>
                   </div>
                 </div>
+
                 <!-- Empty state (toggled by JS) -->
                 <div class="empty" data-empty>
                   <div class="empty__title" data-i18n="empty.title">No data yet</div>
@@ -204,13 +223,16 @@
                   </div>
                 </div>
               </div>
+
               <div class="ai-tip" data-ai>
                 <div class="ai-tip__row">
                   <div class="ai-tip__badge" data-i18n="panel.aitip.badge">AI tip</div>
+
                   <!-- AI reasoning preview -->
                   <button class="ai-why" type="button" data-ai-why aria-label="Why this suggestion?">
                     <span data-i18n="ai.why">Why?</span>
                   </button>
+
                   <div class="tip" role="tooltip" data-ai-tip>
                     <div class="tip__title" data-i18n="ai.tip.title">Reasoning preview</div>
                     <div class="tip__text" data-i18n="ai.tip.text">
@@ -218,9 +240,11 @@
                     </div>
                   </div>
                 </div>
+
                 <p class="ai-tip__text" data-i18n="panel.aitip.text">
                   Try limiting food delivery to once a week — estimated savings ≈ €65/month.
                 </p>
+
                 <button class="btn btn--ghost btn--sm" type="button" data-open="signup" data-i18n="panel.aitip.cta">
                   Enable AI assistant
                 </button>
@@ -229,6 +253,7 @@
           </div>
         </div>
       </section>
+
       <!-- HOW IT WORKS -->
       <section id="how" class="section section--alt" data-reveal>
         <div class="container">
@@ -236,17 +261,20 @@
             <h2 class="section__title" data-i18n="how.title">How Quantiva works</h2>
             <p class="section__desc" data-i18n="how.desc">Three steps from chaos to clarity.</p>
           </div>
+
           <div class="grid3">
             <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">①</div>
               <h3 class="feature__title" data-i18n="how.s1.title">Add income & expenses</h3>
               <p class="feature__text" data-i18n="how.s1.text">Log transactions in seconds with categories and notes.</p>
             </article>
+
             <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">②</div>
               <h3 class="feature__title" data-i18n="how.s2.title">See daily & monthly analytics</h3>
               <p class="feature__text" data-i18n="how.s2.text">Understand trends and stay in control of your budget.</p>
             </article>
+
             <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">③</div>
               <h3 class="feature__title" data-i18n="how.s3.title">Get AI savings advice</h3>
@@ -255,6 +283,7 @@
           </div>
         </div>
       </section>
+
       <!-- FEATURES -->
       <section id="features" class="section" data-reveal>
         <div class="container">
@@ -262,6 +291,7 @@
             <h2 class="section__title" data-i18n="features.title">What Quantiva does</h2>
             <p class="section__desc" data-i18n="features.desc">Minimal clicks. Maximum clarity.</p>
           </div>
+
           <div class="grid3">
             <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">↳</div>
@@ -270,6 +300,7 @@
                 Add transactions quickly with categories and notes. No busywork.
               </p>
             </article>
+
             <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">▦</div>
               <h3 class="feature__title" data-i18n="features.f2.title">Analytics</h3>
@@ -277,6 +308,7 @@
                 Daily and monthly trends, clear summaries, and budget control.
               </p>
             </article>
+
             <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">✦</div>
               <h3 class="feature__title" data-i18n="features.f3.title">AI recommendations</h3>
@@ -287,6 +319,7 @@
           </div>
         </div>
       </section>
+
       <!-- WHO IT'S FOR -->
       <section id="audience" class="section section--alt" data-reveal>
         <div class="container">
@@ -294,17 +327,20 @@
             <h2 class="section__title" data-i18n="aud.title">Who it’s built for</h2>
             <p class="section__desc" data-i18n="aud.desc">Designed for real-life money routines.</p>
           </div>
+
           <div class="grid3">
             <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">🎓</div>
               <h3 class="feature__title" data-i18n="aud.a1.title">Students</h3>
               <p class="feature__text" data-i18n="aud.a1.text">Control daily spending and avoid surprises.</p>
             </article>
+
             <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">👨‍👩‍👧</div>
               <h3 class="feature__title" data-i18n="aud.a3.title">Families</h3>
               <p class="feature__text" data-i18n="aud.a3.text">Budget monthly expenses with clarity and goals.</p>
             </article>
+
             <article class="feature" data-reveal>
               <div class="feature__icon" aria-hidden="true">🧑‍💻</div>
               <h3 class="feature__title" data-i18n="aud.a2.title">Business</h3>
@@ -313,6 +349,7 @@
           </div>
         </div>
       </section>
+
       <!-- SECURITY + TRUST -->
       <section id="security" class="section" data-reveal>
         <div class="container">
@@ -322,14 +359,17 @@
               <p class="section__desc" data-i18n="security.desc">
                 We structure the system so it can scale safely from day one. Today it’s a landing page — next it becomes a full product.
               </p>
+
               <ul class="bullets">
                 <li data-i18n="security.b1">Clear separation between public pages and your private app</li>
                 <li data-i18n="security.b2">Session-based auth and protected forms</li>
                 <li data-i18n="security.b3">Ready for database storage and audit logging</li>
               </ul>
             </div>
+
             <div class="callout" data-reveal>
               <div class="callout__title" data-i18n="roadmap.title">Product roadmap</div>
+
               <div class="steps">
                 <div class="step">
                   <div class="step__num">1</div>
@@ -338,6 +378,7 @@
                     <div class="step__text" data-i18n="roadmap.s1.text">Sign up / sign in and basic navigation.</div>
                   </div>
                 </div>
+
                 <div class="step">
                   <div class="step__num">2</div>
                   <div class="step__body">
@@ -347,6 +388,7 @@
                     </div>
                   </div>
                 </div>
+
                 <div class="step">
                   <div class="step__num">3</div>
                   <div class="step__body">
@@ -359,6 +401,7 @@
               </div>
             </div>
           </div>
+
           <div class="trust-grid" data-reveal>
             <div class="trust">
               <div class="bubble bubble--muted" data-i18n="ai.title">How AI works</div>
@@ -368,6 +411,7 @@
                 <li data-i18n="ai.b3">Advice is actionable, not generic.</li>
               </ul>
             </div>
+
             <div class="trust">
               <div class="bubble bubble--muted" data-i18n="privacy.title">Privacy first</div>
               <ul class="bullets bullets--tight">
@@ -376,6 +420,7 @@
                 <li data-i18n="privacy.b3">EU-ready approach (GDPR-aligned by design).</li>
               </ul>
             </div>
+
             <div class="trust">
               <div class="bubble bubble--muted" data-i18n="next.title">What’s next</div>
               <ul class="bullets bullets--tight">
@@ -387,6 +432,7 @@
           </div>
         </div>
       </section>
+
       <!-- PRICING -->
       <section id="pricing" class="section section--alt" data-reveal>
         <div class="container">
@@ -394,6 +440,7 @@
             <h2 class="section__title" data-i18n="pricing.title">Pricing</h2>
             <p class="section__desc" data-i18n="pricing.desc">Simple tiers, straightforward upgrades.</p>
           </div>
+
           <div class="grid3">
             <article class="price" data-reveal>
               <h3 class="price__title" data-i18n="pricing.free.title">Student</h3>
@@ -411,8 +458,8 @@
               </button>
             </article>
 
-            <!-- ✅ Family: больше НЕ recommended -->
-            <article class="price" data-reveal>
+            <article class="price price--best" data-reveal>
+              <div class="price__tag" data-i18n="pricing.pro.tag">Recommended</div>
               <h3 class="price__title" data-i18n="pricing.pro.title">Family</h3>
               <div class="price__value">
                 <span data-i18n="pricing.pro.price">€11.99</span><span class="price__per" data-i18n="pricing.per">/mo</span>
@@ -424,14 +471,12 @@
                 <li data-i18n="pricing.pro.l4">Priority support light</li>
                 <li data-i18n="pricing.pro.l5">Priced for multi-user access</li>
               </ul>
-              <button class="btn btn--ghost w100" type="button" data-open="signup" data-i18n="pricing.pro.cta">
+              <button class="btn btn--primary w100" type="button" data-open="signup" data-i18n="pricing.pro.cta">
                 Start Family
               </button>
             </article>
 
-            <!-- ✅ Business: теперь recommended + best -->
-            <article class="price price--best" data-reveal>
-              <div class="price__tag" data-i18n="pricing.pro.tag">Recommended</div>
+            <article class="price" data-reveal>
               <h3 class="price__title" data-i18n="pricing.ai.title">Business</h3>
               <div class="price__value">
                 <span data-i18n="pricing.ai.price">€29.99</span><span class="price__per" data-i18n="pricing.per">/mo</span>
@@ -443,13 +488,14 @@
                 <li data-i18n="pricing.ai.l4">Exports and reporting</li>
                 <li data-i18n="pricing.ai.l5">Priced for deep analytics and AI</li>
               </ul>
-              <button class="btn btn--primary w100" type="button" data-open="signup" data-i18n="pricing.ai.cta">
+              <button class="btn btn--ghost w100" type="button" data-open="signup" data-i18n="pricing.ai.cta">
                 Start Business
               </button>
             </article>
           </div>
         </div>
       </section>
+
       <!-- FAQ -->
       <section id="faq" class="section" data-reveal>
         <div class="container">
@@ -457,6 +503,7 @@
             <h2 class="section__title" data-i18n="faq.title">FAQ</h2>
             <p class="section__desc" data-i18n="faq.desc">Quick answers to common questions.</p>
           </div>
+
           <div class="faq">
             <details class="faq__item">
               <summary data-i18n="faq.q1">Is this a finished product?</summary>
@@ -464,28 +511,33 @@
                 This is the landing page. Next we’ll add auth, transaction storage, analytics, and the AI assistant.
               </p>
             </details>
+
             <details class="faq__item">
               <summary data-i18n="faq.q2">Can we add a dashboard quickly?</summary>
               <p data-i18n="faq.a2">Yes. Next step is backend + database, and protected routes like /app.</p>
             </details>
+
             <details class="faq__item">
               <summary data-i18n="faq.q3">How will the AI assistant work?</summary>
               <p data-i18n="faq.a3">
                 We’ll send aggregated data (categories, totals, timeframe) and return actionable advice—without sending unnecessary personal details.
               </p>
             </details>
+
             <details class="faq__item">
               <summary data-i18n="faq.q4">Do I need to connect my bank account?</summary>
               <p data-i18n="faq.a4">
                 No. You can start by manually logging transactions. Bank integrations can be added later as an optional feature.
               </p>
             </details>
+
             <details class="faq__item">
               <summary data-i18n="faq.q5">Is my data secure?</summary>
               <p data-i18n="faq.a5">
                 The architecture is designed for secure storage, protected sessions, and audit-ready logging as the product evolves.
               </p>
             </details>
+
             <details class="faq__item">
               <summary data-i18n="faq.q6">Is there a free plan?</summary>
               <p data-i18n="faq.a6">
@@ -493,6 +545,7 @@
               </p>
             </details>
           </div>
+
           <div class="cta-box">
             <div>
               <h3 class="cta-box__title" data-i18n="cta.title">Ready to begin?</h3>
@@ -503,6 +556,7 @@
         </div>
       </section>
     </main>
+
     <!-- FOOTER -->
     <footer class="footer">
       <div class="container footer__inner">
@@ -520,6 +574,7 @@
             Privacy-first • No bank credentials required • EU-ready
           </div>
         </div>
+
         <div class="footer__right">
           <a class="footer__link" href="#security" data-i18n="nav.security">Security</a>
           <a class="footer__link" href="#pricing" data-i18n="nav.pricing">Pricing</a>
@@ -527,17 +582,20 @@
         </div>
       </div>
     </footer>
+
     <!-- Floating language (bottom-right) -->
     <div class="lang-float" data-lang-float>
       <button class="lang-float__btn" type="button" data-lang-btn aria-label="Language">
         <span data-lang-label>EN</span> · 🌐
       </button>
+
       <div class="lang-float__menu" data-lang-menu>
         <button type="button" class="lang-float__item" data-set-lang="en">English</button>
         <button type="button" class="lang-float__item" data-set-lang="de">Deutsch</button>
         <button type="button" class="lang-float__item" data-set-lang="ru">Русский</button>
       </div>
     </div>
+
     <!-- MODALS -->
     <div class="modal" role="dialog" aria-modal="true" aria-label="Sign in" data-modal="login">
       <div class="modal__backdrop" data-close></div>
@@ -546,16 +604,20 @@
           <h3 class="modal__title" data-i18n="login.title">Sign in</h3>
           <button class="iconbtn" type="button" aria-label="Close" data-close>×</button>
         </div>
+
         <form class="form" id="loginForm">
           <label class="field">
             <span data-i18n="login.email">Email</span>
             <input type="email" name="email" placeholder="you@domain.com" required />
           </label>
+
           <label class="field">
             <span data-i18n="login.password">Password</span>
             <input type="password" name="password" placeholder="••••••••" minlength="6" required />
           </label>
+
           <button class="btn btn--primary w100" type="submit" data-i18n="login.submit">Sign in</button>
+
           <p class="form__hint">
             <span data-i18n="login.hint1">New here?</span>
             <button class="linklike" type="button" data-swap="signup" data-i18n="login.hint2">Create an account</button>
@@ -563,6 +625,7 @@
         </form>
       </div>
     </div>
+
     <div class="modal" role="dialog" aria-modal="true" aria-label="Sign up" data-modal="signup">
       <div class="modal__backdrop" data-close></div>
       <div class="modal__card">
@@ -570,20 +633,25 @@
           <h3 class="modal__title" data-i18n="signup.title">Create your account</h3>
           <button class="iconbtn" type="button" aria-label="Close" data-close>×</button>
         </div>
+
         <form class="form" id="signupForm">
           <label class="field">
             <span data-i18n="signup.name">Name</span>
             <input type="text" name="name" placeholder="Alex" required />
           </label>
+
           <label class="field">
             <span data-i18n="signup.email">Email</span>
             <input type="email" name="email" placeholder="you@domain.com" required />
           </label>
+
           <label class="field">
             <span data-i18n="signup.password">Password</span>
             <input type="password" name="password" placeholder="min 6 characters" minlength="6" required />
           </label>
+
           <button class="btn btn--primary w100" type="submit" data-i18n="signup.submit">Create account</button>
+
           <p class="form__hint">
             <span data-i18n="signup.hint1">Already have an account?</span>
             <button class="linklike" type="button" data-swap="login" data-i18n="signup.hint2">Sign in</button>
@@ -591,12 +659,15 @@
         </form>
       </div>
     </div>
+
     <div class="toast" aria-live="polite" aria-atomic="true" id="toast"></div>
+
     <script src="app.js"></script>
   </body>
 </html>
 <script src="https://towzwaximnwmkeyvthvk.supabase.co//npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
+
 
 
 
