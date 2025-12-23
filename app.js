@@ -602,7 +602,7 @@
       "pricing.free.l2": "Basis-Analysen (monatlich/täglich)",
       "pricing.free.l3": "1 Nutzer, Sync auf einem Gerät",
       "pricing.free.l4": "Preiswert für Studierende",
-      "pricing.free.price": "€2,99",
+      "pricing.free.price": "€2.99",
       "pricing.free.cta": "Student starten",
       "pricing.pro.tag": "Empfohlen",
       "pricing.pro.title": "Family",
@@ -773,7 +773,7 @@
       "pricing.free.l2": "Базовая аналитика (месяц/день)",
       "pricing.free.l3": "1 пользователь, синхрон на одном устройстве",
       "pricing.free.l4": "Доступно для студентов",
-      "pricing.free.price": "€2,99",
+      "pricing.free.price": "€2.99",
       "pricing.free.cta": "Начать Student",
       "pricing.pro.tag": "Рекомендуем",
       "pricing.pro.title": "Family",
@@ -1002,5 +1002,6 @@ if (registerForm) {
     alert("Form is valid (next: backend)");
   });
 }
+
 
 
