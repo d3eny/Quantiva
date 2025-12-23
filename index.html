@@ -1,8 +1,6 @@
 <!doctype html>
 <html lang="en">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="app.js"></script>
-  <head>
+ <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Quantiva — AI Accounting for Personal Finance</title>
@@ -604,11 +602,13 @@
 
     <div class="toast" aria-live="polite" aria-atomic="true" id="toast"></div>
 
-    <!-- ✅ Supabase client (CDN) -->
-    
-   <!-- Supabase SDK (must be before app.js) -->
-    
+        <!-- SUPABASE SDK (обязательно ПЕРЕД app.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Твой основной JS -->
+    <script src="app.js"></script>
   </body>
 </html>
+
 
 
