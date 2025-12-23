@@ -611,7 +611,7 @@
       "pricing.pro.l3": "Exporte (CSV/PDF)",
       "pricing.pro.l4": "Priority Support light",
       "pricing.pro.l5": "Preis wegen Multi-User-Zugang",
-      "pricing.pro.price": "€12",
+      "pricing.pro.price": "€11.99",
       "pricing.pro.cta": "Family starten",
       "pricing.ai.title": "Business",
       "pricing.ai.l1": "Erweiterte Analysen + Cashflow",
@@ -619,7 +619,7 @@
       "pricing.ai.l3": "KI-Insights und Wochen-Reports",
       "pricing.ai.l4": "Exporte und Reporting",
       "pricing.ai.l5": "Preis wegen tiefer Analytik & KI",
-      "pricing.ai.price": "€30",
+      "pricing.ai.price": "€29.99",
       "pricing.ai.cta": "Business starten",
       "pricing.per": "/Monat",
 
@@ -782,7 +782,7 @@
       "pricing.pro.l3": "Экспорт (CSV/PDF)",
       "pricing.pro.l4": "Лёгкий приоритетный саппорт",
       "pricing.pro.l5": "Цена за мультидоступ",
-      "pricing.pro.price": "€12",
+      "pricing.pro.price": "€11.99",
       "pricing.pro.cta": "Начать Family",
       "pricing.ai.title": "Business",
       "pricing.ai.l1": "Расширенная аналитика и cash-flow",
@@ -790,7 +790,7 @@
       "pricing.ai.l3": "ИИ‑инсайты и недельные сводки",
       "pricing.ai.l4": "Экспорты и отчётность",
       "pricing.ai.l5": "Цена за глубокую аналитику и ИИ",
-      "pricing.ai.price": "€30",
+      "pricing.ai.price": "€29.99",
       "pricing.ai.cta": "Начать Business",
       "pricing.per": "/мес",
 
@@ -1002,4 +1002,5 @@ if (registerForm) {
     alert("Form is valid (next: backend)");
   });
 }
+
 
