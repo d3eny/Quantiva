@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
- <head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Quantiva — AI Accounting for Personal Finance</title>
@@ -17,6 +17,7 @@
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
+
   <body>
     <!-- HEADER -->
     <header class="header" data-header>
@@ -65,6 +66,7 @@
         </div>
       </div>
     </header>
+
     <main id="top">
       <!-- HERO -->
       <section class="hero">
@@ -102,6 +104,7 @@
               </div>
             </div>
           </div>
+
           <!-- Right preview panel -->
           <div class="hero__panel" aria-label="Dashboard preview">
             <div class="panel is-loading" data-panel>
@@ -109,39 +112,20 @@
                 <div class="bubble" data-i18n="panel.title">Overview</div>
                 <div class="bubble bubble--muted" data-i18n="panel.chip">December</div>
               </div>
+
               <!-- Scenario demo toggle -->
               <div class="seg" role="tablist" aria-label="Scenario demo" data-seg>
-                <button
-                  class="seg__btn is-active"
-                  type="button"
-                  role="tab"
-                  aria-selected="true"
-                  data-scenario="student"
-                  data-i18n="demo.student"
-                >
+                <button class="seg__btn is-active" type="button" role="tab" aria-selected="true" data-scenario="student" data-i18n="demo.student">
                   Student
                 </button>
-                <button
-                  class="seg__btn"
-                  type="button"
-                  role="tab"
-                  aria-selected="false"
-                  data-scenario="family"
-                  data-i18n="demo.family"
-                >
+                <button class="seg__btn" type="button" role="tab" aria-selected="false" data-scenario="family" data-i18n="demo.family">
                   Family
                 </button>
-                <button
-                  class="seg__btn"
-                  type="button"
-                  role="tab"
-                  aria-selected="false"
-                  data-scenario="business"
-                  data-i18n="demo.business"
-                >
+                <button class="seg__btn" type="button" role="tab" aria-selected="false" data-scenario="business" data-i18n="demo.business">
                   Business
                 </button>
               </div>
+
               <div class="cards">
                 <div class="card" tabindex="0">
                   <div class="card__label" data-i18n="panel.balance.label">Balance</div>
@@ -160,6 +144,7 @@
                   <div class="card__hint" data-i18n="panel.spend.hint">−1.1% this week</div>
                 </div>
               </div>
+
               <div class="chart" aria-label="Weekly trend" data-chart>
                 <div class="chart__row">
                   <div class="chart__label" data-i18n="panel.chart.mon">Mon</div>
@@ -196,7 +181,8 @@
                     <span class="bar__fill" style="width: 66%"></span>
                   </div>
                 </div>
-                <!-- Empty state (toggled by JS) -->
+
+                <!-- Empty state -->
                 <div class="empty" data-empty>
                   <div class="empty__title" data-i18n="empty.title">No data yet</div>
                   <div class="empty__text" data-i18n="empty.text">
@@ -204,10 +190,10 @@
                   </div>
                 </div>
               </div>
+
               <div class="ai-tip" data-ai>
                 <div class="ai-tip__row">
                   <div class="ai-tip__badge" data-i18n="panel.aitip.badge">AI tip</div>
-                  <!-- AI reasoning preview -->
                   <button class="ai-why" type="button" data-ai-why aria-label="Why this suggestion?">
                     <span data-i18n="ai.why">Why?</span>
                   </button>
@@ -225,6 +211,7 @@
                   Enable AI assistant
                 </button>
               </div>
+
             </div>
           </div>
         </div>
@@ -363,6 +350,7 @@
               </div>
             </div>
           </div>
+
           <div class="trust-grid" data-reveal>
             <div class="trust">
               <div class="bubble bubble--muted" data-i18n="ai.title">How AI works</div>
@@ -602,13 +590,10 @@
 
     <div class="toast" aria-live="polite" aria-atomic="true" id="toast"></div>
 
-        <!-- SUPABASE SDK (обязательно ПЕРЕД app.js) -->
+    <!-- ✅ SUPABASE SDK (обязательно ПЕРЕД app.js) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Твой основной JS -->
+    <!-- ✅ Ваш основной JS -->
     <script src="app.js"></script>
   </body>
 </html>
-
-
-
