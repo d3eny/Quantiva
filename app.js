@@ -17,19 +17,15 @@ const supabase = window.supabase.createClient(
 
 (() => {
   "use strict";
-
   /* -----------------------------
      Helpers
   ----------------------------- */
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-
   const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
-
   function prefersReducedMotion() {
     return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
-
   const LANG_KEY = "quantiva_lang";
 
   /* -----------------------------
@@ -40,13 +36,10 @@ const supabase = window.supabase.createClient(
   let acc = 0; // accumulate scroll to avoid jitter
   const HIDE_AFTER = 90; // px
   const SHOW_AFTER = 24; // px
-
   function onScrollHeader() {
     if (!header) return;
-
     const y = window.scrollY || 0;
     const dy = y - lastY;
-
     // near top -> always show
     if (y < 8) {
       header.classList.remove("is-hidden");
@@ -54,13 +47,11 @@ const supabase = window.supabase.createClient(
       lastY = y;
       return;
     }
-
     // ignore tiny movements
     if (Math.abs(dy) < 2) {
       lastY = y;
       return;
     }
-
     // scrolling down -> hide
     if (dy > 0) {
       acc = clamp(acc + dy, 0, 999);
@@ -70,10 +61,8 @@ const supabase = window.supabase.createClient(
       acc = clamp(acc + dy, -999, 999);
       if (acc < -SHOW_AFTER) header.classList.remove("is-hidden");
     }
-
     lastY = y;
   }
-
   window.addEventListener("scroll", onScrollHeader, { passive: true });
 
   /* -----------------------------
@@ -81,25 +70,21 @@ const supabase = window.supabase.createClient(
   ----------------------------- */
   const burger = $("[data-burger]");
   const mobileNav = $("[data-mobile-nav]");
-
   function setMobile(open) {
     if (!mobileNav) return;
     mobileNav.style.display = open ? "block" : "none";
     if (burger) burger.setAttribute("aria-expanded", String(open));
   }
-
   if (burger && mobileNav) {
     setMobile(false);
     burger.addEventListener("click", () => {
       const isOpen = mobileNav.style.display === "block";
       setMobile(!isOpen);
     });
-
     // close after clicking a link
     $$(".mobile-nav a", mobileNav).forEach((a) => {
       a.addEventListener("click", () => setMobile(false));
     });
-
     // close on outside click
     document.addEventListener("click", (e) => {
       if (mobileNav.style.display !== "block") return;
@@ -126,7 +111,6 @@ const supabase = window.supabase.createClient(
       },
       { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
     );
-
     revealEls.forEach((el) => io.observe(el));
   } else {
     // fallback
@@ -159,7 +143,6 @@ const supabase = window.supabase.createClient(
         spending: { en: "−1.1% this week", de: "−1,1% diese Woche", ru: "−1,1% на этой неделе" },
       },
     },
-
     family: {
       balance: "€ 2,105.70",
       spending: "€ 1,534.30",
@@ -205,29 +188,24 @@ const supabase = window.supabase.createClient(
       fill.style.width = `${clamp(v, 6, 96)}%`;
     });
   }
-
   function setKPIs({ balance, spending }) {
     if (kpiBalance) kpiBalance.textContent = balance;
     if (kpiSpending) kpiSpending.textContent = spending;
   }
-
   function setTip(text) {
     if (aiText) aiText.textContent = text;
   }
-
   function setHints(key) {
     const sc = scenarios[key];
     const lang = localStorage.getItem(LANG_KEY) || "en";
     if (kpiBalanceHint && sc?.hints?.balance?.[lang]) kpiBalanceHint.textContent = sc.hints.balance[lang];
     if (kpiSpendingHint && sc?.hints?.spending?.[lang]) kpiSpendingHint.textContent = sc.hints.spending[lang];
   }
-
   function setEmptyState(on) {
     if (!empty) return;
     empty.classList.toggle("is-on", !!on);
     if (chart) chart.classList.toggle("is-empty", !!on);
   }
-
   function applyScenario(key) {
     const sc = scenarios[key] || scenarios.student;
     currentScenario = key;
@@ -237,16 +215,12 @@ const supabase = window.supabase.createClient(
     setHints(key);
     setEmptyState(sc.showEmpty);
   }
-
   function fakeLoadPanel() {
     if (!panel) return;
-
     panel.classList.add("is-loading");
     setEmptyState(false);
-
     // smooth “premium” timing (not too fast, not too slow)
     const t = prefersReducedMotion() ? 0 : 1100;
-
     window.setTimeout(() => {
       panel.classList.remove("is-loading");
     }, t);
@@ -258,14 +232,12 @@ const supabase = window.supabase.createClient(
     seg.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-scenario]");
       if (!btn) return;
-
       const key = btn.getAttribute("data-scenario");
       $$(".seg__btn", seg).forEach((b) => {
         const active = b === btn;
         b.classList.toggle("is-active", active);
         b.setAttribute("aria-selected", String(active));
       });
-
       // quick micro “loading” for demo switch to feel app-like
       if (panel && !prefersReducedMotion()) {
         panel.classList.add("is-loading");
@@ -288,7 +260,6 @@ const supabase = window.supabase.createClient(
   ----------------------------- */
   const whyBtn = $("[data-ai-why]");
   const whyTip = $("[data-ai-tip]");
-
   function closeTip() {
     if (!whyTip) return;
     whyTip.classList.remove("is-open");
@@ -297,13 +268,11 @@ const supabase = window.supabase.createClient(
     if (!whyTip) return;
     whyTip.classList.toggle("is-open");
   }
-
   if (whyBtn && whyTip) {
     whyBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       toggleTip();
     });
-
     document.addEventListener("click", (e) => {
       if (!whyTip.classList.contains("is-open")) return;
       const t = e.target;
@@ -311,7 +280,6 @@ const supabase = window.supabase.createClient(
       if (t === whyTip || whyTip.contains(t)) return;
       closeTip();
     });
-
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeTip();
     });
@@ -332,7 +300,6 @@ const supabase = window.supabase.createClient(
       "nav.faq": "FAQ",
       "nav.signin": "Sign in",
       "nav.getstarted": "Get started",
-
       "hero.pill": "Next-gen AI accounting",
       "hero.title1": "Track income and expenses.",
       "hero.title2": "Get AI-powered savings advice.",
@@ -345,7 +312,6 @@ const supabase = window.supabase.createClient(
       "hero.stat2.label": "fast transaction logging",
       "hero.stat3.value": "AI",
       "hero.stat3.label": "personalized recommendations",
-
       "panel.title": "Overview",
       "panel.chip": "December",
       "demo.student": "Student",
@@ -363,14 +329,11 @@ const supabase = window.supabase.createClient(
       "panel.aitip.badge": "AI tip",
       "panel.aitip.cta": "Enable AI assistant",
       "panel.aitip.text": "Try limiting food delivery to once a week — estimated savings ≈ €65/month.",
-
       "ai.why": "Why?",
       "ai.tip.title": "Reasoning preview",
       "ai.tip.text": "Based on your food & transport categories over the last 30 days, delivery spikes are driving most of the variance.",
-
       "empty.title": "No data yet",
       "empty.text": "Add your first transaction to unlock insights and AI recommendations.",
-
       "how.title": "How Quantiva works",
       "how.desc": "Three steps from chaos to clarity.",
       "how.s1.title": "Add income & expenses",
@@ -379,7 +342,6 @@ const supabase = window.supabase.createClient(
       "how.s2.text": "Understand trends and stay in control of your budget.",
       "how.s3.title": "Get AI savings advice",
       "how.s3.text": "Receive practical actions based on your aggregated patterns.",
-
       "features.title": "What Quantiva does",
       "features.desc": "Minimal clicks. Maximum clarity.",
       "features.f1.title": "Income & expenses",
@@ -388,7 +350,6 @@ const supabase = window.supabase.createClient(
       "features.f2.text": "Daily and monthly trends, clear summaries, and budget control.",
       "features.f3.title": "AI recommendations",
       "features.f3.text": "The assistant reviews your spending patterns and suggests concrete savings actions.",
-
       "aud.title": "Who it’s built for",
       "aud.desc": "Designed for real-life money routines.",
       "aud.a1.title": "Students",
@@ -397,13 +358,11 @@ const supabase = window.supabase.createClient(
       "aud.a2.text": "Track revenue, expenses and cash flow with clarity.",
       "aud.a3.title": "Families",
       "aud.a3.text": "Budget monthly expenses with clarity and goals.",
-
       "security.title": "Security by design",
       "security.desc": "We structure the system so it can scale safely from day one. Today it’s a landing page — next it becomes a full product.",
       "security.b1": "Clear separation between public pages and your private app",
       "security.b2": "Session-based auth and protected forms",
       "security.b3": "Ready for database storage and audit logging",
-
       "roadmap.title": "Product roadmap",
       "roadmap.s1.title": "Landing + Auth",
       "roadmap.s1.text": "Sign up / sign in and basic navigation.",
@@ -411,22 +370,18 @@ const supabase = window.supabase.createClient(
       "roadmap.s2.text": "Income/expense logging, filters, daily/monthly reports.",
       "roadmap.s3.title": "AI Assistant",
       "roadmap.s3.text": "OpenAI-powered advice, using aggregated transaction context.",
-
       "ai.title": "How AI works",
       "ai.b1": "AI uses aggregated totals and category trends (not raw bank credentials).",
       "ai.b2": "You can enable/disable AI at any time.",
       "ai.b3": "Advice is actionable, not generic.",
-
       "privacy.title": "Privacy first",
       "privacy.b1": "No bank login required.",
       "privacy.b2": "Built with secure storage and audit-ready structure.",
       "privacy.b3": "EU-ready approach (GDPR-aligned by design).",
-
       "next.title": "What’s next",
       "next.b1": "Budgets, goals and spending limits.",
       "next.b2": "Exports (CSV/PDF) and reporting.",
       "next.b3": "Smarter AI insights with weekly summaries.",
-
       "pricing.title": "Pricing",
       "pricing.desc": "Simple tiers, straightforward upgrades.",
       "pricing.free.title": "Student",
@@ -454,7 +409,6 @@ const supabase = window.supabase.createClient(
       "pricing.ai.price": "€29.99",
       "pricing.ai.cta": "Start Business",
       "pricing.per": "/mo",
-
       "faq.title": "FAQ",
       "faq.desc": "Quick answers to common questions.",
       "faq.q1": "Is this a finished product?",
@@ -470,21 +424,17 @@ const supabase = window.supabase.createClient(
       "faq.a5": "The architecture is designed for secure storage, protected sessions, and audit-ready logging as the product evolves.",
       "faq.q6": "Is there a low-cost plan?",
       "faq.a6": "Yes. Student is €2.99/mo, with Family and Business upgrades when you need more collaboration or AI insights.",
-
       "cta.title": "Ready to begin?",
       "cta.text": "Create an account and we’ll build the dashboard next.",
       "cta.button": "Get started",
-
       "footer.rights": "Quantiva. All rights reserved.",
       "footer.micro": "Privacy-first • No bank credentials required • EU-ready",
-
       "login.title": "Sign in",
       "login.email": "Email",
       "login.password": "Password",
       "login.submit": "Sign in",
       "login.hint1": "New here?",
       "login.hint2": "Create an account",
-
       "signup.title": "Create your account",
       "signup.name": "Name",
       "signup.email": "Email",
@@ -493,7 +443,6 @@ const supabase = window.supabase.createClient(
       "signup.hint1": "Already have an account?",
       "signup.hint2": "Sign in",
     },
-
     de: {
       "nav.features": "Funktionen",
       "nav.security": "Sicherheit",
@@ -501,7 +450,6 @@ const supabase = window.supabase.createClient(
       "nav.faq": "FAQ",
       "nav.signin": "Anmelden",
       "nav.getstarted": "Loslegen",
-
       "hero.pill": "KI-Buchhaltung der nächsten Generation",
       "hero.title1": "Einnahmen und Ausgaben im Blick.",
       "hero.title2": "KI‑Sparvorschläge, die wirken.",
@@ -515,7 +463,6 @@ const supabase = window.supabase.createClient(
       "hero.stat2.label": "schnelles Erfassen",
       "hero.stat3.value": "KI",
       "hero.stat3.label": "personalisierte Insights",
-
       "panel.title": "Übersicht",
       "panel.chip": "Dezember",
       "demo.student": "Student",
@@ -533,15 +480,12 @@ const supabase = window.supabase.createClient(
       "panel.aitip.badge": "KI‑Tipp",
       "panel.aitip.cta": "KI‑Assistent aktivieren",
       "panel.aitip.text": "Begrenze Lieferdienste auf 1×/Woche — geschätzte Ersparnis ≈ 65 €/Monat.",
-
       "ai.why": "Warum?",
       "ai.tip.title": "Begründung (Vorschau)",
       "ai.tip.text":
         "Basierend auf deinen Kategorien Essen & Transport der letzten 30 Tage treiben Lieferdienste die größten Schwankungen.",
-
       "empty.title": "Noch keine Daten",
       "empty.text": "Füge deine erste Transaktion hinzu, um Insights und KI‑Empfehlungen zu erhalten.",
-
       "how.title": "So funktioniert Quantiva",
       "how.desc": "Drei Schritte von Chaos zu Klarheit.",
       "how.s1.title": "Einnahmen & Ausgaben erfassen",
@@ -550,7 +494,6 @@ const supabase = window.supabase.createClient(
       "how.s2.text": "Trends verstehen und Budget steuern.",
       "how.s3.title": "KI‑Sparvorschläge erhalten",
       "how.s3.text": "Praktische Aktionen aus aggregierten Mustern.",
-
       "features.title": "Was Quantiva macht",
       "features.desc": "Wenige Klicks. Maximale Klarheit.",
       "features.f1.title": "Einnahmen & Ausgaben",
@@ -559,7 +502,6 @@ const supabase = window.supabase.createClient(
       "features.f2.text": "Tages- und Monatstrends, klare Zusammenfassungen und Budgetkontrolle.",
       "features.f3.title": "KI‑Empfehlungen",
       "features.f3.text": "Die KI analysiert Muster und liefert konkrete Sparaktionen.",
-
       "aud.title": "Für wen gebaut",
       "aud.desc": "Für echte Finanz‑Routinen im Alltag.",
       "aud.a1.title": "Studierende",
@@ -568,14 +510,12 @@ const supabase = window.supabase.createClient(
       "aud.a2.text": "Einnahmen, Ausgaben und Cashflow klar verfolgen.",
       "aud.a3.title": "Familien",
       "aud.a3.text": "Monatsbudget mit Zielen und Klarheit managen.",
-
       "security.title": "Sicherheit by design",
       "security.desc":
         "Wir bauen die Struktur so, dass sie sicher skalieren kann. Heute Landing Page — morgen ein Produkt.",
       "security.b1": "Klare Trennung zwischen öffentlichen Seiten und privater App",
       "security.b2": "Sessions & geschützte Formulare",
       "security.b3": "Bereit für Datenbank & Audit‑Logging",
-
       "roadmap.title": "Roadmap",
       "roadmap.s1.title": "Landing + Auth",
       "roadmap.s1.text": "Registrieren/Anmelden und Navigation.",
@@ -583,22 +523,18 @@ const supabase = window.supabase.createClient(
       "roadmap.s2.text": "Erfassung, Filter, Tages-/Monatsreports.",
       "roadmap.s3.title": "KI‑Assistent",
       "roadmap.s3.text": "Beratung auf Basis aggregierter Daten.",
-
       "ai.title": "So arbeitet die KI",
       "ai.b1": "Die KI nutzt aggregierte Summen und Kategorien‑Trends (keine Bank‑Logins).",
       "ai.b2": "Du kannst KI jederzeit an/aus schalten.",
       "ai.b3": "Empfehlungen sind konkret, nicht generisch.",
-
       "privacy.title": "Privacy first",
       "privacy.b1": "Kein Bank‑Login nötig.",
       "privacy.b2": "Sichere Speicherung & auditfähige Struktur.",
       "privacy.b3": "EU‑ready (GDPR‑aligned by design).",
-
       "next.title": "Als Nächstes",
       "next.b1": "Budgets, Ziele und Limits.",
       "next.b2": "Exporte (CSV/PDF) & Reporting.",
       "next.b3": "Wöchentliche KI‑Zusammenfassungen.",
-
       "pricing.title": "Preise",
       "pricing.desc": "Einfache Pakete, klare Upgrades.",
       "pricing.free.title": "Student",
@@ -626,7 +562,6 @@ const supabase = window.supabase.createClient(
       "pricing.ai.price": "€29.99",
       "pricing.ai.cta": "Business starten",
       "pricing.per": "/Monat",
-
       "faq.title": "FAQ",
       "faq.desc": "Kurze Antworten auf häufige Fragen.",
       "faq.q1": "Ist das ein fertiges Produkt?",
@@ -641,21 +576,17 @@ const supabase = window.supabase.createClient(
       "faq.a5": "Die Architektur ist für sichere Speicherung, Sessions und auditfähige Logs ausgelegt.",
       "faq.q6": "Gibt es einen günstigen Einstieg?",
       "faq.a6": "Ja. Student kostet 2,99 €/Monat, Family und Business sind für Zusammenarbeit und KI‑Insights erweiterbar.",
-
       "cta.title": "Bereit zu starten?",
       "cta.text": "Erstelle ein Konto – als Nächstes bauen wir das Dashboard.",
       "cta.button": "Loslegen",
-
       "footer.rights": "Quantiva. Alle Rechte vorbehalten.",
       "footer.micro": "Privacy-first • Kein Bank‑Login • EU‑ready",
-
       "login.title": "Anmelden",
       "login.email": "E‑Mail",
       "login.password": "Passwort",
       "login.submit": "Anmelden",
       "login.hint1": "Neu hier?",
       "login.hint2": "Konto erstellen",
-
       "signup.title": "Konto erstellen",
       "signup.name": "Name",
       "signup.email": "E‑Mail",
@@ -664,7 +595,6 @@ const supabase = window.supabase.createClient(
       "signup.hint1": "Schon ein Konto?",
       "signup.hint2": "Anmelden",
     },
-
     ru: {
       "nav.features": "Функции",
       "nav.security": "Безопасность",
@@ -672,7 +602,6 @@ const supabase = window.supabase.createClient(
       "nav.faq": "FAQ",
       "nav.signin": "Войти",
       "nav.getstarted": "Начать",
-
       "hero.pill": "Новая ИИ‑бухгалтерия",
       "hero.title1": "Учитывай доходы и расходы.",
       "hero.title2": "Получай ИИ‑советы по экономии.",
@@ -686,7 +615,6 @@ const supabase = window.supabase.createClient(
       "hero.stat2.label": "быстрый ввод",
       "hero.stat3.value": "ИИ",
       "hero.stat3.label": "персональные рекомендации",
-
       "panel.title": "Overview",
       "panel.chip": "December",
       "demo.student": "Student",
@@ -704,15 +632,12 @@ const supabase = window.supabase.createClient(
       "panel.aitip.badge": "ИИ‑совет",
       "panel.aitip.cta": "Включить ИИ‑ассистента",
       "panel.aitip.text": "Ограничь доставку еды до 1 раза в неделю — экономия ≈ €65/мес.",
-
       "ai.why": "Почему?",
       "ai.tip.title": "Причина (превью)",
       "ai.tip.text":
         "По категориям Еда и Транспорт за последние 30 дней видно, что пики доставки создают основные колебания.",
-
       "empty.title": "Пока нет данных",
       "empty.text": "Добавь первую транзакцию, чтобы открыть инсайты и ИИ‑рекомендации.",
-
       "how.title": "Как работает Quantiva",
       "how.desc": "Три шага от хаоса к ясности.",
       "how.s1.title": "Добавь доходы и расходы",
@@ -721,7 +646,6 @@ const supabase = window.supabase.createClient(
       "how.s2.text": "Понимай тренды и держи бюджет од контролем.",
       "how.s3.title": "Получай ИИ‑советы по экономии",
       "how.s3.text": "Практичные действия на основе агрегированных паттернов.",
-
       "features.title": "Что умеет Quantiva",
       "features.desc": "Минимум кликов. Максимум ясности.",
       "features.f1.title": "Доходы и расходы",
@@ -730,7 +654,6 @@ const supabase = window.supabase.createClient(
       "features.f2.text": "Тренды по дням/месяцам, понятные сводки и контроль бюджета.",
       "features.f3.title": "ИИ‑рекомендации",
       "features.f3.text": "Ассистент анализирует паттерны и предлагает конкретные шаги экономии.",
-
       "aud.title": "Для кого сделано",
       "aud.desc": "Под реальные финансовые привычки.",
       "aud.a1.title": "Студенты",
@@ -739,14 +662,12 @@ const supabase = window.supabase.createClient(
       "aud.a2.text": "Отслеживайте выручку, расходы и денежный поток без хаоса.",
       "aud.a3.title": "Семьи",
       "aud.a3.text": "Понятный месячный бюджет и цели.",
-
       "security.title": "Безопасность по умолчанию",
       "security.desc":
         "Мы строим структуру так, чтобы продукт безопасно масштабировался. Сегодня лендинг — завтра полноценный продукт.",
       "security.b1": "Разделение публичной части и приватной app",
       "security.b2": "Сессии и защищённые формы",
       "security.b3": "Готово к БД и аудит‑логам",
-
       "roadmap.title": "Roadmap",
       "roadmap.s1.title": "Landing + Auth",
       "roadmap.s1.text": "Регистрация/вход и навигация.",
@@ -754,22 +675,18 @@ const supabase = window.supabase.createClient(
       "roadmap.s2.text": "Ввод, фильтры, отчеты по дням/месяцам.",
       "roadmap.s3.title": "ИИ‑ассистент",
       "roadmap.s3.text": "Советы на основе агрегированного контекста.",
-
       "ai.title": "Как работает ИИ",
       "ai.b1": "ИИ использует агрегированные суммы и тренды категорий (без банковских логинов).",
       "ai.b2": "ИИ можно включать/выключать в любой момент.",
       "ai.b3": "Советы конкретные, а не «общие слова».",
-
       "privacy.title": "Privacy first",
       "privacy.b1": "Подключение банка не требуется.",
       "privacy.b2": "Безопасное хранение и структура для аудита.",
       "privacy.b3": "EU‑ready подход (GDPR‑aligned).",
-
       "next.title": "Что дальше",
       "next.b1": "Бюджеты, цели и лимиты.",
       "next.b2": "Экспорт (CSV/PDF) и отчётность.",
       "next.b3": "Умные недельные ИИ‑сводки.",
-
       "pricing.title": "Цены",
       "pricing.desc": "Простые планы и понятные апгрейды.",
       "pricing.free.title": "Student",
@@ -797,7 +714,6 @@ const supabase = window.supabase.createClient(
       "pricing.ai.price": "€29.99",
       "pricing.ai.cta": "Начать Business",
       "pricing.per": "/мес",
-
       "faq.title": "FAQ",
       "faq.desc": "Короткие ответы на частые вопросы.",
       "faq.q1": "Это уже готовый продукт?",
@@ -812,21 +728,17 @@ const supabase = window.supabase.createClient(
       "faq.a5": "Архитектура рассчитана на безопасное хранение, сессии и аудит‑логи по мере развития продукта.",
       "faq.q6": "Есть недорогой план?",
       "faq.a6": "Да. Student стоит €2,99/мес, Family и Business — для совместной работы и ИИ‑инсайтов.",
-
       "cta.title": "Готов начать?",
       "cta.text": "Создай аккаунт — и дальше мы строим dashboard.",
       "cta.button": "Начать",
-
       "footer.rights": "Quantiva. Все права защищены.",
       "footer.micro": "Privacy-first • Без банковских логинов • EU‑ready",
-
       "login.title": "Вход",
       "login.email": "Email",
       "login.password": "Пароль",
       "login.submit": "Войти",
       "login.hint1": "Впервые здесь?",
       "login.hint2": "Создать аккаунт",
-
       "signup.title": "Создать аккаунт",
       "signup.name": "Имя",
       "signup.email": "Email",
@@ -841,14 +753,12 @@ const supabase = window.supabase.createClient(
     const L = dict[lang] ? lang : "en";
     localStorage.setItem(LANG_KEY, L);
     if (langLabel) langLabel.textContent = L.toUpperCase();
-
     const nodes = $$("[data-i18n]");
     nodes.forEach((el) => {
       const key = el.getAttribute("data-i18n");
       const val = dict[L][key];
       if (typeof val === "string") el.textContent = val;
     });
-
     setHints(currentScenario);
     const sc = scenarios[currentScenario] || scenarios.student;
     setTip(sc.tip?.[L] || sc.tip);
@@ -864,14 +774,12 @@ const supabase = window.supabase.createClient(
       e.stopPropagation();
       toggleLangMenu(!langMenu.classList.contains("is-open"));
     });
-
     langMenu.addEventListener("click", (e) => {
       const item = e.target.closest("[data-set-lang]");
       if (!item) return;
       setLang(item.getAttribute("data-set-lang"));
       toggleLangMenu(false);
     });
-
     document.addEventListener("click", () => toggleLangMenu(false));
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") toggleLangMenu(false);
@@ -892,7 +800,6 @@ const supabase = window.supabase.createClient(
   ----------------------------- */
   const toast = $("#toast");
   let toastTimer = null;
-
   function showToast(msg) {
     if (!toast) return;
     toast.textContent = msg;
@@ -900,7 +807,7 @@ const supabase = window.supabase.createClient(
     clearTimeout(toastTimer);
     toastTimer = window.setTimeout(() => {
       toast.style.display = "none";
-    }, 2200);
+    }, 2600);
   }
 
   const modals = $$("[data-modal]");
@@ -911,7 +818,6 @@ const supabase = window.supabase.createClient(
     // lock scroll
     document.documentElement.style.overflow = "hidden";
   }
-
   function closeAllModals() {
     modals.forEach((m) => m.classList.remove("is-open"));
     document.documentElement.style.overflow = "";
@@ -930,7 +836,6 @@ const supabase = window.supabase.createClient(
   document.addEventListener("click", (e) => {
     const close = e.target.closest("[data-close]");
     if (close) closeAllModals();
-
     const swap = e.target.closest("[data-swap]");
     if (swap) {
       const to = swap.getAttribute("data-swap");
@@ -946,23 +851,146 @@ const supabase = window.supabase.createClient(
     }
   });
 
-  // forms (demo)
+  /* -----------------------------
+     Supabase Auth wiring (REAL)
+  ----------------------------- */
   const loginForm = $("#loginForm");
   const signupForm = $("#signupForm");
 
-  if (loginForm) {
-    loginForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      closeAllModals();
-      showToast("Signed in (demo).");
+  // Buttons that open login/signup (we will rewire "Sign in" -> "Sign out" when authed)
+  const signinBtns = $$('[data-open="login"]');
+  const signupBtns = $$('[data-open="signup"]');
+
+  async function refreshAuthUI(session) {
+    // If logged in -> turn "Sign in" button into "Sign out"
+    const isAuthed = !!session?.user;
+
+    signinBtns.forEach((btn) => {
+      // keep i18n key but override visible text (simple + works now)
+      btn.textContent = isAuthed ? "Sign out" : (dict[localStorage.getItem(LANG_KEY) || "en"]["nav.signin"] || "Sign in");
+    });
+
+    // optional: make "Get started" open signup only when not authed
+    signupBtns.forEach((btn) => {
+      if (!btn) return;
+      btn.textContent = isAuthed
+        ? "Account"
+        : (dict[localStorage.getItem(LANG_KEY) || "en"]["nav.getstarted"] || "Get started");
     });
   }
 
-  if (signupForm) {
-    signupForm.addEventListener("submit", (e) => {
+  async function getSessionSafe() {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) return null;
+      return data?.session || null;
+    } catch {
+      return null;
+    }
+  }
+
+  // initial auth state
+  getSessionSafe().then((s) => refreshAuthUI(s));
+
+  // listen to auth changes
+  supabase.auth.onAuthStateChange((_event, session) => {
+    refreshAuthUI(session);
+  });
+
+  // Intercept click on sign-in buttons when authed -> sign out
+  signinBtns.forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const session = await getSessionSafe();
+      if (!session?.user) return; // normal behavior (modal opens via existing handler)
+      // authed -> sign out instead of opening login modal
       e.preventDefault();
-      closeAllModals();
-      showToast("Account created (demo).");
+      e.stopPropagation();
+      try {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          showToast(error.message || "Sign out failed.");
+          return;
+        }
+        closeAllModals();
+        showToast("Signed out.");
+      } catch (err) {
+        showToast("Sign out failed.");
+      }
+    });
+  });
+
+  // LOGIN (real)
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(loginForm);
+      const email = String(fd.get("email") || "").trim();
+      const password = String(fd.get("password") || "");
+
+      if (!email || !password) {
+        showToast("Please enter email and password.");
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          showToast(error.message || "Sign in failed.");
+          return;
+        }
+        closeAllModals();
+        await refreshAuthUI(data?.session || null);
+        showToast("Signed in.");
+      } catch (err) {
+        showToast("Sign in failed.");
+      }
+    });
+  }
+
+  // SIGNUP (real)
+  if (signupForm) {
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(signupForm);
+      const name = String(fd.get("name") || "").trim();
+      const email = String(fd.get("email") || "").trim();
+      const password = String(fd.get("password") || "");
+
+      if (!name || !email || !password) {
+        showToast("Please fill all fields.");
+        return;
+      }
+      if (password.length < 6) {
+        showToast("Password must be at least 6 characters.");
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { name },
+          },
+        });
+
+        if (error) {
+          showToast(error.message || "Sign up failed.");
+          return;
+        }
+
+        closeAllModals();
+
+        // If email confirmations are ON in Supabase, session may be null
+        if (!data?.session) {
+          showToast("Account created. Please confirm your email.");
+        } else {
+          await refreshAuthUI(data.session);
+          showToast("Account created & signed in.");
+        }
+      } catch (err) {
+        showToast("Sign up failed.");
+      }
     });
   }
 
@@ -971,42 +999,30 @@ const supabase = window.supabase.createClient(
      (kept OFF by default; can be enabled in future)
   ----------------------------- */
   // setEmptyState(true);
-
 })();
 
+/* ---- your existing overlay/register code kept as-is (no losses) ---- */
 const overlay = document.getElementById("auth-overlay");
-
 function openRegister() {
   if (overlay) overlay.classList.remove("hidden");
 }
-
 function closeRegister() {
   if (overlay) overlay.classList.add("hidden");
 }
-
 const registerForm = document.getElementById("registerForm");
-
 if (registerForm) {
   registerForm.addEventListener("submit", (e) => {
     e.preventDefault();
-
     const pass = document.getElementById("password").value;
     const repeat = document.getElementById("passwordRepeat").value;
-
     if (pass.length < 8) {
       alert("Password must be at least 8 characters");
       return;
     }
-
     if (pass !== repeat) {
       alert("Passwords do not match");
       return;
     }
-
     alert("Form is valid (next: backend)");
   });
 }
-
-
-
-
