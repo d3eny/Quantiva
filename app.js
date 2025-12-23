@@ -439,7 +439,7 @@
       "pricing.pro.l3": "Exports (CSV/PDF)",
       "pricing.pro.l4": "Priority support light",
       "pricing.pro.l5": "Priced for multi-user access",
-      "pricing.pro.price": "€12",
+      "pricing.pro.price": "€11.99",
       "pricing.pro.cta": "Start Family",
       "pricing.ai.title": "Business",
       "pricing.ai.l1": "Advanced analytics + cash-flow",
@@ -447,7 +447,7 @@
       "pricing.ai.l3": "AI insights and weekly summaries",
       "pricing.ai.l4": "Exports and reporting",
       "pricing.ai.l5": "Priced for deep analytics and AI",
-      "pricing.ai.price": "€30",
+      "pricing.ai.price": "€29.99",
       "pricing.ai.cta": "Start Business",
       "pricing.per": "/mo",
 
@@ -1002,3 +1002,4 @@ if (registerForm) {
     alert("Form is valid (next: backend)");
   });
 }
+
