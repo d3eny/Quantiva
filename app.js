@@ -1,5 +1,5 @@
 /* =========================================================
-   Quantiva — app.js (control version)
+   Quantiva — app.js (FULL + fixed)
    - Header hide on scroll (Safari-like)
    - Mobile menu toggle
    - Smooth scroll-reveal (IntersectionObserver)
@@ -9,27 +9,38 @@
    - Scenario demo (Student/Family/Business) updates KPIs + chart
    - Language switch (EN/DE/RU) via data-i18n + localStorage
    - Modals (login/signup), swap, close, toast
+   - ✅ Supabase Auth wiring (signup/login/signout + UI refresh)
    ========================================================= */
-const supabase = window.supabase.createClient(
-  "https://towzwaximnwmkeyvthvk.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvd3p3YXhpbW53bWtleXZ0aHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1MTgxMjQsImV4cCI6MjA4MjA5NDEyNH0.UcR2Vo4zQnQSmxG2TfiQvkHK9qRb_3W6g3knXG8PsrI"
-);
 
+/* -----------------------------
+   Supabase client (SAFE init)
+   IMPORTANT: index.html must load:
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+   BEFORE this app.js
+----------------------------- */
+const SUPABASE_URL = "https://towzwaximnwmkeyvthvk.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvd3p3YXhpbW53bWtleXZ0aHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1MTgxMjQsImV4cCI6MjA4MjA5NDEyNH0.UcR2Vo4zQnQSmxG2TfiQvkHK9qRb_3W6g3knXG8PsrI";
 
+const supabase =
+  window.supabase && typeof window.supabase.createClient === "function"
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
+
+// Optional debug helper (does NOT break the page)
 window.testSignup = async () => {
+  if (!supabase) return console.error("Supabase SDK not loaded (check script order).");
   const { data, error } = await supabase.auth.signUp({
     email: "test+" + Date.now() + "@mail.com",
-    password: "12345678"
+    password: "12345678",
   });
-
   console.log("DATA:", data);
   console.log("ERROR:", error);
 };
 
-
-
 (() => {
   "use strict";
+
   /* -----------------------------
      Helpers
   ----------------------------- */
@@ -39,6 +50,7 @@ window.testSignup = async () => {
   function prefersReducedMotion() {
     return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
+
   const LANG_KEY = "quantiva_lang";
 
   /* -----------------------------
@@ -49,31 +61,32 @@ window.testSignup = async () => {
   let acc = 0; // accumulate scroll to avoid jitter
   const HIDE_AFTER = 90; // px
   const SHOW_AFTER = 24; // px
+
   function onScrollHeader() {
     if (!header) return;
     const y = window.scrollY || 0;
     const dy = y - lastY;
-    // near top -> always show
+
     if (y < 8) {
       header.classList.remove("is-hidden");
       acc = 0;
       lastY = y;
       return;
     }
-    // ignore tiny movements
+
     if (Math.abs(dy) < 2) {
       lastY = y;
       return;
     }
-    // scrolling down -> hide
+
     if (dy > 0) {
       acc = clamp(acc + dy, 0, 999);
       if (acc > HIDE_AFTER) header.classList.add("is-hidden");
     } else {
-      // scrolling up -> show
       acc = clamp(acc + dy, -999, 999);
       if (acc < -SHOW_AFTER) header.classList.remove("is-hidden");
     }
+
     lastY = y;
   }
   window.addEventListener("scroll", onScrollHeader, { passive: true });
@@ -83,26 +96,29 @@ window.testSignup = async () => {
   ----------------------------- */
   const burger = $("[data-burger]");
   const mobileNav = $("[data-mobile-nav]");
+
   function setMobile(open) {
     if (!mobileNav) return;
     mobileNav.style.display = open ? "block" : "none";
     if (burger) burger.setAttribute("aria-expanded", String(open));
   }
+
   if (burger && mobileNav) {
     setMobile(false);
+
     burger.addEventListener("click", () => {
       const isOpen = mobileNav.style.display === "block";
       setMobile(!isOpen);
     });
-    // close after clicking a link
+
     $$(".mobile-nav a", mobileNav).forEach((a) => {
       a.addEventListener("click", () => setMobile(false));
     });
-    // close on outside click
+
     document.addEventListener("click", (e) => {
       if (mobileNav.style.display !== "block") return;
       const t = e.target;
-      if (t === burger || burger.contains(t)) return;
+      if (t === burger || (burger && burger.contains(t))) return;
       if (t === mobileNav || mobileNav.contains(t)) return;
       setMobile(false);
     });
@@ -126,7 +142,6 @@ window.testSignup = async () => {
     );
     revealEls.forEach((el) => io.observe(el));
   } else {
-    // fallback
     revealEls.forEach((el) => el.classList.add("is-in"));
   }
 
@@ -201,57 +216,63 @@ window.testSignup = async () => {
       fill.style.width = `${clamp(v, 6, 96)}%`;
     });
   }
+
   function setKPIs({ balance, spending }) {
     if (kpiBalance) kpiBalance.textContent = balance;
     if (kpiSpending) kpiSpending.textContent = spending;
   }
+
   function setTip(text) {
     if (aiText) aiText.textContent = text;
   }
+
   function setHints(key) {
     const sc = scenarios[key];
     const lang = localStorage.getItem(LANG_KEY) || "en";
     if (kpiBalanceHint && sc?.hints?.balance?.[lang]) kpiBalanceHint.textContent = sc.hints.balance[lang];
     if (kpiSpendingHint && sc?.hints?.spending?.[lang]) kpiSpendingHint.textContent = sc.hints.spending[lang];
   }
+
   function setEmptyState(on) {
     if (!empty) return;
     empty.classList.toggle("is-on", !!on);
     if (chart) chart.classList.toggle("is-empty", !!on);
   }
+
   function applyScenario(key) {
     const sc = scenarios[key] || scenarios.student;
     currentScenario = key;
     setKPIs(sc);
     setBars(sc.bars);
-    setTip(sc.tip?.[localStorage.getItem(LANG_KEY) || "en"] || sc.tip);
+    const L = localStorage.getItem(LANG_KEY) || "en";
+    setTip(sc.tip?.[L] || sc.tip);
     setHints(key);
     setEmptyState(sc.showEmpty);
   }
+
   function fakeLoadPanel() {
     if (!panel) return;
     panel.classList.add("is-loading");
     setEmptyState(false);
-    // smooth “premium” timing (not too fast, not too slow)
     const t = prefersReducedMotion() ? 0 : 1100;
     window.setTimeout(() => {
       panel.classList.remove("is-loading");
     }, t);
   }
 
-  /* Scenario segmented control */
   const seg = $("[data-seg]");
   if (seg) {
     seg.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-scenario]");
       if (!btn) return;
       const key = btn.getAttribute("data-scenario");
+
       $$(".seg__btn", seg).forEach((b) => {
         const active = b === btn;
         b.classList.toggle("is-active", active);
         b.setAttribute("aria-selected", String(active));
       });
-      // quick micro “loading” for demo switch to feel app-like
+
       if (panel && !prefersReducedMotion()) {
         panel.classList.add("is-loading");
         window.setTimeout(() => {
@@ -264,7 +285,6 @@ window.testSignup = async () => {
     });
   }
 
-  // init demo
   applyScenario("student");
   fakeLoadPanel();
 
@@ -273,6 +293,7 @@ window.testSignup = async () => {
   ----------------------------- */
   const whyBtn = $("[data-ai-why]");
   const whyTip = $("[data-ai-tip]");
+
   function closeTip() {
     if (!whyTip) return;
     whyTip.classList.remove("is-open");
@@ -281,11 +302,13 @@ window.testSignup = async () => {
     if (!whyTip) return;
     whyTip.classList.toggle("is-open");
   }
+
   if (whyBtn && whyTip) {
     whyBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       toggleTip();
     });
+
     document.addEventListener("click", (e) => {
       if (!whyTip.classList.contains("is-open")) return;
       const t = e.target;
@@ -293,6 +316,7 @@ window.testSignup = async () => {
       if (t === whyTip || whyTip.contains(t)) return;
       closeTip();
     });
+
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeTip();
     });
@@ -316,7 +340,8 @@ window.testSignup = async () => {
       "hero.pill": "Next-gen AI accounting",
       "hero.title1": "Track income and expenses.",
       "hero.title2": "Get AI-powered savings advice.",
-      "hero.subtitle": "Quantiva helps you log transactions, see daily/monthly analytics, and turn spending chaos into a clear plan.",
+      "hero.subtitle":
+        "Quantiva helps you log transactions, see daily/monthly analytics, and turn spending chaos into a clear plan.",
       "hero.cta1": "Create account",
       "hero.cta2": "Explore features",
       "hero.stat1.value": "30 sec",
@@ -344,7 +369,8 @@ window.testSignup = async () => {
       "panel.aitip.text": "Try limiting food delivery to once a week — estimated savings ≈ €65/month.",
       "ai.why": "Why?",
       "ai.tip.title": "Reasoning preview",
-      "ai.tip.text": "Based on your food & transport categories over the last 30 days, delivery spikes are driving most of the variance.",
+      "ai.tip.text":
+        "Based on your food & transport categories over the last 30 days, delivery spikes are driving most of the variance.",
       "empty.title": "No data yet",
       "empty.text": "Add your first transaction to unlock insights and AI recommendations.",
       "how.title": "How Quantiva works",
@@ -372,7 +398,8 @@ window.testSignup = async () => {
       "aud.a3.title": "Families",
       "aud.a3.text": "Budget monthly expenses with clarity and goals.",
       "security.title": "Security by design",
-      "security.desc": "We structure the system so it can scale safely from day one. Today it’s a landing page — next it becomes a full product.",
+      "security.desc":
+        "We structure the system so it can scale safely from day one. Today it’s a landing page — next it becomes a full product.",
       "security.b1": "Clear separation between public pages and your private app",
       "security.b2": "Session-based auth and protected forms",
       "security.b3": "Ready for database storage and audit logging",
@@ -809,10 +836,11 @@ window.testSignup = async () => {
   if (year) year.textContent = String(new Date().getFullYear());
 
   /* -----------------------------
-     Modals + forms + toast
+     Modals + toast
   ----------------------------- */
   const toast = $("#toast");
   let toastTimer = null;
+
   function showToast(msg) {
     if (!toast) return;
     toast.textContent = msg;
@@ -824,13 +852,14 @@ window.testSignup = async () => {
   }
 
   const modals = $$("[data-modal]");
+
   function openModal(name) {
     const m = $(`[data-modal="${name}"]`);
     if (!m) return;
     m.classList.add("is-open");
-    // lock scroll
     document.documentElement.style.overflow = "hidden";
   }
+
   function closeAllModals() {
     modals.forEach((m) => m.classList.remove("is-open"));
     document.documentElement.style.overflow = "";
@@ -845,10 +874,11 @@ window.testSignup = async () => {
     });
   });
 
-  // close targets
+  // close/swap handlers
   document.addEventListener("click", (e) => {
     const close = e.target.closest("[data-close]");
     if (close) closeAllModals();
+
     const swap = e.target.closest("[data-swap]");
     if (swap) {
       const to = swap.getAttribute("data-swap");
@@ -865,34 +895,21 @@ window.testSignup = async () => {
   });
 
   /* -----------------------------
-     Supabase Auth wiring (REAL)
+     ✅ Supabase Auth wiring (REAL)
   ----------------------------- */
   const loginForm = $("#loginForm");
   const signupForm = $("#signupForm");
 
-  // Buttons that open login/signup (we will rewire "Sign in" -> "Sign out" when authed)
-  const signinBtns = $$('[data-open="login"]');
+  const signinBtns = $$('[data-open="login"]'); // will become Sign out when authed
   const signupBtns = $$('[data-open="signup"]');
 
-  async function refreshAuthUI(session) {
-    // If logged in -> turn "Sign in" button into "Sign out"
-    const isAuthed = !!session?.user;
-
-    signinBtns.forEach((btn) => {
-      // keep i18n key but override visible text (simple + works now)
-      btn.textContent = isAuthed ? "Sign out" : (dict[localStorage.getItem(LANG_KEY) || "en"]["nav.signin"] || "Sign in");
-    });
-
-    // optional: make "Get started" open signup only when not authed
-    signupBtns.forEach((btn) => {
-      if (!btn) return;
-      btn.textContent = isAuthed
-        ? "Account"
-        : (dict[localStorage.getItem(LANG_KEY) || "en"]["nav.getstarted"] || "Get started");
-    });
+  function langText(key, fallback) {
+    const L = localStorage.getItem(LANG_KEY) || "en";
+    return dict?.[L]?.[key] || fallback;
   }
 
   async function getSessionSafe() {
+    if (!supabase) return null;
     try {
       const { data, error } = await supabase.auth.getSession();
       if (error) return null;
@@ -902,109 +919,124 @@ window.testSignup = async () => {
     }
   }
 
-  // initial auth state
-  getSessionSafe().then((s) => refreshAuthUI(s));
+  async function refreshAuthUI(session) {
+    const isAuthed = !!session?.user;
 
-  // listen to auth changes
-  supabase.auth.onAuthStateChange((_event, session) => {
-    refreshAuthUI(session);
-  });
-
-  // Intercept click on sign-in buttons when authed -> sign out
-  signinBtns.forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-      const session = await getSessionSafe();
-      if (!session?.user) return; // normal behavior (modal opens via existing handler)
-      // authed -> sign out instead of opening login modal
-      e.preventDefault();
-      e.stopPropagation();
-      try {
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-          showToast(error.message || "Sign out failed.");
-          return;
-        }
-        closeAllModals();
-        showToast("Signed out.");
-      } catch (err) {
-        showToast("Sign out failed.");
-      }
+    signinBtns.forEach((btn) => {
+      // keep working even if i18n later changes
+      btn.textContent = isAuthed ? "Sign out" : langText("nav.signin", "Sign in");
     });
-  });
 
-  // LOGIN (real)
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const fd = new FormData(loginForm);
-      const email = String(fd.get("email") || "").trim();
-      const password = String(fd.get("password") || "");
-
-      if (!email || !password) {
-        showToast("Please enter email and password.");
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          showToast(error.message || "Sign in failed.");
-          return;
-        }
-        closeAllModals();
-        await refreshAuthUI(data?.session || null);
-        showToast("Signed in.");
-      } catch (err) {
-        showToast("Sign in failed.");
-      }
+    signupBtns.forEach((btn) => {
+      btn.textContent = isAuthed ? "Account" : langText("nav.getstarted", "Get started");
     });
   }
 
-  // SIGNUP (real)
-  if (signupForm) {
-    signupForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const fd = new FormData(signupForm);
-      const name = String(fd.get("name") || "").trim();
-      const email = String(fd.get("email") || "").trim();
-      const password = String(fd.get("password") || "");
+  // If SDK missing -> do not crash page, just show warning once
+  if (!supabase) {
+    console.warn("Supabase SDK not loaded. Check script order in index.html.");
+  } else {
+    // initial auth state
+    getSessionSafe().then((s) => refreshAuthUI(s));
 
-      if (!name || !email || !password) {
-        showToast("Please fill all fields.");
-        return;
-      }
-      if (password.length < 6) {
-        showToast("Password must be at least 6 characters.");
-        return;
-      }
+    // auth changes
+    supabase.auth.onAuthStateChange((_event, session) => {
+      refreshAuthUI(session);
+    });
 
-      try {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { name },
-          },
-        });
+    // Intercept click on sign-in buttons when authed -> sign out
+    signinBtns.forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        const session = await getSessionSafe();
+        if (!session?.user) return; // normal click will open login modal (already wired)
+        e.preventDefault();
+        e.stopPropagation();
+        try {
+          const { error } = await supabase.auth.signOut();
+          if (error) {
+            showToast(error.message || "Sign out failed.");
+            return;
+          }
+          closeAllModals();
+          showToast("Signed out.");
+        } catch {
+          showToast("Sign out failed.");
+        }
+      });
+    });
 
-        if (error) {
-          showToast(error.message || "Sign up failed.");
+    // LOGIN (real)
+    if (loginForm) {
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const fd = new FormData(loginForm);
+        const email = String(fd.get("email") || "").trim();
+        const password = String(fd.get("password") || "");
+
+        if (!email || !password) {
+          showToast("Please enter email and password.");
           return;
         }
 
-        closeAllModals();
-
-        // If email confirmations are ON in Supabase, session may be null
-        if (!data?.session) {
-          showToast("Account created. Please confirm your email.");
-        } else {
-          await refreshAuthUI(data.session);
-          showToast("Account created & signed in.");
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          if (error) {
+            showToast(error.message || "Sign in failed.");
+            return;
+          }
+          closeAllModals();
+          await refreshAuthUI(data?.session || null);
+          showToast("Signed in.");
+        } catch {
+          showToast("Sign in failed.");
         }
-      } catch (err) {
-        showToast("Sign up failed.");
-      }
-    });
+      });
+    }
+
+    // SIGNUP (real)
+    if (signupForm) {
+      signupForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const fd = new FormData(signupForm);
+        const name = String(fd.get("name") || "").trim();
+        const email = String(fd.get("email") || "").trim();
+        const password = String(fd.get("password") || "");
+
+        if (!name || !email || !password) {
+          showToast("Please fill all fields.");
+          return;
+        }
+        if (password.length < 6) {
+          showToast("Password must be at least 6 characters.");
+          return;
+        }
+
+        try {
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: { data: { name } },
+          });
+
+          if (error) {
+            showToast(error.message || "Sign up failed.");
+            return;
+          }
+
+          closeAllModals();
+
+          // If email confirmations ON, session can be null
+          if (!data?.session) {
+            showToast("Account created. Please confirm your email.");
+          } else {
+            await refreshAuthUI(data.session);
+            showToast("Account created & signed in.");
+          }
+        } catch {
+          showToast("Sign up failed.");
+        }
+      });
+    }
   }
 
   /* -----------------------------
@@ -1014,20 +1046,27 @@ window.testSignup = async () => {
   // setEmptyState(true);
 })();
 
-/* ---- your existing overlay/register code kept as-is (no losses) ---- */
+/* ---------------------------------------------------------
+   Your existing overlay/register code (kept as-is, safe)
+--------------------------------------------------------- */
 const overlay = document.getElementById("auth-overlay");
+
 function openRegister() {
   if (overlay) overlay.classList.remove("hidden");
 }
 function closeRegister() {
   if (overlay) overlay.classList.add("hidden");
 }
+
 const registerForm = document.getElementById("registerForm");
 if (registerForm) {
   registerForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const pass = document.getElementById("password").value;
-    const repeat = document.getElementById("passwordRepeat").value;
+    const passEl = document.getElementById("password");
+    const repeatEl = document.getElementById("passwordRepeat");
+    const pass = passEl ? passEl.value : "";
+    const repeat = repeatEl ? repeatEl.value : "";
+
     if (pass.length < 8) {
       alert("Password must be at least 8 characters");
       return;
@@ -1039,7 +1078,3 @@ if (registerForm) {
     alert("Form is valid (next: backend)");
   });
 }
-
-
-
-
