@@ -6,14 +6,12 @@
    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
    BEFORE this app.js
 ----------------------------- */
-const SUPABASE_URL = "https://towzwaximnwmkeyvthvk.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvd3p3YXhpbW53bWtleXZ0aHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1MTgxMjQsImV4cCI6MjA4MjA5NDEyNH0.UcR2Vo4zQnQSmxG2TfiQvkHK9qRb_3W6g3knXG8PsrI";
+// вместо const supabase = ...
+window.__qbSupabase =
+  window.__qbSupabase ||
+  window.supabase.createClient("https://towzwaximnwmkeyvthvk.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvd3p3YXhpbW53bWtleXZ0aHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1MTgxMjQsImV4cCI6MjA4MjA5NDEyNH0.UcR2Vo4zQnQSmxG2TfiQvkHK9qRb_3W6g3knXG8PsrI");
 
-const supabase =
-  window.supabase && typeof window.supabase.createClient === "function"
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-    : null;
+const supabase = window.__qbSupabase;
 
 // Optional debug helper (does NOT break the page)
 window.testSignup = async () => {
@@ -1066,4 +1064,5 @@ if (registerForm) {
     alert("Form is valid (next: backend)");
   });
 }
+
 
