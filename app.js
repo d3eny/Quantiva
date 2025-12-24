@@ -1,16 +1,4 @@
-/* =========================================================
-   Quantiva — app.js (FULL + fixed)
-   - Header hide on scroll (Safari-like)
-   - Mobile menu toggle
-   - Smooth scroll-reveal (IntersectionObserver)
-   - Skeleton loading (fake) for preview panel
-   - Empty state toggles (demo)
-   - AI "Why?" tooltip (click/outside/Esc)
-   - Scenario demo (Student/Family/Business) updates KPIs + chart
-   - Language switch (EN/DE/RU) via data-i18n + localStorage
-   - Modals (login/signup), swap, close, toast
-   - ✅ Supabase Auth wiring (signup/login/signout + UI refresh)
-   ========================================================= */
+
 
 /* -----------------------------
    Supabase client (SAFE init)
@@ -1078,3 +1066,4 @@ if (registerForm) {
     alert("Form is valid (next: backend)");
   });
 }
+
