@@ -886,147 +886,123 @@ window.testSignup = async () => {
   /* -----------------------------
      ✅ Supabase Auth wiring (REAL)
   ----------------------------- */
-  const loginForm = $("#loginForm");
-  const signupForm = $("#signupForm");
+/* -----------------------------
+   ✅ Supabase Auth wiring (REAL)
+----------------------------- */
+const loginForm = $("#loginForm");
+const signupForm = $("#signupForm");
+const signinBtns = $$('[data-open="login"]'); // will become Sign out when authed
+const signupBtns = $$('[data-open="signup"]');
 
-  const signinBtns = $$('[data-open="login"]'); // will become Sign out when authed
-  const signupBtns = $$('[data-open="signup"]');
+function langText(key, fallback) {
+  const L = localStorage.getItem(LANG_KEY) || "en";
+  return dict?.[L]?.[key] || fallback;
+}
 
-  function langText(key, fallback) {
-    const L = localStorage.getItem(LANG_KEY) || "en";
-    return dict?.[L]?.[key] || fallback;
+async function getSessionSafe() {
+  if (!sb) return null;
+  try {
+    const { data, error } = await sb.auth.getSession();
+    if (error) return null;
+    return data?.session || null;
+  } catch {
+    return null;
+  }
+}
+
+async function refreshAuthUI(session) {
+  const isAuthed = !!session?.user;
+  signinBtns.forEach((btn) => {
+    btn.textContent = isAuthed ? "Sign out" : langText("nav.signin", "Sign in");
+  });
+  signupBtns.forEach((btn) => {
+    btn.textContent = isAuthed ? "Account" : langText("nav.getstarted", "Get started");
+  });
+}
+
+// Если SDK/клиент не создался — НЕ роняем страницу
+if (!sb) {
+  console.warn("Supabase client not initialized. Check <script> order in index.html.");
+} else {
+  // initial auth state
+  getSessionSafe().then((s) => refreshAuthUI(s));
+
+  // auth changes
+  sb.auth.onAuthStateChange((_event, session) => {
+    refreshAuthUI(session);
+  });
+
+  // Intercept click on sign-in buttons when authed -> sign out
+  signinBtns.forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const session = await getSessionSafe();
+      if (!session?.user) return; // обычный клик откроет модалку (как и было)
+      e.preventDefault();
+      e.stopPropagation();
+      try {
+        const { error } = await sb.auth.signOut();
+        if (error) return showToast(error.message || "Sign out failed.");
+        closeAllModals();
+        showToast("Signed out.");
+      } catch {
+        showToast("Sign out failed.");
+      }
+    });
+  });
+
+  // LOGIN
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(loginForm);
+      const email = String(fd.get("email") || "").trim();
+      const password = String(fd.get("password") || "");
+      if (!email || !password) return showToast("Please enter email and password.");
+
+      try {
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) return showToast(error.message || "Sign in failed.");
+        closeAllModals();
+        await refreshAuthUI(data?.session || null);
+        showToast("Signed in.");
+      } catch {
+        showToast("Sign in failed.");
+      }
+    });
   }
 
-  async function getSessionSafe() {
-    if (!supabase) return null;
-    try {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) return null;
-      return data?.session || null;
-    } catch {
-      return null;
-    }
+  // SIGNUP
+  if (signupForm) {
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(signupForm);
+      const name = String(fd.get("name") || "").trim();
+      const email = String(fd.get("email") || "").trim();
+      const password = String(fd.get("password") || "");
+
+      if (!name || !email || !password) return showToast("Please fill all fields.");
+      if (password.length < 6) return showToast("Password must be at least 6 characters.");
+
+      try {
+        const { data, error } = await sb.auth.signUp({
+          email,
+          password,
+          options: { data: { name } },
+        });
+        if (error) return showToast(error.message || "Sign up failed.");
+        closeAllModals();
+
+        if (!data?.session) showToast("Account created. Please confirm your email.");
+        else {
+          await refreshAuthUI(data.session);
+          showToast("Account created & signed in.");
+        }
+      } catch {
+        showToast("Sign up failed.");
+      }
+    });
   }
-
-  async function refreshAuthUI(session) {
-    const isAuthed = !!session?.user;
-
-    signinBtns.forEach((btn) => {
-      // keep working even if i18n later changes
-      btn.textContent = isAuthed ? "Sign out" : langText("nav.signin", "Sign in");
-    });
-
-    signupBtns.forEach((btn) => {
-      btn.textContent = isAuthed ? "Account" : langText("nav.getstarted", "Get started");
-    });
-  }
-
-  // If SDK missing -> do not crash page, just show warning once
-  if (!supabase) {
-    console.warn("Supabase SDK not loaded. Check script order in index.html.");
-  } else {
-    // initial auth state
-    getSessionSafe().then((s) => refreshAuthUI(s));
-
-    // auth changes
-    supabase.auth.onAuthStateChange((_event, session) => {
-      refreshAuthUI(session);
-    });
-
-    // Intercept click on sign-in buttons when authed -> sign out
-    signinBtns.forEach((btn) => {
-      btn.addEventListener("click", async (e) => {
-        const session = await getSessionSafe();
-        if (!session?.user) return; // normal click will open login modal (already wired)
-        e.preventDefault();
-        e.stopPropagation();
-        try {
-          const { error } = await supabase.auth.signOut();
-          if (error) {
-            showToast(error.message || "Sign out failed.");
-            return;
-          }
-          closeAllModals();
-          showToast("Signed out.");
-        } catch {
-          showToast("Sign out failed.");
-        }
-      });
-    });
-
-    // LOGIN (real)
-    if (loginForm) {
-      loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const fd = new FormData(loginForm);
-        const email = String(fd.get("email") || "").trim();
-        const password = String(fd.get("password") || "");
-
-        if (!email || !password) {
-          showToast("Please enter email and password.");
-          return;
-        }
-
-        try {
-          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-          if (error) {
-            showToast(error.message || "Sign in failed.");
-            return;
-          }
-          closeAllModals();
-          await refreshAuthUI(data?.session || null);
-          showToast("Signed in.");
-        } catch {
-          showToast("Sign in failed.");
-        }
-      });
-    }
-
-    // SIGNUP (real)
-    if (signupForm) {
-      signupForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const fd = new FormData(signupForm);
-        const name = String(fd.get("name") || "").trim();
-        const email = String(fd.get("email") || "").trim();
-        const password = String(fd.get("password") || "");
-
-        if (!name || !email || !password) {
-          showToast("Please fill all fields.");
-          return;
-        }
-        if (password.length < 6) {
-          showToast("Password must be at least 6 characters.");
-          return;
-        }
-
-        try {
-          const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: { data: { name } },
-          });
-
-          if (error) {
-            showToast(error.message || "Sign up failed.");
-            return;
-          }
-
-          closeAllModals();
-
-          // If email confirmations ON, session can be null
-          if (!data?.session) {
-            showToast("Account created. Please confirm your email.");
-          } else {
-            await refreshAuthUI(data.session);
-            showToast("Account created & signed in.");
-          }
-        } catch {
-          showToast("Sign up failed.");
-        }
-      });
-    }
-  }
+}
 
   /* -----------------------------
      Optional: demo empty state toggle on long idle
@@ -1067,6 +1043,7 @@ if (registerForm) {
     alert("Form is valid (next: backend)");
   });
 }
+
 
 
 
