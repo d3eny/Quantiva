@@ -242,8 +242,8 @@ input {
 }
 
 .brand__logo {
-  width: 120px;
-  height: 120px;
+  width: 70px;
+  height: 70px;
 }
 
 .brand__name {
@@ -1523,6 +1523,7 @@ details[open] summary::after {
     grid-column: auto;
   }
 }
+
 
 
 
