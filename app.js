@@ -987,7 +987,8 @@ if (!sb) {
         const { data, error } = await sb.auth.signUp({
           email,
           password,
-          options: { data: { name } },
+          options: { emailRedirectTo: "https://d3eny.github.io/Quantiva/"
+                   }
         });
         if (error) return showToast(error.message || "Sign up failed.");
         closeAllModals();
@@ -1043,6 +1044,7 @@ if (registerForm) {
     alert("Form is valid (next: backend)");
   });
 }
+
 
 
 
