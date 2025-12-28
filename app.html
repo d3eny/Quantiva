@@ -1,1 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quantiva — App</title>
+
+    <!-- тот же шрифт для логотипа -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body class="app">
+    <header class="header header--app">
+      <div class="container header__inner">
+        <a class="brand" href="index.html" aria-label="Quantiva">
+          <span class="brand__mark" aria-hidden="true">
+            <img class="brand__logo" src="assets/logo.svg" alt="" />
+          </span>
+          <span class="brand__name">Quantiva</span>
+        </a>
+
+        <div class="header__actions">
+          <div class="header__btns">
+            <button class="btn btn--ghost" type="button" id="appSignOut" data-i18n="app.signout">
+              Sign out
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <div class="container app-shell">
+        <aside class="sidebar" aria-label="App navigation">
+          <div class="sidebar__user">
+            <div class="bubble bubble--muted" data-i18n="app.account">Account</div>
+            <div class="sidebar__email" id="userEmail">—</div>
+          </div>
+
+          <nav class="side-nav">
+            <button class="side-nav__link is-active" type="button" data-view="dashboard" data-i18n="app.nav.dashboard">
+              Dashboard
+            </button>
+            <button class="side-nav__link" type="button" data-view="settings" data-i18n="app.nav.settings">
+              Account settings
+            </button>
+            <button class="side-nav__link" type="button" data-view="subs" data-i18n="app.nav.subs">
+              Manage subscriptions
+            </button>
+            <button class="side-nav__link" type="button" data-view="security" data-i18n="app.nav.security">
+              Security
+            </button>
+          </nav>
+
+          <div class="sidebar__foot">
+            <a class="side-nav__link side-nav__link--muted" href="index.html" data-i18n="app.back">
+              ← Back to landing
+            </a>
+          </div>
+        </aside>
+
+        <section class="app-content" aria-live="polite">
+          <!-- DASHBOARD -->
+          <div class="view is-active" data-view-panel="dashboard">
+            <div class="app-head">
+              <h1 class="app-title" data-i18n="app.dashboard.title">Dashboard</h1>
+              <p class="app-subtitle" data-i18n="app.dashboard.subtitle">
+                Your overview, insights, and quick actions.
+              </p>
+            </div>
+
+            <div class="grid3 app-cards">
+              <div class="card card--soft">
+                <div class="card__label" data-i18n="app.kpi.plan">Plan</div>
+                <div class="card__value" id="planName">—</div>
+                <div class="card__hint" data-i18n="app.kpi.planHint">Current subscription tier</div>
+              </div>
+
+              <div class="card card--soft">
+                <div class="card__label" data-i18n="app.kpi.status">Status</div>
+                <div class="card__value" id="subStatus">—</div>
+                <div class="card__hint" data-i18n="app.kpi.statusHint">Billing state</div>
+              </div>
+
+              <div class="card card--soft">
+                <div class="card__label" data-i18n="app.kpi.next">Next step</div>
+                <div class="card__value" data-i18n="app.kpi.nextValue">Connect features</div>
+                <div class="card__hint" data-i18n="app.kpi.nextHint">We’ll plug real data next</div>
+              </div>
+            </div>
+
+            <div class="callout app-callout">
+              <div class="callout__title" data-i18n="app.todo.title">Next: build the product</div>
+              <div class="callout__text" data-i18n="app.todo.text">
+                Here we’ll add transactions, analytics, exports, and AI assistant.
+              </div>
+            </div>
+          </div>
+
+          <!-- SETTINGS -->
+          <div class="view" data-view-panel="settings">
+            <div class="app-head">
+              <h1 class="app-title" data-i18n="app.settings.title">Account settings</h1>
+              <p class="app-subtitle" data-i18n="app.settings.subtitle">Basic profile and preferences.</p>
+            </div>
+
+            <div class="card card--soft">
+              <div class="row2">
+                <div>
+                  <div class="card__label" data-i18n="app.settings.email">Email</div>
+                  <div class="card__value" id="settingsEmail">—</div>
+                </div>
+                <div>
+                  <div class="card__label" data-i18n="app.settings.name">Name</div>
+                  <div class="card__value" id="settingsName">—</div>
+                </div>
+              </div>
+              <div class="card__hint" data-i18n="app.settings.hint">
+                Name is taken from Supabase user metadata (options.data.name).
+              </div>
+            </div>
+          </div>
+
+          <!-- SUBSCRIPTIONS -->
+          <div class="view" data-view-panel="subs">
+            <div class="app-head">
+              <h1 class="app-title" data-i18n="app.subs.title">Manage subscriptions</h1>
+              <p class="app-subtitle" data-i18n="app.subs.subtitle">
+                Hook Stripe later — for now this is the UI shell.
+              </p>
+            </div>
+
+            <div class="card card--soft">
+              <div class="card__label" data-i18n="app.subs.current">Current</div>
+              <div class="card__value" id="subsCurrent">—</div>
+              <div class="card__hint" data-i18n="app.subs.hint">
+                We’ll connect billing data from DB/Stripe.
+              </div>
+              <div class="card__actions">
+                <button class="btn btn--primary" type="button" id="upgradeBtn" data-i18n="app.subs.upgrade">
+                  Upgrade
+                </button>
+                <button class="btn btn--ghost" type="button" id="cancelBtn" data-i18n="app.subs.cancel">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECURITY -->
+          <div class="view" data-view-panel="security">
+            <div class="app-head">
+              <h1 class="app-title" data-i18n="app.security.title">Security</h1>
+              <p class="app-subtitle" data-i18n="app.security.subtitle">
+                Session info and safe defaults.
+              </p>
+            </div>
+
+            <div class="card card--soft">
+              <div class="card__label" data-i18n="app.security.session">Session</div>
+              <div class="card__value" id="sessionState">—</div>
+              <div class="card__hint" data-i18n="app.security.hint">
+                If you’re not logged in, you’ll be redirected to landing.
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Floating language -->
+    <div class="lang-float" data-lang-float>
+      <button class="lang-float__btn" type="button" data-lang-btn aria-label="Language">
+        <span data-lang-label>EN</span> · 🌐
+      </button>
+      <div class="lang-float__menu" data-lang-menu>
+        <button type="button" class="lang-float__item" data-set-lang="en">English</button>
+        <button type="button" class="lang-float__item" data-set-lang="de">Deutsch</button>
+        <button type="button" class="lang-float__item" data-set-lang="ru">Русский</button>
+      </div>
+    </div>
+
+    <div class="toast" aria-live="polite" aria-atomic="true" id="toast"></div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>
 
