@@ -4,17 +4,16 @@
    Supabase safe init
 ================================ */
 
+// --- Supabase client (single init) ---
 const SUPABASE_URL = "https://towzwaximnwmkeyvthvk.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvd3p3YXhpbW53bWtleXZ0aHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1MTgxMjQsImV4cCI6MjA4MjA5NDEyNH0.UcR2Vo4zQnQSmxG2TfiQvkHK9qRb_3W6g3knXG8PsrI";
 
-if (!window.supabase || typeof window.supabase.createClient !== "function") {
-  console.error("Supabase SDK not loaded");
-}
+const sb =
+  window.supabase && typeof window.supabase.createClient === "function"
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
 
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+window.sb = sb; // чтобы можно было дебажить в консоли
 
 
 // Optional debug helper (does NOT break the page)
@@ -1068,6 +1067,7 @@ if (registerForm) {
     alert("Form is valid (next: backend)");
   });
 }
+
 
 
 
