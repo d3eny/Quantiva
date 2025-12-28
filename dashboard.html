@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quantiva — Dashboard</title>
+    <meta name="description" content="Quantiva dashboard" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body data-page="dashboard">
+    <!-- HEADER (same vibe) -->
+    <header class="header" data-header>
+      <div class="container header__inner">
+        <a class="brand" href="index.html" aria-label="Quantiva">
+          <span class="brand__mark" aria-hidden="true">
+            <img class="brand__logo" src="assets/logo.svg" alt="" />
+          </span>
+          <span class="brand__name">Quantiva</span>
+        </a>
+
+        <div class="header__actions">
+          <div class="header__btns">
+            <!-- becomes Sign out when authed -->
+            <button class="btn btn--ghost" type="button" data-action="signout" data-i18n="nav.signout">
+              Sign out
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="dash">
+      <aside class="dash__sidebar" aria-label="Sidebar navigation">
+        <div class="dash__user">
+          <div class="dash__avatar" aria-hidden="true">Q</div>
+          <div class="dash__userMeta">
+            <div class="dash__userName" id="dashUserName">—</div>
+            <div class="dash__userEmail" id="dashUserEmail">—</div>
+          </div>
+        </div>
+
+        <nav class="dash__nav">
+          <a class="dash__link is-active" href="#dashboard" data-i18n="dash.nav.dashboard">Dashboard</a>
+          <a class="dash__link" href="#settings" data-i18n="dash.nav.settings">Account settings</a>
+          <a class="dash__link" href="#subs" data-i18n="dash.nav.subs">Manage subscriptions</a>
+          <a class="dash__link" href="#billing" data-i18n="dash.nav.billing">Billing</a>
+          <a class="dash__link" href="#support" data-i18n="dash.nav.support">Support</a>
+        </nav>
+
+        <div class="dash__footer">
+          <div class="muted" data-i18n="dash.footer.note">This is the first version of the dashboard UI.</div>
+        </div>
+      </aside>
+
+      <section class="dash__main">
+        <div class="dash__top">
+          <h1 class="dash__title" data-i18n="dash.title">Dashboard</h1>
+          <div class="dash__pill">
+            <span class="dot" aria-hidden="true"></span>
+            <span data-i18n="dash.pill">Logged in</span>
+          </div>
+        </div>
+
+        <div class="dash__grid">
+          <article class="dashcard">
+            <div class="dashcard__head">
+              <div class="bubble bubble--muted" data-i18n="dash.cards.overview">Overview</div>
+            </div>
+            <div class="dashcard__body">
+              <div class="dashkpi">
+                <div class="dashkpi__label" data-i18n="dash.kpi.balance">Balance</div>
+                <div class="dashkpi__value">€ —</div>
+              </div>
+              <div class="dashkpi">
+                <div class="dashkpi__label" data-i18n="dash.kpi.spending">Spending</div>
+                <div class="dashkpi__value">€ —</div>
+              </div>
+              <p class="muted" style="margin: 10px 0 0" data-i18n="dash.note">
+                Next: connect transactions table and show real analytics.
+              </p>
+            </div>
+          </article>
+
+          <article class="dashcard" id="subs">
+            <div class="dashcard__head">
+              <div class="bubble bubble--muted" data-i18n="dash.cards.subs">Manage subscriptions</div>
+            </div>
+            <div class="dashcard__body">
+              <p class="muted" data-i18n="dash.subs.text">
+                Here you’ll manage plan upgrades, invoices and payment methods.
+              </p>
+              <button class="btn btn--primary" type="button" data-i18n="dash.subs.cta">Open billing portal</button>
+              <p class="muted" style="margin: 10px 0 0; font-size: 13px" data-i18n="dash.subs.hint">
+                (Stripe portal подключим следующим шагом)
+              </p>
+            </div>
+          </article>
+
+          <article class="dashcard" id="settings">
+            <div class="dashcard__head">
+              <div class="bubble bubble--muted" data-i18n="dash.cards.settings">Account settings</div>
+            </div>
+            <div class="dashcard__body">
+              <p class="muted" data-i18n="dash.settings.text">
+                Update name, email, password and preferences (coming soon).
+              </p>
+              <button class="btn btn--ghost" type="button" data-i18n="dash.settings.cta">Edit profile</button>
+            </div>
+          </article>
+
+          <article class="dashcard" id="support">
+            <div class="dashcard__head">
+              <div class="bubble bubble--muted" data-i18n="dash.cards.support">Support</div>
+            </div>
+            <div class="dashcard__body">
+              <p class="muted" data-i18n="dash.support.text">
+                Need help? We’ll add chat/email support links here.
+              </p>
+              <a class="btn btn--ghost" href="index.html#faq" data-i18n="dash.support.cta">Open FAQ</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- Floating language (same) -->
+    <div class="lang-float" data-lang-float>
+      <button class="lang-float__btn" type="button" data-lang-btn aria-label="Language">
+        <span data-lang-label>EN</span> · 🌐
+      </button>
+      <div class="lang-float__menu" data-lang-menu>
+        <button type="button" class="lang-float__item" data-set-lang="en">English</button>
+        <button type="button" class="lang-float__item" data-set-lang="de">Deutsch</button>
+        <button type="button" class="lang-float__item" data-set-lang="ru">Русский</button>
+      </div>
+    </div>
+
+    <div class="toast" aria-live="polite" aria-atomic="true" id="toast"></div>
+
+    <!-- Supabase SDK + same app.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
