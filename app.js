@@ -1061,7 +1061,30 @@ if (registerForm) {
     }
     alert("Form is valid (next: backend)");
   });
+   async function loadProfile() {
+  if (!sb) return;
+
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+
+  const { data, error } = await sb
+    .from("profiles")
+    .select("email, subscription")
+    .eq("id", user.id)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  document.querySelector("#accountEmail").textContent = data.email;
+  document.querySelector("#accountPlan").textContent = data.subscription;
 }
+   loadProfile();
+
+}
+
 
 
 
