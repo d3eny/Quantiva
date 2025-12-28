@@ -912,13 +912,31 @@ async function getSessionSafe() {
 
 async function refreshAuthUI(session) {
   const isAuthed = !!session?.user;
+
   signinBtns.forEach((btn) => {
-    btn.textContent = isAuthed ? "Sign out" : langText("nav.signin", "Sign in");
+    btn.textContent = isAuthed ? langText("nav.signout", "Sign out") : langText("nav.signin", "Sign in");
   });
+
   signupBtns.forEach((btn) => {
-    btn.textContent = isAuthed ? "Account" : langText("nav.getstarted", "Get started");
+    btn.textContent = isAuthed ? langText("nav.account", "Account") : langText("nav.getstarted", "Get started");
   });
+
+   // Intercept click on "Get started / Account":
+// - if NOT authed: keep old behavior (open signup modal)
+// - if authed: go to account.html
+signupBtns.forEach((btn) => {
+  btn.addEventListener("click", async (e) => {
+    const session = await getSessionSafe();
+    if (!session?.user) return; // обычный клик откроет модалку (как и было)
+    e.preventDefault();
+    e.stopPropagation();
+    window.location.href = "account.html";
+  });
+});
+
 }
+   
+
 
 // Если SDK/клиент не создался — НЕ роняем страницу
 if (!sb) {
@@ -1044,6 +1062,7 @@ if (registerForm) {
     alert("Form is valid (next: backend)");
   });
 }
+
 
 
 
