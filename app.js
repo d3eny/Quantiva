@@ -18,14 +18,14 @@ window.sb = sb; // чтобы можно было дебажить в консо
 
 // Optional debug helper (does NOT break the page)
 window.testSignup = async () => {
-  if (!supabase) return console.error("Supabase SDK not loaded (check script order).");
-  const { data, error } = await supabase.auth.signUp({
+  if (!sb) return console.error("Supabase SDK not loaded (check script order).");
+  const { data, error } = await sb.auth.signUp({
     email: "test+" + Date.now() + "@mail.com",
     password: "12345678",
   });
-  console.log("DATA:", data);
-  console.log("ERROR:", error);
+  console.log({ data, error });
 };
+
 
 (() => {
   "use strict";
@@ -1067,6 +1067,7 @@ if (registerForm) {
     alert("Form is valid (next: backend)");
   });
 }
+
 
 
 
