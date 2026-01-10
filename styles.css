@@ -1523,6 +1523,52 @@ details[open] summary::after {
     grid-column: auto;
   }
 }
+/* ================================
+   Account extras (email/settings/upgrade)
+================================ */
+.acc-form { display: grid; gap: 12px; }
+.acc-grid { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+.acc-actions { display: flex; gap: 10px; align-items: center; justify-content: flex-end; grid-column: 1 / -1; }
+.acc-status { font-size: 13px; }
+.acc-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 14px 0; border-radius: 999px; }
+
+.modal__card--wide { width: min(860px, calc(100% - 28px)); }
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+.plan {
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  cursor: pointer;
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+  user-select: none;
+}
+.plan:hover { transform: translateY(-2px); background: rgba(255,255,255,0.055); border-color: rgba(255,255,255,0.14); }
+.plan.is-selected { border-color: rgba(124, 92, 255, 0.55); box-shadow: 0 14px 40px rgba(124,92,255,0.18); }
+.plan__title { margin: 0 0 6px; font-weight: 800; letter-spacing: -0.01em; }
+.plan__price { font-size: 20px; font-weight: 800; margin: 0 0 10px; color: rgba(255,255,255,0.92); }
+.plan__list { margin: 0; padding-left: 18px; color: rgba(255,255,255,0.74); font-size: 13px; }
+.plan__list li { margin: 6px 0; }
+
+.upgrade-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+}
+@media (max-width: 920px) {
+  .plan-grid { grid-template-columns: 1fr; }
+  .acc-grid { grid-template-columns: 1fr; }
+}
+
+
 
 
 
