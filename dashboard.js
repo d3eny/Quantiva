@@ -271,5 +271,278 @@ const sb =
   // placeholders
   $("#upgradeBtn")?.addEventListener("click", () => showToast("Stripe позже 🙂"));
   $("#cancelBtn")?.addEventListener("click", () => showToast("Stripe позже 🙂"));
+   /* =========================================================
+   Quantiva — Account page wiring (append-only)
+   - Email display
+   - Profile settings save (public.profiles)
+   - Plan picker modal + save plan to Supabase
+   - Change password (requires current password)
+   - Reset password email
+   ========================================================= */
+(async () => {
+  "use strict";
+
+  const isAccount = document.body && document.body.getAttribute("data-page") === "account";
+  if (!isAccount) return;
+
+  const sb = window.sb;
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  const toast = $("#toast");
+  let toastTimer = null;
+  function showToast(msg) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.style.display = "block";
+    clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => {
+      toast.style.display = "none";
+    }, 2600);
+  }
+
+  // modal helpers (compatible with your existing modal styles)
+  const modals = $$("[data-modal]");
+  function openModal(name) {
+    const m = $(`[data-modal="${name}"]`);
+    if (!m) return;
+    m.classList.add("is-open");
+    document.documentElement.style.overflow = "hidden";
+  }
+  function closeAllModals() {
+    modals.forEach((m) => m.classList.remove("is-open"));
+    document.documentElement.style.overflow = "";
+  }
+  document.addEventListener("click", (e) => {
+    const close = e.target.closest("[data-close]");
+    if (close) closeAllModals();
+    const open = e.target.closest("[data-open]");
+    if (open) openModal(open.getAttribute("data-open"));
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeAllModals();
+  });
+
+  if (!sb) {
+    showToast("Supabase SDK not loaded. Check script order.");
+    return;
+  }
+
+  async function getSessionSafe() {
+    try {
+      const { data, error } = await sb.auth.getSession();
+      if (error) return null;
+      return data?.session || null;
+    } catch {
+      return null;
+    }
+  }
+
+  const session = await getSessionSafe();
+  if (!session?.user) {
+    // если не залогинен — обратно на landing
+    window.location.href = "index.html#top";
+    return;
+  }
+
+  // ✅ EMAIL DISPLAY (fix)
+  const emailEl = $("[data-account-email]");
+  if (emailEl) emailEl.textContent = session.user.email || "—";
+
+  // ✅ Sign out buttons on account page
+  const signOutBtn = $("#signOutBtn");
+  const signOutBtnMobile = $("#signOutBtnMobile");
+  async function doSignOut() {
+    try {
+      const { error } = await sb.auth.signOut();
+      if (error) return showToast(error.message || "Sign out failed.");
+      showToast("Signed out.");
+      window.location.href = "index.html#top";
+    } catch {
+      showToast("Sign out failed.");
+    }
+  }
+  if (signOutBtn) signOutBtn.addEventListener("click", doSignOut);
+  if (signOutBtnMobile) signOutBtnMobile.addEventListener("click", doSignOut);
+
+  // -------------------------
+  // ✅ Profiles load/upsert
+  // Table expected: public.profiles
+  // columns: id (uuid PK = auth.users.id), full_name text, plan text, currency text, timezone text
+  // -------------------------
+  const planValueEl = $("#planValue");
+  const profileForm = $("#profileForm");
+
+  async function ensureProfileRow() {
+    const uid = session.user.id;
+    // 1) try read
+    const { data: row, error } = await sb.from("profiles").select("*").eq("id", uid).maybeSingle();
+    if (error) {
+      // If table doesn't exist / RLS denies, you will see it here.
+      console.warn("profiles select error:", error);
+      return null;
+    }
+    if (row) return row;
+
+    // 2) create minimal row
+    const payload = {
+      id: uid,
+      full_name: "",
+      plan: "free",
+      currency: "EUR",
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+    };
+    const { data: up, error: upErr } = await sb.from("profiles").upsert(payload).select().maybeSingle();
+    if (upErr) {
+      console.warn("profiles upsert error:", upErr);
+      return null;
+    }
+    return up || payload;
+  }
+
+  function normalizePlanLabel(plan) {
+    const p = String(plan || "free").toLowerCase();
+    if (p === "student") return "Student";
+    if (p === "family") return "Family";
+    if (p === "business") return "Business";
+    return "Free";
+  }
+
+  let profile = await ensureProfileRow();
+
+  // Fill UI from profile
+  if (planValueEl) planValueEl.textContent = normalizePlanLabel(profile?.plan);
+
+  if (profileForm && profile) {
+    const nameIn = profileForm.querySelector('input[name="full_name"]');
+    const curIn = profileForm.querySelector('input[name="currency"]');
+    const tzIn = profileForm.querySelector('input[name="timezone"]');
+
+    if (nameIn) nameIn.value = profile.full_name || "";
+    if (curIn) curIn.value = profile.currency || "EUR";
+    if (tzIn) tzIn.value = profile.timezone || (Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC");
+  }
+
+  // Save profile
+  if (profileForm) {
+    profileForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(profileForm);
+      const full_name = String(fd.get("full_name") || "").trim();
+      const currency = String(fd.get("currency") || "").trim() || "EUR";
+      const timezone = String(fd.get("timezone") || "").trim() || "UTC";
+
+      try {
+        const payload = {
+          id: session.user.id,
+          full_name,
+          currency,
+          timezone,
+          plan: (profile?.plan || "free"),
+        };
+        const { data, error } = await sb.from("profiles").upsert(payload).select().maybeSingle();
+        if (error) return showToast(error.message || "Save failed.");
+        profile = data || payload;
+        showToast("Saved.");
+      } catch {
+        showToast("Save failed.");
+      }
+    });
+  }
+
+  // -------------------------
+  // ✅ Plan picker
+  // -------------------------
+  const plansList = $("#plansList");
+  if (plansList) {
+    plansList.addEventListener("click", async (e) => {
+      const btn = e.target.closest("[data-plan]");
+      if (!btn) return;
+
+      const plan = btn.getAttribute("data-plan");
+      if (!plan) return;
+
+      try {
+        const payload = {
+          id: session.user.id,
+          plan: String(plan).toLowerCase(),
+          full_name: profile?.full_name || "",
+          currency: profile?.currency || "EUR",
+          timezone: profile?.timezone || (Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"),
+        };
+        const { data, error } = await sb.from("profiles").upsert(payload).select().maybeSingle();
+        if (error) return showToast(error.message || "Plan update failed.");
+
+        profile = data || payload;
+        if (planValueEl) planValueEl.textContent = normalizePlanLabel(profile.plan);
+
+        closeAllModals();
+        showToast("Plan updated.");
+      } catch {
+        showToast("Plan update failed.");
+      }
+    });
+  }
+
+  // -------------------------
+  // ✅ Change password (must know current)
+  // re-auth: signInWithPassword(email + current_password)
+  // then updateUser({ password: new_password })
+  // -------------------------
+  const changePasswordForm = $("#changePasswordForm");
+  if (changePasswordForm) {
+    changePasswordForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const fd = new FormData(changePasswordForm);
+      const cur = String(fd.get("current_password") || "");
+      const next = String(fd.get("new_password") || "");
+      const rep = String(fd.get("new_password_repeat") || "");
+
+      if (!cur || !next || !rep) return showToast("Please fill all password fields.");
+      if (next.length < 6) return showToast("New password must be at least 6 characters.");
+      if (next !== rep) return showToast("New passwords do not match.");
+
+      const email = session.user.email;
+      if (!email) return showToast("Email missing in session.");
+
+      try {
+        // Re-auth
+        const { error: signErr } = await sb.auth.signInWithPassword({ email, password: cur });
+        if (signErr) return showToast(signErr.message || "Current password is incorrect.");
+
+        // Update password
+        const { error: upErr } = await sb.auth.updateUser({ password: next });
+        if (upErr) return showToast(upErr.message || "Password update failed.");
+
+        changePasswordForm.reset();
+        showToast("Password changed.");
+      } catch {
+        showToast("Password update failed.");
+      }
+    });
+  }
+
+  // -------------------------
+  // ✅ Reset password email
+  // -------------------------
+  const resetPasswordBtn = $("#resetPasswordBtn");
+  if (resetPasswordBtn) {
+    resetPasswordBtn.addEventListener("click", async () => {
+      const email = session.user.email;
+      if (!email) return showToast("Email missing in session.");
+
+      try {
+        const { error } = await sb.auth.resetPasswordForEmail(email, {
+          redirectTo: "https://d3eny.github.io/Quantiva/account.html",
+        });
+        if (error) return showToast(error.message || "Reset email failed.");
+        showToast("Reset link sent to your email.");
+      } catch {
+        showToast("Reset email failed.");
+      }
+    });
+  }
+
 })();
 
