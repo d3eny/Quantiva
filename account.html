@@ -4,17 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Quantiva — Account</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
-
     <link rel="stylesheet" href="styles.css" />
   </head>
-
   <body data-page="account">
     <!-- HEADER -->
     <header class="header" data-header>
@@ -25,14 +22,12 @@
           </span>
           <span class="brand__name">Quantiva</span>
         </a>
-
         <nav class="nav" aria-label="Navigation">
           <a class="nav__link" href="index.html#features" data-i18n="nav.features">Features</a>
           <a class="nav__link" href="index.html#security" data-i18n="nav.security">Security</a>
           <a class="nav__link" href="index.html#pricing" data-i18n="nav.pricing">Pricing</a>
           <a class="nav__link" href="index.html#faq" data-i18n="nav.faq">FAQ</a>
         </nav>
-
         <div class="header__actions">
           <div class="header__btns">
             <!-- на account странице это будет Sign out -->
@@ -41,7 +36,6 @@
             </button>
             <a class="btn btn--primary" href="account.html" data-i18n="nav.account">Account</a>
           </div>
-
           <button class="iconbtn burger" type="button" aria-label="Open menu" data-burger>
             <span class="burger__line"></span>
             <span class="burger__line"></span>
@@ -49,7 +43,6 @@
           </button>
         </div>
       </div>
-
       <!-- Mobile nav -->
       <div class="mobile-nav" data-mobile-nav>
         <a class="mobile-nav__link" href="index.html#features" data-i18n="nav.features">Features</a>
@@ -70,15 +63,12 @@
         <!-- SIDEBAR -->
         <aside class="sidebar" aria-label="Account navigation">
           <div class="sidebar__title" data-i18n="account.sidebar.title">Workspace</div>
-
           <a class="sidebar__link is-active" href="#dash" data-i18n="account.nav.dashboard">Dashboard</a>
           <a class="sidebar__link" href="#settings" data-i18n="account.nav.settings">Account settings</a>
           <a class="sidebar__link" href="#subs" data-i18n="account.nav.subs">Manage subscriptions</a>
           <a class="sidebar__link" href="#billing" data-i18n="account.nav.billing">Billing</a>
           <a class="sidebar__link" href="#security" data-i18n="account.nav.security">Security</a>
-
           <div class="sidebar__divider"></div>
-
           <a class="sidebar__link" href="index.html#top" data-i18n="account.nav.back">← Back to landing</a>
         </aside>
 
@@ -98,17 +88,16 @@
               <div class="a-card__value" id="planValue" data-i18n="account.card.plan.value">Free</div>
               <div class="a-card__hint" data-i18n="account.card.plan.hint">Upgrade anytime.</div>
             </article>
-
             <article class="a-card">
               <div class="a-card__label" data-i18n="account.card.status.label">Status</div>
               <div class="a-card__value" id="statusValue" data-i18n="account.card.status.value">Active</div>
               <div class="a-card__hint" data-i18n="account.card.status.hint">Signed in with Supabase.</div>
             </article>
-
             <article class="a-card a-card--wide">
               <div class="a-card__label" data-i18n="account.card.email.label">Email</div>
-              <div class="a-card__value" id="userEmail"><span data-account-email>—</span>
-</div>
+              <div class="a-card__value" id="userEmail">
+                <span data-account-email>—</span>
+              </div>
               <div class="a-card__hint" data-i18n="account.card.email.hint">This is your login email.</div>
             </article>
           </div>
@@ -118,11 +107,34 @@
             <div class="a-section__title" data-i18n="account.settings.title">Account settings</div>
             <div class="a-panel">
               <p class="a-text" data-i18n="account.settings.text">
-                Profile settings will appear here next (name, avatar, preferences).
+                Update your profile preferences.
               </p>
-              <button class="btn btn--ghost btn--sm" type="button" disabled data-i18n="account.settings.cta">
-                Coming soon
-              </button>
+
+              <!-- ✅ real settings form -->
+              <form class="form" id="profileForm" autocomplete="off">
+                <label class="field">
+                  <span data-i18n="account.settings.name">Display name</span>
+                  <input name="full_name" type="text" placeholder="Your name" />
+                </label>
+
+                <label class="field">
+                  <span data-i18n="account.settings.currency">Currency</span>
+                  <input name="currency" type="text" placeholder="EUR" />
+                </label>
+
+                <label class="field">
+                  <span data-i18n="account.settings.timezone">Timezone</span>
+                  <input name="timezone" type="text" placeholder="Europe/Berlin" />
+                </label>
+
+                <button class="btn btn--primary btn--sm" type="submit" id="saveProfileBtn">
+                  Save changes
+                </button>
+
+                <p class="form__hint muted">
+                  Saved to Supabase: <span class="muted">public.profiles</span>
+                </p>
+              </form>
             </div>
           </div>
 
@@ -130,12 +142,21 @@
             <div class="a-section__title" data-i18n="account.subs.title">Manage subscriptions</div>
             <div class="a-panel">
               <p class="a-text" data-i18n="account.subs.text">
-                Subscription management UI will be connected to Stripe later.
+                Choose a plan. (Stripe connection can be added later.)
               </p>
               <div class="a-actions">
-                <button class="btn btn--primary btn--sm" type="button" disabled data-i18n="account.subs.upgrade">
+                <!-- ✅ enabled + opens modal -->
+                <button
+                  class="btn btn--primary btn--sm"
+                  type="button"
+                  id="upgradePlanBtn"
+                  data-open="plans"
+                  data-i18n="account.subs.upgrade"
+                >
                   Upgrade plan
                 </button>
+
+                <!-- keep, but still disabled until Stripe -->
                 <button class="btn btn--ghost btn--sm" type="button" disabled data-i18n="account.subs.cancel">
                   Cancel subscription
                 </button>
@@ -156,13 +177,78 @@
             <div class="a-section__title" data-i18n="account.security.title">Security</div>
             <div class="a-panel">
               <p class="a-text" data-i18n="account.security.text">
-                We’ll add password change, devices list, and sessions view.
+                Change your password or reset it via email.
+              </p>
+
+              <!-- ✅ Change password (requires old password) -->
+              <form class="form" id="changePasswordForm" autocomplete="off">
+                <label class="field">
+                  <span>Current password</span>
+                  <input name="current_password" type="password" placeholder="••••••••" />
+                </label>
+
+                <label class="field">
+                  <span>New password</span>
+                  <input name="new_password" type="password" placeholder="••••••••" />
+                </label>
+
+                <label class="field">
+                  <span>Repeat new password</span>
+                  <input name="new_password_repeat" type="password" placeholder="••••••••" />
+                </label>
+
+                <div class="a-actions">
+                  <button class="btn btn--primary btn--sm" type="submit" id="changePassBtn">
+                    Change password
+                  </button>
+
+                  <button class="btn btn--ghost btn--sm" type="button" id="resetPasswordBtn">
+                    Send reset link
+                  </button>
+                </div>
+              </form>
+
+              <p class="form__hint muted">
+                “Send reset link” отправит письмо на твой email (Supabase reset).
               </p>
             </div>
           </div>
         </section>
       </div>
     </main>
+
+    <!-- ✅ Plans modal -->
+    <div class="modal" data-modal="plans" aria-hidden="true">
+      <div class="modal__backdrop" data-close></div>
+      <div class="modal__card" role="dialog" aria-modal="true" aria-label="Choose plan">
+        <div class="modal__head">
+          <h3 class="modal__title">Choose your plan</h3>
+          <button class="iconbtn" type="button" data-close aria-label="Close">✕</button>
+        </div>
+
+        <div class="form" id="plansList">
+          <button class="btn btn--ghost w100" type="button" data-plan="free">
+            Free — €0
+          </button>
+
+          <button class="btn btn--ghost w100" type="button" data-plan="student">
+            Student — €2.99 / mo
+          </button>
+
+          <button class="btn btn--ghost w100" type="button" data-plan="family">
+            Family — €11.99 / mo
+          </button>
+
+          <button class="btn btn--ghost w100" type="button" data-plan="business">
+            Business — €29.99 / mo
+          </button>
+
+          <p class="form__hint muted">
+            Сейчас это “manual plan” в Supabase (Stripe подключим позже).
+          </p>
+        </div>
+      </div>
+    </div>
 
     <!-- Floating language (bottom-right) -->
     <div class="lang-float" data-lang-float>
