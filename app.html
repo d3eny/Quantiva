@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quantiva — App</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body data-page="app">
+    <header class="header" data-header>
+      <div class="container header__inner">
+        <a class="brand" href="index.html#top" aria-label="Quantiva">
+          <span class="brand__mark" aria-hidden="true">
+            <img class="brand__logo" src="assets/logo.svg" alt="" />
+          </span>
+          <span class="brand__name">Quantiva</span>
+        </a>
+
+        <div class="header__actions">
+          <div class="header__btns">
+            <button class="btn btn--ghost" type="button" id="signOutBtn">Sign out</button>
+            <a class="btn btn--primary" href="account.html">Account</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container" style="display:grid; gap:14px;">
+        <div class="section__head">
+          <div>
+            <h1 class="section__title">App</h1>
+            <p class="section__desc muted">
+              Logged in as <b data-account-email>—</b>
+            </p>
+          </div>
+        </div>
+
+        <!-- ADD TRANSACTION -->
+        <div class="a-panel" style="padding:16px; border-radius:18px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.05);">
+          <h3 style="margin:0 0 10px;">Add transaction</h3>
+
+          <form id="txForm" style="display:grid; gap:10px; grid-template-columns:repeat(6,minmax(0,1fr));">
+            <label class="field" style="grid-column:span 1;">
+              <span>Type</span>
+              <select name="type" required style="padding:10px; border-radius:12px;">
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+              </select>
+            </label>
+
+            <label class="field" style="grid-column:span 1;">
+              <span>Amount</span>
+              <input name="amount" type="number" min="0" step="0.01" required />
+            </label>
+
+            <label class="field" style="grid-column:span 2;">
+              <span>Category</span>
+              <input name="category" type="text" required placeholder="Food, Transport, Salary..." />
+            </label>
+
+            <label class="field" style="grid-column:span 1;">
+              <span>Date</span>
+              <input name="happened_on" type="date" required />
+            </label>
+
+            <label class="field" style="grid-column:span 1;">
+              <span>Currency</span>
+              <input name="currency" type="text" value="EUR" />
+            </label>
+
+            <label class="field" style="grid-column:span 6;">
+              <span>Note</span>
+              <input name="note" type="text" placeholder="optional" />
+            </label>
+
+            <div style="grid-column:span 6; display:flex; gap:10px;">
+              <button class="btn btn--primary" type="submit">Add</button>
+              <button class="btn btn--ghost" type="button" id="txRefreshBtn">Refresh</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ANALYTICS -->
+        <div class="a-panel" style="padding:16px; border-radius:18px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.05);">
+          <h3 style="margin:0 0 10px;">This month</h3>
+          <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px;">
+            <div class="stat">
+              <div class="stat__value" id="kpiIncome">—</div>
+              <div class="stat__label">Income</div>
+            </div>
+            <div class="stat">
+              <div class="stat__value" id="kpiExpense">—</div>
+              <div class="stat__label">Expenses</div>
+            </div>
+            <div class="stat">
+              <div class="stat__value" id="kpiNet">—</div>
+              <div class="stat__label">Net</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LIST -->
+        <div class="a-panel" style="padding:16px; border-radius:18px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.05);">
+          <h3 style="margin:0 0 10px;">Recent transactions</h3>
+          <div id="txList" class="muted">Loading…</div>
+        </div>
+      </div>
+    </main>
+
+    <div class="toast" aria-live="polite" aria-atomic="true" id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
