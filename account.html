@@ -85,23 +85,18 @@
           <div id="dash" class="account__cards">
             <article class="a-card">
               <div class="a-card__label" data-i18n="account.card.plan.label">Plan</div>
-              <!-- ✅ убрали data-i18n с value, чтобы app.js мог менять план -->
-              <div class="a-card__value" id="planValue">Free</div>
+              <div class="a-card__value" id="planValue" data-i18n="account.card.plan.value">Free</div>
               <div class="a-card__hint" data-i18n="account.card.plan.hint">Upgrade anytime.</div>
             </article>
-
             <article class="a-card">
               <div class="a-card__label" data-i18n="account.card.status.label">Status</div>
-              <!-- ✅ убрали data-i18n с value, чтобы app.js мог менять статус -->
-              <div class="a-card__value" id="statusValue">Active</div>
+              <div class="a-card__value" id="statusValue" data-i18n="account.card.status.value">Active</div>
               <div class="a-card__hint" data-i18n="account.card.status.hint">Signed in with Supabase.</div>
             </article>
-
             <article class="a-card a-card--wide">
               <div class="a-card__label" data-i18n="account.card.email.label">Email</div>
-              <!-- ✅ важно: один элемент с data-account-email и БЕЗ data-i18n -->
-              <div class="a-card__value">
-                <span id="accountEmail" data-account-email>—</span>
+              <div class="a-card__value" id="userEmail">
+                <span data-account-email>—</span>
               </div>
               <div class="a-card__hint" data-i18n="account.card.email.hint">This is your login email.</div>
             </article>
@@ -127,10 +122,7 @@
                   <span data-i18n="account.settings.timezone">Timezone</span>
                   <input name="timezone" type="text" placeholder="Europe/Berlin" />
                 </label>
-
-                <button class="btn btn--primary btn--sm" type="submit" id="saveProfileBtn">
-                  Save changes
-                </button>
+                <button class="btn btn--primary btn--sm" type="submit" id="saveProfileBtn">Save changes</button>
                 <p class="form__hint muted">
                   Saved to Supabase: <span class="muted">public.profiles</span>
                 </p>
@@ -141,10 +133,11 @@
           <div class="a-section" id="subs">
             <div class="a-section__title" data-i18n="account.subs.title">Manage subscriptions</div>
             <div class="a-panel">
-              <p class="a-text" data-i18n="account.subs.text">Choose a plan. (Stripe connection can be added later.)</p>
-
+              <p class="a-text" data-i18n="account.subs.text">
+                Choose a plan. (Stripe connection can be added later.)
+              </p>
               <div class="a-actions">
-                <!-- ✅ enabled + opens modal (через ваш existing modal system data-open) -->
+                <!-- ✅ enabled + opens modal -->
                 <button
                   class="btn btn--primary btn--sm"
                   type="button"
@@ -154,7 +147,6 @@
                 >
                   Upgrade plan
                 </button>
-
                 <!-- keep, but still disabled until Stripe -->
                 <button class="btn btn--ghost btn--sm" type="button" disabled data-i18n="account.subs.cancel">
                   Cancel subscription
@@ -177,7 +169,7 @@
             <div class="a-panel">
               <p class="a-text" data-i18n="account.security.text">Change your password or reset it via email.</p>
 
-              <!-- ✅ Change password (requires old password) -->
+              <!-- ✅ Change password (requires old password via re-login) -->
               <form class="form" id="changePasswordForm" autocomplete="off">
                 <label class="field">
                   <span>Current password</span>
@@ -191,14 +183,9 @@
                   <span>Repeat new password</span>
                   <input name="new_password_repeat" type="password" placeholder="••••••••" />
                 </label>
-
                 <div class="a-actions">
-                  <button class="btn btn--primary btn--sm" type="submit" id="changePassBtn">
-                    Change password
-                  </button>
-                  <button class="btn btn--ghost btn--sm" type="button" id="resetPasswordBtn">
-                    Send reset link
-                  </button>
+                  <button class="btn btn--primary btn--sm" type="submit" id="changePassBtn">Change password</button>
+                  <button class="btn btn--ghost btn--sm" type="button" id="resetPasswordBtn">Send reset link</button>
                 </div>
               </form>
 
@@ -217,8 +204,6 @@
           <h3 class="modal__title">Choose your plan</h3>
           <button class="iconbtn" type="button" data-close aria-label="Close">✕</button>
         </div>
-
-        <!-- ✅ plans list -->
         <div class="form" id="plansList">
           <button class="btn btn--ghost w100" type="button" data-plan="free">Free — €0</button>
           <button class="btn btn--ghost w100" type="button" data-plan="student">Student — €2.99 / mo</button>
@@ -246,5 +231,273 @@
     <!-- ✅ SUPABASE SDK (ОБЯЗАТЕЛЬНО ПЕРЕД app.js) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
+
+    <!-- ✅ Account page wiring (email, profile, plans, security) -->
+    <script>
+      (function () {
+        "use strict";
+
+        const $ = (sel, root = document) => root.querySelector(sel);
+        const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+        const toast = $("#toast");
+        let toastTimer = null;
+        function showToast(msg) {
+          if (!toast) return;
+          toast.textContent = msg;
+          toast.style.display = "block";
+          clearTimeout(toastTimer);
+          toastTimer = window.setTimeout(() => {
+            toast.style.display = "none";
+          }, 2600);
+        }
+
+        async function getUserSafe() {
+          if (!window.sb) return null;
+          try {
+            const { data, error } = await window.sb.auth.getUser();
+            if (error) return null;
+            return data?.user || null;
+          } catch {
+            return null;
+          }
+        }
+
+        async function requireAuthOrRedirect() {
+          const user = await getUserSafe();
+          if (!user) {
+            // нет сессии — назад на лендинг
+            window.location.href = "index.html#top";
+            return null;
+          }
+          return user;
+        }
+
+        function setEmail(email) {
+          const el = document.querySelector("[data-account-email]");
+          if (el) el.textContent = email || "—";
+        }
+
+        function setPlanLabel(planId) {
+          const planEl = $("#planValue");
+          if (!planEl) return;
+          const map = {
+            free: "Free",
+            student: "Student",
+            family: "Family",
+            business: "Business",
+          };
+          planEl.textContent = map[String(planId || "free").toLowerCase()] || "Free";
+        }
+
+        async function loadSubscription(userId) {
+          // ожидаем таблицу public.user_subscriptions: user_id (pk), plan_id, status
+          if (!window.sb) return;
+          try {
+            const { data, error } = await window.sb
+              .from("user_subscriptions")
+              .select("plan_id,status")
+              .eq("user_id", userId)
+              .maybeSingle();
+
+            if (error) {
+              // если таблицы/rls нет — просто оставим Free
+              return;
+            }
+            if (data?.plan_id) setPlanLabel(data.plan_id);
+            const statusEl = $("#statusValue");
+            if (statusEl && data?.status) statusEl.textContent = String(data.status).charAt(0).toUpperCase() + String(data.status).slice(1);
+          } catch {
+            // ignore
+          }
+        }
+
+        async function loadProfile(userId) {
+          // ожидаем public.profiles: id uuid pk, full_name, currency, timezone
+          if (!window.sb) return;
+          const form = $("#profileForm");
+          if (!form) return;
+
+          try {
+            const { data, error } = await window.sb
+              .from("profiles")
+              .select("full_name,currency,timezone")
+              .eq("id", userId)
+              .maybeSingle();
+
+            if (error) return;
+
+            if (data?.full_name) form.full_name.value = data.full_name;
+            if (data?.currency) form.currency.value = data.currency;
+            if (data?.timezone) form.timezone.value = data.timezone;
+          } catch {
+            // ignore
+          }
+        }
+
+        function wireSignOut() {
+          const btn1 = $("#signOutBtn");
+          const btn2 = $("#signOutBtnMobile");
+          [btn1, btn2].filter(Boolean).forEach((btn) => {
+            btn.addEventListener("click", async () => {
+              if (!window.sb) return;
+              try {
+                const { error } = await window.sb.auth.signOut();
+                if (error) return showToast(error.message || "Sign out failed.");
+                showToast("Signed out.");
+                window.location.href = "index.html#top";
+              } catch {
+                showToast("Sign out failed.");
+              }
+            });
+          });
+        }
+
+        function wireProfileSave(userId) {
+          const form = $("#profileForm");
+          if (!form) return;
+
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (!window.sb) return showToast("Supabase not ready.");
+
+            const payload = {
+              id: userId,
+              full_name: String(form.full_name.value || "").trim() || null,
+              currency: String(form.currency.value || "").trim() || null,
+              timezone: String(form.timezone.value || "").trim() || null,
+              updated_at: new Date().toISOString(),
+            };
+
+            try {
+              const { error } = await window.sb.from("profiles").upsert(payload, { onConflict: "id" });
+              if (error) return showToast(error.message || "Save failed.");
+              showToast("Saved.");
+            } catch {
+              showToast("Save failed.");
+            }
+          });
+        }
+
+        function wirePlans(userId) {
+          const list = $("#plansList");
+          if (!list) return;
+
+          list.addEventListener("click", async (e) => {
+            const btn = e.target.closest("[data-plan]");
+            if (!btn) return;
+            const plan = btn.getAttribute("data-plan");
+            if (!plan) return;
+
+            if (!window.sb) return showToast("Supabase not ready.");
+
+            try {
+              const { error } = await window.sb.from("user_subscriptions").upsert(
+                {
+                  user_id: userId,
+                  plan_id: plan,
+                  status: "active",
+                  updated_at: new Date().toISOString(),
+                },
+                { onConflict: "user_id" }
+              );
+
+              if (error) return showToast(error.message || "Plan update failed.");
+              setPlanLabel(plan);
+              showToast("Plan updated.");
+              // закрыть модалку (совместимо с твоим app.js: data-close на backdrop/btn)
+              const openModal = document.querySelector('[data-modal="plans"]');
+              if (openModal) openModal.classList.remove("is-open");
+              document.documentElement.style.overflow = "";
+            } catch {
+              showToast("Plan update failed.");
+            }
+          });
+        }
+
+        function wireSecurity(userEmail) {
+          const resetBtn = $("#resetPasswordBtn");
+          const form = $("#changePasswordForm");
+          if (resetBtn) {
+            resetBtn.addEventListener("click", async () => {
+              if (!window.sb) return showToast("Supabase not ready.");
+              if (!userEmail) return showToast("Email not found.");
+              try {
+                const { error } = await window.sb.auth.resetPasswordForEmail(userEmail, {
+                  // после клика по письму можно вести на account.html (или отдельную страницу reset)
+                  redirectTo: window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "/") + "account.html",
+                });
+                if (error) return showToast(error.message || "Reset failed.");
+                showToast("Reset link sent.");
+              } catch {
+                showToast("Reset failed.");
+              }
+            });
+          }
+
+          if (form) {
+            form.addEventListener("submit", async (e) => {
+              e.preventDefault();
+              if (!window.sb) return showToast("Supabase not ready.");
+              if (!userEmail) return showToast("Email not found.");
+
+              const fd = new FormData(form);
+              const currentPass = String(fd.get("current_password") || "");
+              const newPass = String(fd.get("new_password") || "");
+              const newPass2 = String(fd.get("new_password_repeat") || "");
+
+              if (!currentPass || !newPass || !newPass2) return showToast("Please fill all fields.");
+              if (newPass.length < 6) return showToast("New password must be at least 6 characters.");
+              if (newPass !== newPass2) return showToast("New passwords do not match.");
+
+              try {
+                // re-login to prove “old password”
+                const { error: signInErr } = await window.sb.auth.signInWithPassword({
+                  email: userEmail,
+                  password: currentPass,
+                });
+                if (signInErr) return showToast("Current password is incorrect.");
+
+                const { error: updErr } = await window.sb.auth.updateUser({ password: newPass });
+                if (updErr) return showToast(updErr.message || "Password change failed.");
+
+                form.reset();
+                showToast("Password changed.");
+              } catch {
+                showToast("Password change failed.");
+              }
+            });
+          }
+        }
+
+        async function init() {
+          // ждём, пока app.js создаст window.sb
+          if (!window.sb) {
+            console.warn("Supabase client not found on window.sb. Check script order.");
+          }
+
+          const user = await requireAuthOrRedirect();
+          if (!user) return;
+
+          const email = user.email || "";
+          setEmail(email);
+          wireSignOut();
+
+          await loadProfile(user.id);
+          wireProfileSave(user.id);
+
+          await loadSubscription(user.id);
+          wirePlans(user.id);
+
+          wireSecurity(email);
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", init);
+        } else {
+          init();
+        }
+      })();
+    </script>
   </body>
 </html>
