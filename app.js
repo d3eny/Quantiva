@@ -9,9 +9,6 @@
    Supabase safe init (guarded)
 ================================ */
 (() => {
-  // если уже инициализировали — ничего не делаем
-  if (window.__QV_SUPABASE_READY__) return;
-  window.__QV_SUPABASE_READY__ = true;
 
   const SUPABASE_URL = "https://towzwaximnwmkeyvthvk.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvd3p3YXhpbW53bWtleXZ0aHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1MTgxMjQsImV4cCI6MjA4MjA5NDEyNH0.UcR2Vo4zQnQSmxG2TfiQvkHK9qRb_3W6g3knXG8PsrI";
@@ -1685,6 +1682,7 @@ async function adminSetSubscription(userId, plan) {
   // email на любых страницах, где есть [data-account-email]
   paintEmailEverywhere();
 })();
+
 
 
 
