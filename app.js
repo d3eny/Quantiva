@@ -1692,30 +1692,6 @@ window.sb = sb;
   paintEmailEverywhere();
 })();
 
-/* ================================
-   Show user email on account page
-================================ */
-
-async function loadUserEmail() {
-  const sb = window.sb;
-  if (!sb) return;
-
-  try {
-    const { data, error } = await sb.auth.getUser();
-    if (error) return;
-
-    const emailEl = document.querySelector("[data-account-email]");
-    if (!emailEl) return;
-
-    emailEl.textContent = data?.user?.email || "—";
-  } catch (e) {
-    console.error("Email load error", e);
-  }
-}
-
-// запуск при загрузке страницы
-document.addEventListener("DOMContentLoaded", loadUserEmail);
-
 
 
 
